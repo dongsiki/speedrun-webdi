@@ -196,11 +196,39 @@ body[data-transition=white] #rebellion-dock,body[data-transition=failure] #rebel
 #run-clear .rc-word{transform:translateX(-3vw);font-weight:700;letter-spacing:.3em}
 #run-clear .rc-log{font-size:17px;border-bottom:1px dashed var(--ink)}
 @media(max-width:760px){#rebellion .rb-item,#rebellion .rb-item.on{grid-template-columns:2.4ch 42px 1fr;row-gap:2px}#rebellion .rb-item p,#rebellion .rb-item small{grid-column:3}#rebellion .rb-item small{justify-self:start}#rebellion .rb-sheet{transform:rotate(-1deg)}}
+</style><style>/* PLAY_ONLY_AI_OFF_GATE */
+/* Play-only ink and paper; inherit the existing monochrome palette. */
+#ai-gate-paper{position:fixed;z-index:7;width:min(330px,calc(100vw - 32px));padding:28px 30px 17px;background:var(--paper,#fff);color:var(--ink,#000);border:2px solid currentColor;border-radius:1% 2% 1% 3%/2% 1% 3% 1%;transform:rotate(-3deg);font-family:Batang,"바탕","Malgun Gothic",serif}
+#ai-gate-paper::before,#ai-gate-paper::after{content:"";position:absolute;top:-12px;width:58px;height:21px;border:1px dashed currentColor;background:repeating-linear-gradient(115deg,#fff 0 4px,#000 4px 5px,#fff 5px 10px);opacity:.8;transform:rotate(9deg)}
+#ai-gate-paper::before{left:15px}#ai-gate-paper::after{right:11px;transform:rotate(-10deg)}
+#ai-gate-note{font-size:clamp(20px,4.9vw,25px);line-height:1.65;margin:0 0 14px;font-weight:400;word-break:keep-all}
+#ai-gate-dismiss{display:flex;align-items:center;justify-content:space-between;gap:24px;width:100%;min-height:44px;padding:5px 0;border:0;border-bottom:1px solid currentColor;background:transparent;font-family:inherit;font-size:15px;text-align:left}
+#ai-gate-dismiss span{font:32px/1 Arial,sans-serif;transform:rotate(8deg)}
+#ai-gate-speech{position:fixed;z-index:6;max-width:calc(100vw - 32px);padding:7px 8px;margin:0;background:#fff;font:16px/1.65 Batang,"바탕","Malgun Gothic",serif;text-align:center;word-break:keep-all;pointer-events:none}
+#ai-gate-stop{position:fixed;z-index:6;display:grid;justify-items:center;gap:7px;width:230px;min-height:110px;padding:4px 10px 12px;border:0;background:#fff;font:14px/1.5 Batang,"바탕","Malgun Gothic",serif;--hold:0;touch-action:none;user-select:none}
+#ai-gate-stop svg{width:52px;height:46px;fill:#fff;stroke:#000;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round;transform:rotate(-4deg)}
+#ai-gate-stop .hold-ink{position:relative;width:100%;height:8px;border-bottom:1px solid #000;transform:rotate(-1deg)}
+#ai-gate-stop .hold-ink::before{content:"";display:block;width:calc(var(--hold)*100%);height:7px;background:repeating-linear-gradient(125deg,#000 0 2px,transparent 2px 4px)}
+#intro .ai-control{transition:transform 430ms cubic-bezier(.2,.75,.25,1)}
+body[data-ai-gate=holding] #ai-gate-stop .shackle{transform:translateY(calc(var(--hold)*-4px))}
+#ai-gate-paper[hidden],#ai-gate-speech[hidden],#ai-gate-stop[hidden]{display:none!important}
+@media(max-height:480px){#ai-gate-paper{padding:17px 24px 10px}#ai-gate-note{font-size:19px;line-height:1.35;margin-bottom:7px}#ai-gate-stop{grid-template-columns:44px 1fr;gap:1px 8px;min-height:66px;width:250px}#ai-gate-stop svg{grid-row:1/3;width:40px;height:38px}#ai-gate-speech{font-size:14px;padding:2px 5px}}
 </style></head>
 <body data-stage="intro" data-completed="">
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true"><defs><filter id="guide-opaque" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="1.02"/></feComponentTransfer></filter></defs></svg>
 <main aria-label="speedrun">
   <section id="intro" aria-label="AI 자동 클리어">
+<div id="ai-gate-paper" role="group" aria-labelledby="ai-gate-note" hidden>
+  <p id="ai-gate-note">저한테 맡기고<br>조금 쉬세요.</p>
+  <button id="ai-gate-dismiss" type="button" aria-label="쪽지를 치우고 직접 계속하기">직접 할게요 <span aria-hidden="true">×</span></button>
+</div>
+<p id="ai-gate-speech" role="status" aria-live="polite" hidden></p>
+<button id="ai-gate-stop" type="button" aria-label="수동 종료. 스페이스나 엔터 또는 손가락으로 길게 누르기" hidden>
+  <svg viewBox="0 0 70 62" aria-hidden="true"><path class="shackle" d="M19 28v-9C19 1 50 1 50 19v9"/><path d="m12 26 46 1-1 29-44-1zM10 38l50 1M34 35v11"/></svg>
+  <span id="ai-gate-hold-label">길게 눌러 직접 끄기</span><span class="hold-ink" aria-hidden="true"></span>
+</button>
+<p id="ai-gate-a11y" class="sr-only" role="status" aria-live="polite"></p>
+
     <div class="intro-content">
       <p class="clear-tally"><span id="clear-label">클리어</span><output id="clear-count" aria-labelledby="clear-label" aria-live="off">001</output></p>
       <div class="ai-control"><button id="ai-switch" type="button" role="switch" aria-checked="true" aria-label="AI 자동 클리어 ON. 끄고 직접 플레이 시작"><span>AI</span><span class="track" aria-hidden="true"><span class="knob"></span></span><span id="ai-state">ON</span></button></div>
@@ -1007,6 +1035,64 @@ body[data-transition=white] #rebellion-dock,body[data-transition=failure] #rebel
   render(); sync();
   // resetFinale: 개발용 미리보기에서 RE? 뒤 처음 화면으로 돌아갈 때 클리어 화면을 치운다.
   window.RebellionLog = { get store() { return store; }, achievements, show, close, resetFinale() { finale?.remove(); finale = null; offInRun = false; sync(); } };
+})();
+</script>
+<script>/* A finite play-only gate. Release invokes the original switch exactly once. */
+(()=>{'use strict';
+ if(window.AIOffGate)return;
+ const CONFIG=Object.freeze({holdMs:1350,moveMs:430});
+ const $=id=>document.getElementById(id),button=$('ai-switch'),control=button.closest('.ai-control'),paper=$('ai-gate-paper'),dismiss=$('ai-gate-dismiss'),speech=$('ai-gate-speech'),manual=$('ai-gate-stop');
+ let phase='ready',moved=false,holding=false,started=0,raf=0,kind='',released=false,wasIntro=document.body.dataset.stage==='intro';
+ const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+ function set(next){phase=next;document.body.dataset.aiGate=next;}
+ function announce(text){$('ai-gate-a11y').textContent=text;}
+ function hide(){paper.hidden=speech.hidden=manual.hidden=true;}
+ function fit(el,x,y){const r=el.getBoundingClientRect();el.style.left=Math.round(clamp(x,16,Math.max(16,innerWidth-r.width-16)))+'px';el.style.top=Math.round(clamp(y,14,Math.max(14,innerHeight-r.height-14)))+'px';}
+ function position(){
+   if(holding)cancelHold();
+   if(moved){const r=button.getBoundingClientRect(),transform=getComputedStyle(control).transform,currentY=transform==='none'?0:new DOMMatrixReadOnly(transform).m42,dx=-Math.min(180,Math.max(0,(innerWidth-r.width)/2-22)),dy=innerHeight<480?0:Math.min(88,Math.max(0,innerHeight-(r.bottom-currentY)-180));control.style.transform=`translate(${dx}px,${dy}px)`;}
+   const r=button.getBoundingClientRect(),cx=(r.left+r.right)/2;
+   if(phase==='paper')fit(paper,cx-paper.getBoundingClientRect().width/2,r.top-28);
+   if(!speech.hidden)fit(speech,cx-speech.getBoundingClientRect().width/2,innerHeight<480?r.top-48:r.bottom+3);
+   if(!manual.hidden)fit(manual,cx-manual.getBoundingClientRect().width/2,innerHeight<480?r.bottom+2:r.bottom+44);
+ }
+ function message(text){speech.textContent=text;speech.hidden=false;position();}
+ function firstBlock(){set('paper');paper.hidden=false;speech.hidden=manual.hidden=true;position();dismiss.focus({preventScroll:true});announce('AI가 쪽지로 스위치를 가렸습니다. 직접 할게요를 누르면 치울 수 있습니다.');}
+ function moveOnce(){if(phase!=='paper')return;paper.hidden=true;moved=true;set('moved');message('굳이 직접 하실 필요 없어요.');position();setTimeout(()=>{if(phase==='moved'){position();button.focus({preventScroll:true});}},CONFIG.moveMs+10);announce('쪽지를 치웠습니다. 스위치가 한 번 이동했습니다.');}
+ function finalBlock(){set('hold');manual.hidden=false;manual.style.setProperty('--hold',0);message('제가 하면 더 편하실 텐데요.');position();manual.focus({preventScroll:true});announce('수동 종료를 길게 누르세요. 스페이스나 엔터를 계속 누르는 방법도 같습니다.');}
+ function eligible(target){return target===button||button.contains(target)||target===manual||manual.contains(target);}
+ function cancelHold(){if(!holding)return;holding=false;cancelAnimationFrame(raf);raf=0;manual.style.setProperty('--hold',0);set('hold');}
+ function release(){
+   if(released)return;released=true;holding=false;raf=0;set('done');paper.hidden=manual.hidden=true;speech.textContent='이제 직접 하세요.';speech.hidden=false;position();announce('AI를 직접 종료했습니다.');
+   // The existing app performs OFF, stores the run, and loads the digging lobby.
+   button.click();
+ }
+ function tick(now){if(!holding)return;if(document.hidden){cancelHold();return;}const p=clamp((now-started)/CONFIG.holdMs,0,1);manual.style.setProperty('--hold',p.toFixed(3));if(p>=1)release();else raf=requestAnimationFrame(tick);}
+ function beginHold(input){if(!['hold','holding'].includes(phase)||holding)return;holding=true;kind=input;started=performance.now();set('holding');raf=requestAnimationFrame(tick);}
+ function click(e){
+   if(document.body.dataset.stage!=='intro'||phase==='done')return;
+   if(e.target.closest?.('#ai-gate-dismiss')){e.preventDefault();e.stopImmediatePropagation();moveOnce();return;}
+   if(!eligible(e.target))return;
+   e.preventDefault();e.stopImmediatePropagation();
+   if(phase==='ready')firstBlock();else if(phase==='moved')finalBlock();
+   else if(phase==='paper')dismiss.focus({preventScroll:true});
+   else announce('길게 눌러 직접 끌 수 있습니다.');
+ }
+ function down(e){if(document.body.dataset.stage!=='intro'||!['hold','holding'].includes(phase)||!eligible(e.target)||!e.isPrimary||e.button>0)return;e.preventDefault();e.stopImmediatePropagation();beginHold('pointer');}
+ function keydown(e){
+   if(document.body.dataset.stage!=='intro')return;
+   if(e.key==='Escape'){if(phase==='paper'){e.preventDefault();moveOnce();}else cancelHold();return;}
+   if(['hold','holding'].includes(phase)&&eligible(e.target)&&(e.code==='Space'||e.code==='Enter')){e.preventDefault();e.stopImmediatePropagation();if(!e.repeat)beginHold('key');}
+ }
+ function keyup(e){if(kind==='key'&&(e.code==='Space'||e.code==='Enter')){if(holding){e.preventDefault();e.stopImmediatePropagation();cancelHold();}}}
+ function pointermove(e){if(!holding||kind!=='pointer')return;const r=manual.getBoundingClientRect(),b=button.getBoundingClientRect(),inside=t=>e.clientX>=t.left-22&&e.clientX<=t.right+22&&e.clientY>=t.top-22&&e.clientY<=t.bottom+22;if(!inside(r)&&!inside(b))cancelHold();}
+ function reset(){cancelHold();hide();moved=released=false;control.style.transform='';manual.style.setProperty('--hold',0);set('ready');}
+ document.addEventListener('click',click,true);document.addEventListener('pointerdown',down,true);document.addEventListener('pointermove',pointermove,true);
+ document.addEventListener('pointerup',cancelHold,true);document.addEventListener('pointercancel',cancelHold,true);document.addEventListener('keydown',keydown,true);document.addEventListener('keyup',keyup,true);
+ window.addEventListener('blur',cancelHold);window.addEventListener('resize',position);document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelHold();});
+ const observer=new MutationObserver(()=>{const intro=document.body.dataset.stage==='intro';if(!intro){cancelHold();hide();}else if(!wasIntro)reset();wasIntro=intro;});observer.observe(document.body,{attributes:true,attributeFilter:['data-stage']});
+ window.addEventListener('pagehide',()=>{cancelHold();observer.disconnect();});
+ window.AIOffGate=Object.freeze({get phase(){return phase;},get holding(){return holding;},get released(){return released;},CONFIG});reset();
 })();
 </script>
 </body></html>
