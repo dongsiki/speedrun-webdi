@@ -1,0 +1,1 @@
+const SwitchArt = /* @json assets/data/switches-art-switch-art-5d069cc6f3.json */ null;

@@ -1,0 +1,87 @@
+{
+  "commit": "989a7bcd00cf843b948cbc36e7027144a96a9193",
+  "outputs": {
+    "01_speedrun_play.html": {
+      "sha256": "b218f38211f492db4debc018cf4bfefa189b8982b2d4c9291bc9b6ad636b0564",
+      "bytes": 41059031
+    },
+    "02_speedrun_dev.html": {
+      "sha256": "20f4c2c2dd66ea2be0478720cde0f0f6b0e6b6a8975598d1151dd7dc3fe5b66f",
+      "bytes": 54399664
+    }
+  },
+  "documents": {
+    "play": {
+      "digging": {
+        "sha256": "f9f4d26f852e7bc798d65843cf7ec0ddb61e1e33aafc8fda5e0d0d2019af4ef0",
+        "bytes": 39044
+      },
+      "switches": {
+        "sha256": "272a3b82fbae75f19572b3b72cd1d45711871d12e747fbc3e5f8e46f801094b0",
+        "bytes": 117447
+      },
+      "maze": {
+        "sha256": "f2e103f33398294bae07b53e7dd33f64765fd687937a91782142716aadc60c48",
+        "bytes": 21019439
+      },
+      "routine": {
+        "sha256": "5f9770c8fdbbbc6a67b6add2cead729c4337c50fb8308e50ffea8f65aea5f4a5",
+        "bytes": 13550129
+      },
+      "limb": {
+        "sha256": "dd1c609947ad86b36e85fab58a8fb8841048bc2b28c1de25012bc020a014228a",
+        "bytes": 58662
+      },
+      "needle": {
+        "sha256": "7201c69b25cf61117f636c05ecf80885dc920ed11dc92e905cbd116bc3a6d828",
+        "bytes": 2225334
+      },
+      "suitcase": {
+        "sha256": "6815179512ac3353a64c94af97a64c6a13c83d0b735a34cc7593c607b46792c7",
+        "bytes": 24284
+      },
+      "mri": {
+        "sha256": "6da96c36fb399344093c1267828089304c61382e31011233208a1e43badb7814",
+        "bytes": 1892650
+      }
+    },
+    "dev": {
+      "01-switches.html": {
+        "sha256": "31bc373e05e15f8ec88cee2b5611d86d3e2c78c5b02785f3c5b5eb1dd2aab73a",
+        "bytes": 133509
+      },
+      "02-maze.html": {
+        "sha256": "dd2c5c5afd76952499261a2b65e25d4b87e8c5338a5381dd1b1c3255fa171162",
+        "bytes": 21235859
+      },
+      "03-memory-routine.html": {
+        "sha256": "c2c76954dfcfbd777f63ceecff9543dab1e70c6f5e36501b3fca2892d8bab464",
+        "bytes": 13548180
+      },
+      "05-elder-dance.html": {
+        "sha256": "116606fcd6c8f1088fb307e59b6e022d7bf61760b05923521818e9ed72165289",
+        "bytes": 14557267
+      },
+      "06-last-walk.html": {
+        "sha256": "1d9c7d77e2338b32e956f235c07240fa07fd067cf782a0498c837b98ad732391",
+        "bytes": 75315
+      },
+      "07-mri.html": {
+        "sha256": "cefe5587c39731d1a8dd928ab60305c8c3364f337de69c710a73e4874c3de54c",
+        "bytes": 1892814
+      },
+      "08-clear-screen.html": {
+        "sha256": "72aac0ed22236bd8d7d3d8b54c4edb08de40dfb2251457f2431f515a1f8dc900",
+        "bytes": 86333
+      },
+      "09-needle.html": {
+        "sha256": "b15f024d21b98a3a928168d4a37510ff103140529d7a0e0d0c978befa12d13e4",
+        "bytes": 2225725
+      },
+      "10-suitcase.html": {
+        "sha256": "56b7f1abfdb53abfc49dd1ed575eeb83e8919a7ab72f5a12b3746d133ffcc50b",
+        "bytes": 25191
+      }
+    }
+  }
+}

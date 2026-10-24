@@ -1,0 +1,12 @@
+:root{--paper:#fff;--ink:#000;--hit:44px;--edge:clamp(12px,2.5vw,26px)}
+*{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--paper);color:var(--ink);font-family:"Pretendard","Noto Sans KR","Malgun Gothic",sans-serif}
+[hidden]{display:none!important}#world{display:block;width:100%;height:100%;image-rendering:pixelated;touch-action:manipulation}
+.icon{width:var(--hit);height:var(--hit);padding:11px;border:0;color:var(--ink);background:var(--paper);cursor:pointer;display:grid;place-items:center;text-decoration:none;border-radius:0}
+.icon svg{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.icon:focus-visible,a:focus-visible{outline:2px solid var(--ink);outline-offset:3px}.icon:hover{background:#eee}.icon:disabled{opacity:.3;cursor:wait}
+.back{position:fixed;top:max(var(--edge),env(safe-area-inset-top));left:max(var(--edge),env(safe-area-inset-left))}
+.tools{position:fixed;top:max(var(--edge),env(safe-area-inset-top));right:max(var(--edge),env(safe-area-inset-right));display:flex;gap:4px}
+.play{position:fixed;bottom:max(28px,env(safe-area-inset-bottom));left:calc(50% - 26px);width:52px;height:52px;border:1px solid var(--ink);border-radius:50%}.play svg{width:23px;height:23px}.play #play-icon{fill:var(--ink);stroke-width:1}.play #pause-icon{stroke-width:3}
+#credits{position:fixed;right:var(--edge);top:80px;max-width:calc(100vw - 2 * var(--edge));padding:22px 28px;border:1px solid var(--ink);font-size:13px;line-height:1.8;background:var(--paper)}#credits p{margin:0 0 16px}#credits p:last-child{margin-bottom:0}#credits a{color:inherit;text-underline-offset:3px}#close-info{position:absolute;right:0;top:0;font:24px/1 sans-serif;padding:0}#credits p:first-of-type{padding-right:22px}
+#error{position:fixed;bottom:95px;left:16px;right:16px;text-align:center;font-size:13px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(max-height:500px){.play{bottom:10px;width:44px;height:44px;left:calc(50% - 22px)}}

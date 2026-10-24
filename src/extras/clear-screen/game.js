@@ -1,0 +1,1 @@
+window.RebellionForceReveal=true;

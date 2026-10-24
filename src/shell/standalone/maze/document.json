@@ -1,0 +1,12 @@
+{
+  "entry": "src/stages/maze/dev-game.template.html",
+  "metadata": {
+    "stage": "maze",
+    "title": "미로"
+  },
+  "propertyOrder": [
+    "stage",
+    "title",
+    "html"
+  ]
+}

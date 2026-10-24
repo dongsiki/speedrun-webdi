@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>불을 켜는 순서</title>
+  <style>/* @inline src/stages/switches/style.css */</style>
+</head>
+<body>
+  <svg class="definitions" aria-hidden="true"><defs><filter id="ink" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncR type="discrete" tableValues="0 1"/><feFuncG type="discrete" tableValues="0 1"/><feFuncB type="discrete" tableValues="0 1"/></feComponentTransfer></filter></defs></svg>
+  <main id="experience" data-phase="playing" aria-label="전구를 모두 켜는 퍼즐">
+    <div class="board-window">
+      <div id="switches" role="group" aria-label="윗줄 여덟 개, 아랫줄 일곱 개의 스위치"></div>
+    </div>
+    <p id="status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+  </main>
+  <script>/* @inline src/common/motion.js *//* @inline src/common/guides.js */</script><script>/* @inline src/stages/switches/art.js */</script>
+  <script>/* @inline src/stages/switches/guide.js */</script>
+  <script>/* @inline src/stages/switches/game.js */</script>
+<button class="demo-back" id="stage-back" type="button" aria-label="땅파기 로비로 돌아가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5.5 3.5 12 10 18.5M4 12c5-.3 10-.2 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><script>/* @inline src/stages/switches/back.js */</script></body>
+</html>

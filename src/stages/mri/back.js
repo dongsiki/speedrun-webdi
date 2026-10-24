@@ -1,0 +1,1 @@
+document.getElementById('mri-back').addEventListener('click',()=>parent.postMessage({channel:'speedrun-midterm-v1',type:'back'},'*'));

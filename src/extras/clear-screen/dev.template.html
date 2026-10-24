@@ -1,0 +1,14 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>클리어 후 화면 · 개발용</title>
+<style>/* @inline src/extras/clear-screen/style.css */</style></head>
+<body data-stage="digging" data-transition="idle" data-completed="switches,maze,routine,limb">
+<main aria-label="클리어 후 화면 미리보기">
+<div id="scene-intro" class="scene" aria-label="처음 화면: AI 스위치"><button id="fake-switch" type="button" aria-label="AI 끄기"></button></div>
+<div id="scene-digging" class="scene" aria-label="땅파기 화면"></div>
+<div id="stub"><button id="ai-switch" type="button" role="switch" aria-checked="true"></button><output id="clear-count">65</output></div>
+</main>
+<div id="preview-bar" role="group" aria-label="미리보기 기록 상태"><span>개발용 · 기록 상태</span><button type="button" data-state="all">전부 해금</button><button type="button" data-state="some">일부</button><button type="button" data-state="none">전부 잠금</button></div>
+<p id="preview-hint">① 클리어 화면 → RE? 누르기</p>
+<script>/* @inline src/extras/clear-screen/game.js *//* @inline src/extras/clear-screen/game.dev.js */</script>
+<script>/* @inline src/extras/clear-screen/game.dev-2.js */</script>
+<style>/* @inline src/stages/memory/additional-2.css */</style><a class="portable-back" href="00-index.html" aria-label="개발용 목록으로 돌아가기" title="돌아가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5 7 12l7 7M7 12h13"/></svg></a><script>/* @inline src/shell/standalone/switches/navigation.js */</script>
+</body></html>

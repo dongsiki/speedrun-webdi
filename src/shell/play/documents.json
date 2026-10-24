@@ -1,0 +1,26 @@
+{
+  "digging": {
+    "entry": "src/stages/digging/play.template.html"
+  },
+  "switches": {
+    "entry": "src/stages/switches/play.template.html"
+  },
+  "maze": {
+    "entry": "src/stages/maze/play.template.html"
+  },
+  "routine": {
+    "entry": "src/stages/memory/play.template.html"
+  },
+  "limb": {
+    "entry": "src/stages/last-walk/play.template.html"
+  },
+  "needle": {
+    "entry": "src/stages/needle/play.template.html"
+  },
+  "suitcase": {
+    "entry": "src/stages/suitcase/play.template.html"
+  },
+  "mri": {
+    "entry": "src/stages/mri/play.template.html"
+  }
+}

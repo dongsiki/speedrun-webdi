@@ -1,0 +1,12 @@
+{
+  "entry": "src/stages/last-walk/dev-game.template.html",
+  "metadata": {
+    "stage": "limb",
+    "title": "마지막 걸음"
+  },
+  "propertyOrder": [
+    "stage",
+    "title",
+    "html"
+  ]
+}

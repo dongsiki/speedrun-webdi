@@ -1,0 +1,92 @@
+{
+  "01-switches.html": {
+    "entry": "src/shell/standalone/switches/index.template.html",
+    "metadata": {
+      "title": "전구 퍼즐"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  },
+  "02-maze.html": {
+    "entry": "src/shell/standalone/maze/index.template.html",
+    "metadata": {
+      "title": "미로"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  },
+  "03-memory-routine.html": {
+    "entry": "src/stages/memory/dev.template.html",
+    "metadata": {
+      "title": "기억 스테이지"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  },
+  "05-elder-dance.html": {
+    "entry": "src/extras/elder-dance/dev.template.html",
+    "metadata": {
+      "title": "그냥 춤"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  },
+  "06-last-walk.html": {
+    "entry": "src/shell/standalone/last-walk/index.template.html",
+    "metadata": {
+      "title": "마지막 걸음"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  },
+  "07-mri.html": {
+    "entry": "src/stages/mri/dev.template.html",
+    "metadata": {
+      "title": "MRI 검사"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  },
+  "08-clear-screen.html": {
+    "entry": "src/extras/clear-screen/dev.template.html",
+    "metadata": {
+      "title": "클리어 후 화면"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  },
+  "09-needle.html": {
+    "entry": "src/stages/needle/dev.template.html",
+    "metadata": {
+      "title": "실 꿰기"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  },
+  "10-suitcase.html": {
+    "entry": "src/stages/suitcase/dev.template.html",
+    "metadata": {
+      "title": "짐 싸기"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  }
+}

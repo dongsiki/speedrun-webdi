@@ -1,0 +1,6 @@
+{
+  "switch-idle": "@@data:assets/images/switches-art-switch-art-5d069cc6f3-372c5a1cab55.svg@@",
+  "switch-pressed": "@@data:assets/images/switches-art-switch-art-5d069cc6f3-842edbff5a43.svg@@",
+  "bulb-off": "@@data:assets/images/switches-art-switch-art-5d069cc6f3-6d242adfbb7f.svg@@",
+  "bulb-on": "@@data:assets/images/switches-art-switch-art-5d069cc6f3-b8932d77ae80.svg@@"
+}

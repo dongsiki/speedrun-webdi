@@ -1,0 +1,1 @@
+try{const r=JSON.parse(localStorage.getItem('speedrun-rebellion-v1'));if(r&&r.lastAuto>0)window.RebellionAutoBase=r.lastAuto+1;}catch(_){}

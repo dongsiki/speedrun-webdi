@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>그냥 춤 · 이스터에그</title>
+<style>/* @inline src/extras/elder-dance/style.css */</style></head><body>
+<canvas id="world" role="img" aria-label="흑백 점묘로 표현한 기억 속 노인이 춤을 춥니다."></canvas>
+<a class="icon back" href="00-index.html" aria-label="개발용 목록으로 돌아가기" title="돌아가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5 7 12l7 7M7 12h13"/></svg></a>
+<div class="tools">
+<button id="mute" class="icon" aria-label="소리 끄기" aria-pressed="false" title="소리"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4zM17 8q5 4 0 8"/><path id="muted-line" d="m3 3 18 18" hidden/></svg></button>
+<button id="motion" class="icon" aria-label="작은 동작으로 보기" aria-pressed="false" title="동작 크기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 18 3-6 4-1 3-6M3 12l5 1 5 5M13 9l5 2 3-4"/><circle cx="15" cy="3" r="1.5"/></svg></button>
+<button id="info" class="icon" aria-label="출처 보기" aria-expanded="false" title="출처"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7v1"/></svg></button>
+</div>
+<button id="play" class="icon play" aria-label="춤과 음악 재생" title="재생 / 일시정지"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="play-icon" d="m8 5 11 7-11 7z"/><path id="pause-icon" d="M8 5v14M16 5v14" hidden/></svg></button>
+<aside id="credits" hidden><button id="close-info" class="icon" aria-label="출처 닫기">×</button><p>Music: なまーく<br>Original: Only Dance!</p><p><a href="https://note.com/namacream0/n/nb089cbd23d4b" target="_blank" rel="noopener">음원 / 제작자</a><br><a href="https://novelgame.jp/games/show/11394" target="_blank" rel="noopener">Only Dance!</a></p><p>Character mesh: Lucas Pope / 3909<br>Obra Dinn GDC 2016 demo<br>로컬 모델링·애니메이션 연구 시제품</p></aside>
+<p id="error" hidden role="alert"></p><p id="status" class="sr-only" aria-live="polite"></p>
+<audio id="music" loop preload="auto" src="@@data:assets/audio/dev-template-8c5fcb31c8a9.mp3@@"></audio>
+<script>/* @inline src/extras/elder-dance/three.js */</script><script>/* @inline src/extras/elder-dance/dance-mesh.js *//* @inline src/extras/elder-dance/create-elder-model.js *//* @inline src/extras/elder-dance/dance-reference.js *//* @inline src/extras/elder-dance/elder-dance.js *//* @inline src/extras/elder-dance/game.js */</script><script>/* @inline src/shell/standalone/switches/navigation.js */</script></body></html>

@@ -1,0 +1,223 @@
+{
+  "assets/images/switches-art-switch-art-5d069cc6f3-372c5a1cab55.svg": {
+    "mime": "image/svg+xml",
+    "sha256": "372c5a1cab55e59defa0f3325ca3db740c8ab6f5e146999e507cf3142fe0283c",
+    "bytes": 462,
+    "usedBy": [
+      "assets/data/switches-art-switch-art-5d069cc6f3.json"
+    ]
+  },
+  "assets/images/switches-art-switch-art-5d069cc6f3-842edbff5a43.svg": {
+    "mime": "image/svg+xml",
+    "sha256": "842edbff5a43634634429fc423d1474661ba56dbb234fc2c61df13525047826c",
+    "bytes": 338,
+    "usedBy": [
+      "assets/data/switches-art-switch-art-5d069cc6f3.json"
+    ]
+  },
+  "assets/images/switches-art-switch-art-5d069cc6f3-6d242adfbb7f.svg": {
+    "mime": "image/svg+xml",
+    "sha256": "6d242adfbb7fb95798665d37c4e7d8fecc1af799313cedd4b939e69f9f636e0d",
+    "bytes": 505,
+    "usedBy": [
+      "assets/data/switches-art-switch-art-5d069cc6f3.json"
+    ]
+  },
+  "assets/images/switches-art-switch-art-5d069cc6f3-b8932d77ae80.svg": {
+    "mime": "image/svg+xml",
+    "sha256": "b8932d77ae803d1c4873c0987dda134d5cdab256ae2124cd9b0d7a4d0cbd2b96",
+    "bytes": 563,
+    "usedBy": [
+      "assets/data/switches-art-switch-art-5d069cc6f3.json"
+    ]
+  },
+  "assets/images/switches-game-switch-memory-assets-05652ef819-fbaaf3cb127b.svg": {
+    "mime": "image/svg+xml",
+    "sha256": "fbaaf3cb127bab2ecf7e9bdd214d13b7654a9d03246c3ebbca98aa398b44a07e",
+    "bytes": 1855,
+    "usedBy": [
+      "assets/data/switches-game-switch-memory-assets-05652ef819.json"
+    ]
+  },
+  "assets/images/switches-game-switch-memory-assets-05652ef819-ddf8d5f6ff6a.svg": {
+    "mime": "image/svg+xml",
+    "sha256": "ddf8d5f6ff6afc4844d0c7fd7d08ccb0454ca3ce4703a101ca2739e8269d53e5",
+    "bytes": 1302,
+    "usedBy": [
+      "assets/data/switches-game-switch-memory-assets-05652ef819.json"
+    ]
+  },
+  "assets/audio/switches-game-switch-memory-assets-05652ef819-88b012d67277.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "88b012d6727768d7e1ee0138b9f19f330c1a3ff5b943e43582b88be2671cfc54",
+    "bytes": 62636,
+    "usedBy": [
+      "assets/data/switches-game-switch-memory-assets-05652ef819.json"
+    ]
+  },
+  "assets/images/maze-npc-assets-maze-npcassets-cf25899691-319e9c477a79.png": {
+    "mime": "image/png",
+    "sha256": "319e9c477a79a10dc0ea6f99f2a0143799d851ebd5ddb7cd203de55f90b7abfe",
+    "bytes": 1776314,
+    "usedBy": [
+      "assets/data/maze-npc-assets-maze-npcassets-cf25899691.json"
+    ]
+  },
+  "assets/images/maze-npc-assets-maze-npcassets-cf25899691-064b7901b47f.png": {
+    "mime": "image/png",
+    "sha256": "064b7901b47f14a6e14a065fd1611910d1d6e7919f4a90d22458224190438fc5",
+    "bytes": 2585276,
+    "usedBy": [
+      "assets/data/maze-npc-assets-maze-npcassets-cf25899691.json"
+    ]
+  },
+  "assets/images/maze-npc-assets-maze-npcassets-cf25899691-9c75b8475897.png": {
+    "mime": "image/png",
+    "sha256": "9c75b8475897c757b7a76a2e94971aaed505e0640c80f169c890023096b93246",
+    "bytes": 2868145,
+    "usedBy": [
+      "assets/data/maze-npc-assets-maze-npcassets-cf25899691.json"
+    ]
+  },
+  "assets/images/maze-npc-assets-maze-npcassets-cf25899691-a5764bf8415f.png": {
+    "mime": "image/png",
+    "sha256": "a5764bf8415f900d5caa31a0082a30b23b09ce4e8ac5de0b661c8dad95aee186",
+    "bytes": 2148407,
+    "usedBy": [
+      "assets/data/maze-npc-assets-maze-npcassets-cf25899691.json"
+    ]
+  },
+  "assets/images/maze-npc-assets-maze-npcassets-cf25899691-64314adad8e1.png": {
+    "mime": "image/png",
+    "sha256": "64314adad8e104cc7e2a25100e22da99179a9f92ef11db92e1b539da39ac5f35",
+    "bytes": 2632259,
+    "usedBy": [
+      "assets/data/maze-npc-assets-maze-npcassets-cf25899691.json"
+    ]
+  },
+  "assets/audio/play-template-798a4908e4fc.wav": {
+    "mime": "audio/wav",
+    "sha256": "798a4908e4fc48f7624b4188932d2f8fc66e61983666822e12c32b7b396b831d",
+    "bytes": 23244,
+    "usedBy": [
+      "src/stages/maze/play.template.html",
+      "src/stages/maze/dev-game.template.html"
+    ]
+  },
+  "assets/images/play-template-2797b221fd09.png": {
+    "mime": "image/png",
+    "sha256": "2797b221fd0991422cbcbeaf9ec7af33e7c03a1132392f71327defc4df984797",
+    "bytes": 549755,
+    "usedBy": [
+      "src/stages/maze/play.template.html",
+      "src/stages/maze/dev-game.template.html"
+    ]
+  },
+  "assets/images/elder-model-143319738660.png": {
+    "mime": "image/png",
+    "sha256": "1433197386603dd81880ae19e484eeb1395b51e16fbd617ef090aa4b9742169a",
+    "bytes": 2862881,
+    "usedBy": [
+      "src/stages/memory/elder-model.js",
+      "src/extras/elder-dance/create-elder-model.js"
+    ]
+  },
+  "assets/images/elder-model-909eb9a596a5.png": {
+    "mime": "image/png",
+    "sha256": "909eb9a596a56ba3e317a296eb8da3eeafaf1ebd5ed7faff769733b5d201730f",
+    "bytes": 2333800,
+    "usedBy": [
+      "src/stages/memory/elder-model.js",
+      "src/extras/elder-dance/create-elder-model.js"
+    ]
+  },
+  "assets/images/elder-model-f6e62ce9dc17.png": {
+    "mime": "image/png",
+    "sha256": "f6e62ce9dc174cfcc87eaa2f698431e2b8e56d3a422c5240a48f4dbd3ec13542",
+    "bytes": 2756314,
+    "usedBy": [
+      "src/stages/memory/elder-model.js",
+      "src/extras/elder-dance/create-elder-model.js"
+    ]
+  },
+  "assets/images/game-c92a579205fa.png": {
+    "mime": "image/png",
+    "sha256": "c92a579205fa5336058591a5ef735666073dd9b558e96ccf98c70915f5fc14ee",
+    "bytes": 1648292,
+    "usedBy": [
+      "src/stages/needle/game.js"
+    ]
+  },
+  "assets/audio/mri-audio-data-be34b32204-84e00fb1ea81.wav": {
+    "mime": "audio/wav",
+    "sha256": "84e00fb1ea81389d62ff4a065194c92bc3f39cefc4dbf7cf35503c31efdf93b0",
+    "bytes": 204884,
+    "usedBy": [
+      "assets/data/mri-audio-data-be34b32204.json"
+    ]
+  },
+  "assets/audio/mri-audio-data-be34b32204-228bd1416547.wav": {
+    "mime": "audio/wav",
+    "sha256": "228bd1416547a873e5ed6a18b2243147adf047bd7a5cb3fb0501386e4f55fc33",
+    "bytes": 456596,
+    "usedBy": [
+      "assets/data/mri-audio-data-be34b32204.json"
+    ]
+  },
+  "assets/audio/mri-audio-data-be34b32204-79fdcf250638.wav": {
+    "mime": "audio/wav",
+    "sha256": "79fdcf250638f51ed59b65f879e59c421e7faf21f72d08edd8d53b669480c07d",
+    "bytes": 301368,
+    "usedBy": [
+      "assets/data/mri-audio-data-be34b32204.json"
+    ]
+  },
+  "assets/audio/mri-audio-data-be34b32204-6ea491bc23da.wav": {
+    "mime": "audio/wav",
+    "sha256": "6ea491bc23da96281514af3b685ea1e6f90468dd5131620b5e850480e02362a3",
+    "bytes": 210836,
+    "usedBy": [
+      "assets/data/mri-audio-data-be34b32204.json"
+    ]
+  },
+  "assets/audio/mri-audio-data-be34b32204-4b863e091c0a.wav": {
+    "mime": "audio/wav",
+    "sha256": "4b863e091c0aff00d171689171d456c0738013ab62b55b05fef5da518c9333ce",
+    "bytes": 227158,
+    "usedBy": [
+      "assets/data/mri-audio-data-be34b32204.json"
+    ]
+  },
+  "assets/images/index-template-a9844f536afc.png": {
+    "mime": "image/png",
+    "sha256": "a9844f536afc9b8e7e1680e30736b4a88d42e3414536a58bff435ce1b93fd80c",
+    "bytes": 1222584,
+    "usedBy": [
+      "src/shell/play/index.template.html"
+    ]
+  },
+  "assets/audio/dev-template-8c5fcb31c8a9.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "8c5fcb31c8a9bcbbac3219f0ba1824cc070b776b5ec03df790540eae0d0eef38",
+    "bytes": 922599,
+    "usedBy": [
+      "src/extras/elder-dance/dev.template.html"
+    ]
+  },
+  "assets/images/style-8e2a42d3de93.png": {
+    "mime": "image/png",
+    "sha256": "8e2a42d3de939c46b43b7dd2eb0261d4af3a2f587187638418a2ddf260249385",
+    "bytes": 13227,
+    "usedBy": [
+      "src/extras/clear-screen/style.css"
+    ]
+  },
+  "assets/images/style-cb1b60dc1cdc.png": {
+    "mime": "image/png",
+    "sha256": "cb1b60dc1cdc27cacaa7707c59096a3879e5ae76773485e7e6539f8efcf4cbc9",
+    "bytes": 8551,
+    "usedBy": [
+      "src/extras/clear-screen/style.css"
+    ]
+  }
+}

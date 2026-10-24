@@ -1,0 +1,12 @@
+
+html,body{margin:0;height:100%;background:#fff;overflow:hidden}
+canvas{display:block;width:100vw;height:100vh;outline:none;touch-action:none}
+canvas:focus-visible{outline:2px solid #000;outline-offset:-3px}
+#keys{position:fixed;left:50%;bottom:max(22px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;padding:4px 10px;background:#fff;color:#000;font:600 15px/1.4 "Malgun Gothic",sans-serif;letter-spacing:.02em;white-space:normal;text-align:center;width:min(92vw,850px);box-sizing:border-box;pointer-events:none;transition:opacity 600ms}
+#keys[data-hidden="true"]{opacity:0}
+#keys kbd{display:inline-block;min-width:1.2em;padding:0 5px;border:2px solid #000;font:inherit;text-align:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.demo-back{position:fixed;z-index:4;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));width:44px;height:44px;display:grid;place-items:center;margin:0;padding:10px;border:0;border-radius:0;color:#000;background:#fff;cursor:pointer;touch-action:manipulation}
+.demo-back svg{width:24px;height:24px;pointer-events:none}
+.demo-back:focus-visible{outline:2px solid #000;outline-offset:2px}
+@media(prefers-reduced-motion:reduce-off){#keys{transition:none}}

@@ -1,0 +1,47 @@
+:root{color-scheme:light;--paper:#ffffff;--ink:#000000;--muted:#000000;--line:#000000;--ease:cubic-bezier(.23,1,.32,1)}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:Pretendard,"Noto Sans KR","Malgun Gothic",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button:focus-visible,canvas:focus-visible{outline:2px solid var(--ink);outline-offset:5px}
+button:active{transform:scale(.96)}
+button:disabled{cursor:default}
+button[hidden],[hidden]{display:none!important}
+#experience{position:relative;isolation:isolate;width:100%;height:100%;height:100dvh;overflow:hidden;background:var(--paper);filter:url(#one-bit-palette)}
+#world{display:block;width:100%;height:100%;touch-action:none;cursor:grab;image-rendering:pixelated}
+#world:active{cursor:grabbing}
+#world:focus-visible{outline-offset:-8px}
+.sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.tools{position:absolute;right:max(25px,env(safe-area-inset-right));top:max(22px,env(safe-area-inset-top));display:flex;gap:6px}
+.icon-button{display:grid;place-items:center;width:44px;height:44px;border:0;background:transparent;border-radius:50%;transition:background 160ms var(--ease),transform 120ms var(--ease)}
+.icon-button svg{width:20px;height:20px}
+.sound-on{display:none}
+#sound[aria-pressed=true] .sound-on{display:block}
+#sound[aria-pressed=true] .sound-off{display:none}
+#motion[aria-pressed=true] .motion-off{display:none}
+/* Pointer input belongs to the actual 3D object. This native target preserves
+   keyboard access and only shows a focus ring when navigating by keyboard. */
+#action,.object-action{position:absolute;left:50%;top:50%;min-width:44px;min-height:44px;padding:0;background:transparent;border:0;transform:translate(-50%,-50%);pointer-events:none;z-index:2}
+#action:active,.object-action:active{transform:translate(-50%,-50%)}
+#action:disabled,.object-action:disabled{visibility:hidden}
+.eyelid{position:absolute;left:0;right:0;height:calc(50% + 2px);background:var(--ink);pointer-events:none;z-index:10;transform:scaleY(0);will-change:transform}
+#eyelid-top{top:0;transform-origin:top}
+#eyelid-bottom{bottom:0;transform-origin:bottom}
+#reduced-cut{position:absolute;inset:0;background:var(--ink);opacity:0;pointer-events:none;z-index:11}
+/* 2026-10-13: crisp copies of the wall notes, warped onto their cards. */
+#note-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+#note-layer canvas{position:absolute;left:0;top:0;display:none;transform-origin:0 0;backface-visibility:hidden}
+/* 2026-10-13 (사용자 정정 2): 따로 그린 네모 테두리는 없다. 반짝임은 3D 물건 자신의 굵은 윤곽선이 한다(셰이더). */
+#error{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;background:var(--paper);text-align:center;z-index:20}
+#error p{max-width:30em;font-size:14px;line-height:1.8}
+#error button{min-height:44px;border:1px solid var(--ink);background:transparent;padding:8px 20px}
+@media(hover:hover){.icon-button:hover{background:var(--ink);color:var(--paper)}}
+@media(max-width:600px){.tools{right:13px;top:max(17px,env(safe-area-inset-top));gap:0}}
+@media(max-height:480px){.tools{top:10px}}
+@media(prefers-reduced-motion:reduce-off){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}button:active{transform:none}#action:active{transform:translate(-50%,-50%)}}
+@media(forced-colors:active){button{border:1px solid ButtonText}button:focus-visible,canvas:focus-visible{outline-color:Highlight}}
+.demo-back{position:fixed;z-index:4;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));right:auto;width:44px;height:44px;display:grid;place-items:center;margin:0;padding:10px;border:0;border-radius:0;color:#000;background:#fff;cursor:pointer;touch-action:manipulation}
+.demo-back svg{width:24px;height:24px;pointer-events:none}
+.demo-back:hover,.demo-back:active{background:#fff}
+.demo-back:active svg{transform:translateX(-1px)}
+.demo-back:focus-visible{outline:2px solid #000;outline-offset:2px}
+

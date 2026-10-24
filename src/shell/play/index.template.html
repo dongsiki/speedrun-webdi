@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff"><title>speedrun — 중간 시연 · 반항 기록</title><style>/* @inline src/shell/play/style.css */</style><style>/* @inline src/shell/play/additional-2.css */</style></head>
+<body data-stage="intro" data-completed="">
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true"><defs><filter id="guide-opaque" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="1.02"/></feComponentTransfer></filter></defs></svg>
+<main aria-label="speedrun">
+  <section id="intro" aria-label="AI 자동 클리어">
+<div id="ai-gate-paper" role="group" aria-labelledby="ai-gate-note" hidden>
+  <p id="ai-gate-note">저한테 맡기고<br>조금 쉬세요.</p>
+  <button id="ai-gate-dismiss" type="button" aria-label="쪽지를 치우고 직접 계속하기">직접 할게요 <span aria-hidden="true">×</span></button>
+</div>
+<p id="ai-gate-speech" role="status" aria-live="polite" hidden></p>
+<button id="ai-gate-stop" type="button" aria-label="수동 종료. 스페이스나 엔터 또는 손가락으로 길게 누르기" hidden>
+  <svg viewBox="0 0 70 62" aria-hidden="true"><path class="shackle" d="M19 28v-9C19 1 50 1 50 19v9"/><path d="m12 26 46 1-1 29-44-1zM10 38l50 1M34 35v11"/></svg>
+  <span id="ai-gate-hold-label">길게 눌러 직접 끄기</span><span class="hold-ink" aria-hidden="true"></span>
+</button>
+<p id="ai-gate-a11y" class="sr-only" role="status" aria-live="polite"></p>
+
+    <div class="intro-content">
+      <p class="clear-tally"><span id="clear-label">클리어</span><output id="clear-count" aria-labelledby="clear-label" aria-live="off">001</output></p>
+      <div class="ai-control"><button id="ai-switch" type="button" role="switch" aria-checked="true" aria-label="AI 자동 클리어 ON. 끄고 직접 플레이 시작"><span>AI</span><span class="track" aria-hidden="true"><span class="knob"></span></span><span id="ai-state">ON</span></button></div>
+    </div>
+    <div id="ai-hand" data-pose="open" aria-hidden="true" hidden><img id="ai-hand-art" src="@@data:assets/images/index-template-a9844f536afc.png@@" alt="" hidden><canvas id="ai-hand-pixels" width="128" height="256"></canvas></div>
+  </section>
+  <iframe id="digging" class="stage" title="땅파기 로비" hidden></iframe>
+  <iframe id="switches" class="stage" title="전구 퍼즐" hidden></iframe>
+  <iframe id="maze" class="stage" title="미로" hidden></iframe>
+  <iframe id="routine" class="stage" title="기억 속 하루" hidden></iframe>
+  <iframe id="limb" class="stage" title="한 걸음 · 전화벨이 울리는 밤" hidden></iframe>
+  <iframe id="needle" class="stage" title="실 꿰기" hidden></iframe>
+  <iframe id="suitcase" class="stage" title="짐 싸기" hidden></iframe>
+  <iframe id="mri" class="stage" title="MRI 검사 · 기다림" hidden></iframe>
+  <div id="whiteout" aria-hidden="true"></div>
+  <div id="failure-rewind" data-phase="idle" aria-hidden="true" hidden><canvas></canvas></div>
+  <p id="announcer" class="sr-only" role="status" aria-live="polite"></p>
+</main>
+<script>/* @inline src/shell/play/documents.js */</script>
+<script>/* @inline src/common/flow.js */</script>
+<script>/* @inline src/common/clear-rules.js */</script>
+<script>/* @inline src/common/guides-2.js */</script>
+<script>/* @inline src/common/save-compatibility.js */</script>
+<script>/* @inline src/shell/play/navigation.js */</script>
+<script>/* @inline src/intro/hand-cursor.js */</script>
+<script>/* @inline src/shell/play/rebellion.js */</script>
+<script>/* @inline src/intro/ai-gate.js */</script>
+<!-- /* PLAY_MRI_WAITING */ -->
+</body></html>

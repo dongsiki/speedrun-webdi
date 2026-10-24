@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>불친절 게임 — 땅</title>
+<style>/* @inline src/stages/digging/style.css */</style>
+</head>
+<body>
+<canvas id="earth" role="img" aria-label="빈 화면" tabindex="-1"></canvas>
+<div id="discovery" role="dialog" aria-modal="true" aria-label="발견한 물건" hidden>
+  <button id="close" class="demo-back" type="button" aria-label="땅파기 로비로 돌아가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5.5 3.5 12 10 18.5M4 12c5-.3 10-.2 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <div class="result"><p id="count" aria-live="polite"></p><button id="continue" type="button">계속 파기</button></div>
+</div>
+<button id="restart" class="corner" type="button" aria-label="새로 시작" title="새로 시작" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 7A8 8 0 1 0 20 14M19 2V8H13" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+<script>/* @inline src/common/motion.js *//* @inline src/common/guides.js */</script><script>/* @inline src/stages/digging/rules.js *//* @inline src/stages/digging/game.js */</script>
+</body>
+</html>

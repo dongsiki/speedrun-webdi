@@ -1,0 +1,28 @@
+
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fff}canvas{display:block;width:100%;height:100%;touch-action:none;outline:none}canvas:focus-visible{outline:2px solid #000;outline-offset:-3px}
+#maze-lives{position:fixed;z-index:3;top:max(25px,env(safe-area-inset-top));right:max(25px,env(safe-area-inset-right));display:flex;gap:9px;padding:3px 5px;background:#fff;pointer-events:none}
+#maze-lives svg{width:12px;height:15px;fill:#000;stroke:#000;stroke-width:1.2;transition:fill 160ms ease-out}
+#maze-lives svg:nth-child(even){transform:rotate(7deg)}#maze-lives svg.lost{fill:#fff}
+#maze-narration{position:fixed;z-index:3;left:50%;bottom:max(30px,env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:calc(100% - 40px);margin:0;padding:8px 12px;background:#fff;color:#000;text-align:center;font:400 clamp(14px,1.4vw,17px)/1.75 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none}
+#maze-impact{position:fixed;inset:0;pointer-events:none;opacity:0}
+#maze-impact{z-index:2;box-shadow:inset 0 0 0 4px #000;transition:opacity 180ms ease-out}
+#maze-impact[data-on="true"]{opacity:1}
+.maze-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(prefers-reduced-motion:reduce-off){#maze-lives svg,#maze-impact{transition:none}}
+:root{--guide-opacity:.36;--guide-echo-opacity:.12;--guide-size:30px;--guide-fade:260ms}
+.guide-cursor{position:fixed;inset:0;z-index:8;pointer-events:none;user-select:none;transition:opacity var(--guide-fade) ease-out}
+.guide-cursor[hidden]{display:none!important}
+.guide-pointer{position:absolute;left:0;top:0;width:var(--guide-size);height:40px;opacity:var(--guide-opacity);transform-origin:5px 5px;will-change:transform}
+.guide-pointer.echo{opacity:var(--guide-echo-opacity)}
+.guide-pointer.echo.far{opacity:.055}
+.guide-pointer svg{display:block;width:100%;height:100%;overflow:visible}
+.guide-pointer .press-ring{opacity:0}
+.guide-pointer.pressed .press-ring{opacity:1}
+@media(prefers-reduced-motion:reduce-off){.guide-pointer.echo{display:none}.guide-cursor{transition:none}}
+
+.demo-back{position:fixed;z-index:4;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));right:auto;width:44px;height:44px;display:grid;place-items:center;margin:0;padding:10px;border:0;border-radius:0;color:#000;background:#fff;cursor:pointer;touch-action:manipulation}
+.demo-back svg{width:24px;height:24px;pointer-events:none}
+.demo-back:hover,.demo-back:active{background:#fff}
+.demo-back:active svg{transform:translateX(-1px)}
+.demo-back:focus-visible{outline:2px solid #000;outline-offset:2px}
+

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>검사 — 움직이지 마십시오</title>
+<style>/* @inline src/stages/mri/style.dev.css */</style>
+</head>
+<body data-phase="intro">
+<canvas id="bore" aria-hidden="true"></canvas>
+<canvas id="bug" aria-hidden="true"></canvas>
+<canvas id="elsewhere" aria-hidden="true"></canvas>
+<div id="hold" role="status" aria-live="assertive">검사 중입니다.<br>움직이지 마십시오.<small>아무것도 누르지 마십시오</small></div>
+<div id="timer" aria-hidden="true">남은 시간 01:30</div>
+<div id="notice" role="alert">움직이셨습니다.<br>처음부터 다시 찍습니다.</div>
+<button id="ask" class="lure" type="button" tabindex="-1">다 됐나요?</button>
+<div id="phone" class="lure"><b>따르릉…</b><span>딸 · 휴대전화</span><button type="button" tabindex="-1">받기</button></div>
+<div id="nurse" class="lure"><em>스피커</em>어르신, 괜찮으세요?<br>괜찮으시면 손 한번 들어 보세요.</div>
+<div id="fakedone" class="lure"><b>띵동 · 검사가 끝났습니다</b><span>일어나셔도 됩니다.</span><button type="button" tabindex="-1">일어나기</button></div>
+<div id="winerr" class="lure" role="alertdialog" aria-label="speedrun.exe - 응용 프로그램 오류"><div class="bar"><span>speedrun.exe - 응용 프로그램 오류</span><button class="x" type="button" tabindex="-1" aria-label="닫기">✕</button></div><div class="msg"><div class="icon" aria-hidden="true">✕</div><div>"0x00007ffb3c2e4f10" 명령이 "0x0000000000000040" 메모리를 참조했습니다. 메모리는 "read"될 수 없습니다.<br><br>프로그램을 끝내려면 [확인]을 클릭하십시오.</div></div><div class="foot"><button class="primary" type="button" tabindex="-1">확인</button><button type="button" tabindex="-1">취소</button></div></div>
+<div id="black" aria-hidden="true"></div>
+<section id="intro" class="screen" aria-label="검사 안내"><div>
+  <h1>MRI 검사</h1>
+  <p>기계 안에 누웠습니다.</p>
+  <p>검사가 시작되면 <b>아무것도 누르거나 움직이면 안 됩니다.</b><br>마우스도, 키보드도, 화면도.</p>
+  <button id="start" type="button">검사 시작</button>
+</div></section>
+<section id="done" class="screen" aria-label="검사 끝"><div>
+  <h1>검사가 끝났습니다.</h1>
+  <p class="count"></p>
+  <p class="record"></p>
+</div></section>
+<script>/* @inline src/stages/mri/audio.js */</script>
+<script>/* @inline src/stages/mri/game.dev.js */</script>
+<style>/* @inline src/stages/memory/additional-2.css */</style><a class="portable-back" href="00-index.html" aria-label="개발용 목록으로 돌아가기" title="돌아가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5 7 12l7 7M7 12h13"/></svg></a><script>/* @inline src/shell/standalone/switches/navigation.js */</script></body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "speedrun-webdi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "스피드런 — 편집 가능한 소스와 오프라인 실행본",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node scripts/build.cjs",
+    "check": "node scripts/check.cjs",
+    "test": "node scripts/check.cjs",
+    "test:baseline": "node scripts/check.cjs --baseline",
+    "test:browser": "node scripts/browser-check.cjs"
+  }
+}

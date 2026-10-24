@@ -1,0 +1,11 @@
+# Keep imported runtime source and assets byte-for-byte on Windows and Unix.
+/src/** -text whitespace=-blank-at-eol,-blank-at-eof
+/assets/** -text
+/assets/vendor/** whitespace=-space-before-tab
+/01_speedrun_play.html -text
+/02_speedrun_dev.html -text
+/scripts/** text eol=lf
+*.md text eol=lf
+/package.json text eol=lf
+/.gitignore text eol=lf
+/.gitattributes text eol=lf

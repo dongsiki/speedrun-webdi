@@ -1,0 +1,12 @@
+{
+  "entry": "src/stages/switches/dev-game.template.html",
+  "metadata": {
+    "stage": "switches",
+    "title": "전구 퍼즐"
+  },
+  "propertyOrder": [
+    "stage",
+    "title",
+    "html"
+  ]
+}
