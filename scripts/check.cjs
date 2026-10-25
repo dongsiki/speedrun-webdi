@@ -50,7 +50,7 @@ assert(assets[introVideo]?.delivery === 'external', 'Reviewed intro video must b
 assert.equal(assets[introVideo].mime, 'video/mp4', 'Opening video MIME');
 assert.equal(fs.statSync(path.join(root, introVideo)).size, assets[introVideo].bytes, 'Opening video byte count');
 for (const [file, html] of Object.entries(result.outputs)) {
-  assert(html.includes("video.src = '" + introVideo + "'"), 'Shared opening missing from ' + file);
+  assert(html.includes("video.src = '" + introVideo + '?v=' + assets[introVideo].sha256.slice(0, 12) + "'"), 'Shared opening or video revision missing from ' + file);
   assert(!html.includes('data:video/mp4;base64,'), 'Opening video must remain separate: ' + file);
 }
 console.log(JSON.stringify({ status: 'passed', stageDocuments: documentCount, scriptBlocks: scriptCount, binaryAssets: Object.keys(assets).length, sourceInputs: result.builder.inputs.size, baseline: process.argv.includes('--baseline') }));
