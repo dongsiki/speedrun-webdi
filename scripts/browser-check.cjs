@@ -29,6 +29,7 @@ async function idle(page, stage) {
   await page.waitForFunction(s => document.body.dataset.stage === s && document.body.dataset.transition === 'idle', stage, { timeout: 45000 });
 }
 async function start(page) {
+  await page.waitForFunction(() => !window.TransformationIntro?.active);
   await page.locator('#ai-switch').click();
   await page.locator('#ai-gate-dismiss').click();
   await delay(600);
@@ -97,6 +98,7 @@ async function actual(page, url) {
 }
 async function developer(page,url,full=true) {
   await page.goto(url,{waitUntil:'load',timeout:90000});
+  await page.waitForFunction(() => !window.TransformationIntro?.active);
   const links=await page.locator('a[href$=".html"]').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
   const wanted=links.filter(x=>/^\d\d-/.test(x));
   assert.equal(wanted.length,9,'Developer menu entries');
@@ -124,7 +126,7 @@ async function developer(page,url,full=true) {
         const name=decodeURIComponent(new URL(req.url,'http://local').pathname).replace(/^\//,'')||'index.html';
         const target=path.resolve(root,name);
         if(!target.startsWith(root+path.sep)||!fs.existsSync(target)){res.writeHead(404);return res.end();}
-        res.setHeader('Content-Type',name.endsWith('.html')?'text/html; charset=utf-8':'application/octet-stream');
+        res.setHeader('Content-Type',name.endsWith('.html')?'text/html; charset=utf-8':name.endsWith('.mp4')?'video/mp4':'application/octet-stream');
         fs.createReadStream(target).pipe(res);
       });
       await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));

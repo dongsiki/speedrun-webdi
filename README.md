@@ -7,7 +7,7 @@
 ## 실행
 
 - 온라인: 위 링크를 엽니다.
-- 오프라인·USB: `01_speedrun_play.html` 또는 `02_speedrun_dev.html`을 내려받아 브라우저에서 엽니다. 코드·모델·그림·음성을 각각 내장합니다.
+- 오프라인·USB: `01_speedrun_play.html` 또는 `02_speedrun_dev.html`과 `assets/video/` 폴더를 같은 상대 위치에 두고 브라우저에서 엽니다. 게임 코드·모델·그림·음성은 HTML에 내장하고, 시작하는 10초 변신 영상은 두 실행본이 같은 분리 파일을 사용합니다.
 - 소스 수정: `src/`와 `assets/`를 수정하고 빌드합니다. `.template.html`은 빌드 입력이므로 직접 실행하지 않습니다.
 - 미로 등 키보드·마우스 조작은 PC 기준입니다. 이번 정리가 모바일 조작을 추가한 것은 아닙니다.
 
@@ -23,7 +23,7 @@
 src/
   shell/                  실제·개발자 화면, 개발용 단독 게임 껍데기
   common/                 흐름·저장·복귀·기존 안내 규칙
-  intro/                  현재 AI ON/OFF 관문·손 커서
+  intro/                  10초 변신 인트로·AI ON/OFF 관문·손 커서
   stages/
     digging/              땅파기 로비
     switches/             전구 퍼즐
@@ -34,7 +34,7 @@ src/
     suitcase/             짐 싸기
     mri/                  MRI
   extras/                 개발자 모음의 춤·클리어 화면 미리보기
-assets/                   이미지·음성·모델·데이터·Three.js
+assets/                   이미지·음성·모델·데이터·Three.js·분리 시작 영상
 scripts/                  빌드와 검사
 01_speedrun_play.html      생성된 실제 게임
 02_speedrun_dev.html       생성된 개발자 모음
@@ -46,6 +46,7 @@ index.html                기존 접속 경로
 | 수정할 내용 | 원본 위치 |
 |---|---|
 | AI ON/OFF 방해·손 | `src/intro/` |
+| 두 실행본의 시작 영상 | `src/intro/transformation.js`, `transformation.css`, `assets/video/` |
 | 발견물과 게임 연결 | `src/common/flow.js`, `src/shell/play/documents.json` |
 | 저장·반항 기록 | `src/common/progress-store.js`, `src/shell/play/rebellion.js` |
 | 전구·억까·반사상 | `src/stages/switches/game.js` |
@@ -78,4 +79,6 @@ npm test
 
 ## 합본 크기
 
-읽고 수정할 **소스를 분리**한 작업입니다. USB에서 HTML만 열어도 실행되도록 배포본은 계속 자산을 내장합니다. 약 41MB·54MB의 합본 크기와 최초 전송량을 줄이는 변경은 이번 범위에 포함하지 않았습니다. 새 3페이즈·새 인트로 기획도 이번에 구현하지 않았습니다.
+게임의 모델·그림·음성은 USB에서 실행되도록 계속 내장합니다. 시작 영상만 `assets/video/elder-transformation-10s.mp4`로 분리하여 약 41MB·54MB의 두 HTML에 영상을 중복해서 넣지 않습니다. 오프라인에서는 이 상대 폴더를 함께 복사합니다. 영상이 없거나 재생할 수 없으면 기존 시작 화면으로 돌아옵니다. 자동 재생이 막히면 영상을 클릭하거나 Enter/Space로 시작하고, Escape로 건너뛸 수 있습니다.
+
+시작 영상 뒤 실제 게임은 기존 AI 화면으로, 개발자용은 바로가기 목록으로 이어집니다. 실제용 AI 끄기 방해는 개발자용에 들어가지 않습니다. 후속 글리치나 3페이즈 스토리는 이번 인트로 연결 범위에 포함하지 않습니다.

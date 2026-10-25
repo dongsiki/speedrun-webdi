@@ -43,4 +43,14 @@ for (const folder of fs.readdirSync(standalone, { withFileTypes: true })) {
 }
 const assets = JSON.parse(fs.readFileSync(path.join(root, 'assets/manifest.json'), 'utf8'));
 for (const [file, meta] of Object.entries(assets)) assert.equal(sha(fs.readFileSync(path.join(root, file))), meta.sha256, 'Asset changed without manifest update: ' + file);
+// The shared opening is deliberately external, so HTML-only packaging must not
+// silently pass while the browser would fall back to the old opening screen.
+const introVideo = 'assets/video/elder-transformation-10s.mp4';
+assert(assets[introVideo]?.delivery === 'external', 'Reviewed intro video must be packaged and recorded as an external asset');
+assert.equal(assets[introVideo].mime, 'video/mp4', 'Opening video MIME');
+assert.equal(fs.statSync(path.join(root, introVideo)).size, assets[introVideo].bytes, 'Opening video byte count');
+for (const [file, html] of Object.entries(result.outputs)) {
+  assert(html.includes("video.src = '" + introVideo + "'"), 'Shared opening missing from ' + file);
+  assert(!html.includes('data:video/mp4;base64,'), 'Opening video must remain separate: ' + file);
+}
 console.log(JSON.stringify({ status: 'passed', stageDocuments: documentCount, scriptBlocks: scriptCount, binaryAssets: Object.keys(assets).length, sourceInputs: result.builder.inputs.size, baseline: process.argv.includes('--baseline') }));

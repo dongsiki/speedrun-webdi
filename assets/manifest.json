@@ -1,4 +1,13 @@
 {
+  "assets/video/elder-transformation-10s.mp4": {
+    "mime": "video/mp4",
+    "sha256": "64b4c9c5378bebc93444367b2e031d8710c92098132c5bd6a211ec3c06d366c7",
+    "bytes": 7061168,
+    "delivery": "external",
+    "usedBy": ["src/intro/transformation.js", "01_speedrun_play.html", "02_speedrun_dev.html"],
+    "source": "Local costume-skin-r02 render; original mesh Lucas Pope / 3909, Return of the Obra Dinn GDC 2016 demo v0.1.23",
+    "rightsStatus": "Original mesh provenance recorded. No separate reuse license located; no assertion of rights clearance or legal determination."
+  },
   "assets/images/switches-art-switch-art-5d069cc6f3-372c5a1cab55.svg": {
     "mime": "image/svg+xml",
     "sha256": "372c5a1cab55e59defa0f3325ca3db740c8ab6f5e146999e507cf3142fe0283c",
