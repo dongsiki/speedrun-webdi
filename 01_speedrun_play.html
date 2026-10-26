@@ -339,6 +339,24 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   'use strict';
   const P = window.SpeedrunPhase;
   function out() { const ctx = P.audio(); return ctx && ctx.state !== 'closed' ? ctx : null; }
+  // 10/26 사용자: 「소리도 글리치에 디스토션 존나 넣은 걸로. 근데 ㄹㅇ 소리 크게 하지는 말고.」
+  // 페이즈 효과음은 모두 강한 디스토션(파형 깎기 + 계단처럼 깨진 비트)을 거친 뒤 압축기로 눌러 작게 나간다.
+  // 종류별 음량: fx(지직·찌름·속삭임) 작게, loud(점프스케어 비명) 조금 크게, bed(깔리는 웅웅) 가장 작게.
+  const buses = {}, KIND = { fx: [6, .2], loud: [6, .42], bed: [2, .07] };
+  function bus(ctx, kind = 'fx') {
+    if (buses[kind]) return buses[kind];
+    const drive = ctx.createGain(); drive.gain.value = KIND[kind][0];
+    const shaper = ctx.createWaveShaper(), curve = new Float32Array(2048);
+    for (let i = 0; i < curve.length; i++) { const x = i / 1024 - 1; curve[i] = Math.round(Math.tanh(x * 14) * 6) / 6; }
+    shaper.curve = curve; shaper.oversample = 'none';
+    const tone = ctx.createBiquadFilter(); tone.type = 'peaking'; tone.frequency.value = 2400; tone.gain.value = 5; tone.Q.value = .9;
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -26; comp.knee.value = 4; comp.ratio.value = 14; comp.attack.value = .002; comp.release.value = .12;
+    const level = ctx.createGain(); level.gain.value = KIND[kind][1]; // 전체 음량 낮게
+    drive.connect(shaper).connect(tone).connect(comp).connect(level).connect(P.master);
+    buses[kind] = drive;
+    return drive;
+  }
   let noiseBuffer = null;
   function noise(ctx) {
     if (noiseBuffer) return noiseBuffer;
@@ -360,7 +378,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     const src = ctx.createBufferSource(); src.buffer = noise(ctx); src.playbackRate.value = type === 'hiss' ? .5 : 1 + Math.random();
     const f = ctx.createBiquadFilter(); f.type = type === 'hiss' ? 'lowpass' : 'bandpass';
     f.frequency.value = type === 'hiss' ? 900 : 1800 + Math.random() * 3200; f.Q.value = type === 'hiss' ? .7 : 4;
-    const g = ctx.createGain(); src.connect(f).connect(g).connect(P.master);
+    const g = ctx.createGain(); src.connect(f).connect(g).connect(bus(ctx));
     const end = env(ctx, g, gain, .004, dur * .6, dur * .4);
     src.start(ctx.currentTime, Math.random()); src.stop(end + .05);
   }
@@ -369,7 +387,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   function droneOn(level = .05) {
     const ctx = out(); if (!ctx) return;
     if (!drone) {
-      const g = ctx.createGain(); g.gain.value = 0.0001; g.connect(P.master);
+      const g = ctx.createGain(); g.gain.value = 0.0001; g.connect(bus(ctx, 'bed'));
       const a = ctx.createOscillator(), b = ctx.createOscillator(), c = ctx.createOscillator();
       a.type = 'sawtooth'; b.type = 'sawtooth'; c.type = 'sine';
       a.frequency.value = 43; b.frequency.value = 43.7; c.frequency.value = 2310;
@@ -395,7 +413,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     const t = ctx.currentTime; o.frequency.setValueAtTime(190 + Math.random() * 40, t); o.frequency.exponentialRampToValueAtTime(70, t + 2.4);
     const v = ctx.createOscillator(), vg = ctx.createGain(); v.frequency.value = 5.5; vg.gain.value = 9; v.connect(vg).connect(o.frequency);
     const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 700; f.Q.value = 1.2;
-    const g = ctx.createGain(); o.connect(f).connect(g).connect(P.master);
+    const g = ctx.createGain(); o.connect(f).connect(g).connect(bus(ctx));
     const end = env(ctx, g, gain, .4, 1.2, 1);
     o.start(t); v.start(t); o.stop(end); v.stop(end);
   }
@@ -405,7 +423,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     const t = ctx.currentTime;
     for (const freq of [1180, 1251, 1662]) {
       const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(freq, t); o.frequency.exponentialRampToValueAtTime(freq * .55, t + .5);
-      const g = ctx.createGain(); o.connect(g).connect(P.master); const end = env(ctx, g, gain / 3, .003, .25, .25); o.start(t); o.stop(end);
+      const g = ctx.createGain(); o.connect(g).connect(bus(ctx)); const end = env(ctx, g, gain / 3, .003, .25, .25); o.start(t); o.stop(end);
     }
     crackle(.45, gain * .8, 'tear');
   }
@@ -415,7 +433,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     const t = ctx.currentTime;
     const shaper = ctx.createWaveShaper(); const curve = new Float32Array(1024);
     for (let i = 0; i < curve.length; i++) { const x = i / 512 - 1; curve[i] = Math.tanh(x * 9); }
-    shaper.curve = curve; const g = ctx.createGain(); shaper.connect(g).connect(P.master);
+    shaper.curve = curve; const g = ctx.createGain(); shaper.connect(g).connect(bus(ctx, 'loud'));
     env(ctx, g, .95, .005, dur - .3, .3);
     for (const base of [620, 845, 1290, 2010]) {
       const o = ctx.createOscillator(); o.type = 'sawtooth';
@@ -425,7 +443,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     }
     const n = ctx.createBufferSource(); n.buffer = noise(ctx); const ng = ctx.createGain(); ng.gain.value = .6; n.connect(ng).connect(shaper); n.start(t); n.stop(t + dur);
     const boom = ctx.createOscillator(); boom.type = 'sine'; boom.frequency.setValueAtTime(95, t); boom.frequency.exponentialRampToValueAtTime(32, t + .8);
-    const bg = ctx.createGain(); boom.connect(bg).connect(P.master); const be = env(ctx, bg, 1, .002, .25, .7); boom.start(t); boom.stop(be);
+    const bg = ctx.createGain(); boom.connect(bg).connect(bus(ctx, 'loud')); const be = env(ctx, bg, 1, .002, .25, .7); boom.start(t); boom.stop(be);
   }
   // 속삭임: 걸러진 잡음이 말하듯 오르내린다(경고 글자와 함께).
   function whisper(dur = 1.1, gain = .22) {
@@ -434,7 +452,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 6;
     const t = ctx.currentTime;
     for (let i = 0; i < 8; i++) f.frequency.setValueAtTime(900 + Math.random() * 2200, t + i * dur / 8);
-    const g = ctx.createGain(); src.connect(f).connect(g).connect(P.master);
+    const g = ctx.createGain(); src.connect(f).connect(g).connect(bus(ctx));
     const end = env(ctx, g, gain, .05, dur - .2, .15); src.start(t); src.stop(end);
   }
 
