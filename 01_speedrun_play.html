@@ -213,6 +213,66 @@ body[data-transition=white] #rebellion-dock,body[data-transition=failure] #rebel
 body[data-ai-gate=holding] #ai-gate-stop .shackle{transform:translateY(calc(var(--hold)*-4px))}
 #ai-gate-paper[hidden],#ai-gate-speech[hidden],#ai-gate-stop[hidden]{display:none!important}
 @media(max-height:480px){#ai-gate-paper{padding:17px 24px 10px}#ai-gate-note{font-size:19px;line-height:1.35;margin-bottom:7px}#ai-gate-stop{grid-template-columns:44px 1fr;gap:1px 8px;min-height:66px;width:250px}#ai-gate-stop svg{grid-row:1/3;width:40px;height:38px}#ai-gate-speech{font-size:14px;padding:2px 5px}}
+</style><style>/* 페이즈(2026-10-26, Claude Code). 흑백 1-bit 그대로, 새 그림 없음. */
+.phase-intro-glitch{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:2}
+
+/* 2페이즈: 클리어마다 바뀐 맵. 입력 좌표는 브라우저가 변환을 따라가므로 조작은 그대로 된다. */
+body[data-phase="2"][data-corrupt~="maze"] #maze{filter:invert(1)}
+body[data-phase="2"][data-corrupt~="routine"] #routine{transform:scaleX(-1)}
+body[data-phase="2"][data-corrupt~="switches"] #switches{transform:rotate(180deg)}
+body[data-phase="2"][data-corrupt~="limb"] #limb{transform:scaleX(-1)}
+body[data-phase="2"][data-corrupt~="suitcase"] #suitcase{transform:scaleX(-1);filter:invert(1)}
+body[data-phase="2"][data-corrupt~="needle"] #needle{transform:rotate(180deg)}
+body[data-phase="2"][data-corrupt~="mri"] #mri{filter:invert(1) contrast(1.3);animation:phase-sway 7s ease-in-out infinite}
+/* 땅파기 로비도 점점: 세 곳 이상 바뀌면 좌우가 뒤집히고, 다섯 곳 이상이면 색까지 뒤집힌다. */
+body[data-phase="2"][data-corruptn="3"] #digging,body[data-phase="2"][data-corruptn="4"] #digging{transform:scaleX(-1)}
+body[data-phase="2"][data-corruptn="5"] #digging,body[data-phase="2"][data-corruptn="6"] #digging,body[data-phase="2"][data-corruptn="7"] #digging{transform:scaleX(-1);filter:invert(1)}
+@keyframes phase-sway{0%,100%{translate:0 0}50%{translate:6px -3px}}
+
+/* 순간 글리치 */
+body[data-burst] iframe.stage:not([hidden]){translate:var(--gx,0) var(--gy,0)}
+body[data-burst="invert"] iframe.stage:not([hidden]){filter:invert(1) contrast(1.8)!important}
+#phase-tear{position:fixed;left:0;right:0;top:var(--gb,40%);height:var(--gh,8%);z-index:60;pointer-events:none;display:none;
+  background:repeating-linear-gradient(0deg,#000 0 2px,#fff 2px 5px,#000 5px 6px,transparent 6px 11px);mix-blend-mode:difference;transform:translateX(var(--gx,0))}
+body[data-burst] #phase-tear{display:block}
+
+/* 바뀐 곳에 들어가면 그 게임의 기존 이야기 한 줄이 깨진 자막으로 */
+#phase-caption{position:fixed;left:50%;bottom:7vh;z-index:61;margin:0;transform:translateX(-50%);max-width:min(88vw,720px);padding:.35em .7em;
+  font:18px/1.5 "Batang","바탕",serif;color:#fff;background:#000;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .25s steps(3)}
+#phase-caption.show{opacity:1;animation:phase-jitter .18s steps(2) infinite}
+@keyframes phase-jitter{0%{translate:0 0}50%{translate:2px -1px}100%{translate:-2px 1px}}
+
+/* 공포 컷(1페이즈 결과 화면, 0.5초 × 2) */
+.phase-cut{position:fixed;inset:0;z-index:2147483000;background:#000;display:grid;place-items:center;pointer-events:none}
+.phase-cut canvas{height:125vh;width:auto;filter:contrast(2.4);transform:scale(1.08) rotate(-2deg)}
+
+/* 2페이즈 끝: 경고 → 점프스케어 */
+#phase-end{position:fixed;inset:0;z-index:2147483100;background:#000;cursor:none}
+#phase-end canvas{position:absolute;inset:0;width:100%;height:100%}
+#phase-end p{position:absolute;left:0;right:0;top:50%;margin:0;transform:translateY(-50%);text-align:center;color:#fff;
+  font:700 clamp(30px,6vw,76px)/1.2 "Courier New","Malgun Gothic",monospace;letter-spacing:.08em;opacity:0}
+#phase-end p.show{opacity:1;animation:phase-jitter .12s steps(2) infinite}
+#phase-end p.hold{animation:phase-grow 1.4s linear forwards}
+@keyframes phase-grow{to{transform:translateY(-50%) scale(1.35);letter-spacing:.3em;filter:blur(.6px)}}
+#phase-end.scare{animation:phase-quake .05s steps(2) infinite}
+@keyframes phase-quake{0%{transform:translate(18px,-14px) rotate(1.5deg)}50%{transform:translate(-22px,12px) rotate(-2deg)}100%{transform:translate(10px,20px)}}
+
+/* 구현 예정 표시(발표용). 게임 화면과 구분되게 점선 쪽지로. */
+#phase-todo{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:70;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:min(96vw,900px);pointer-events:none}
+#phase-todo[hidden]{display:none}
+#phase-todo p{margin:0;padding:4px 9px;background:#fff;color:#000;border:1.5px dashed #000;font:13px/1.35 "Malgun Gothic",sans-serif;pointer-events:auto}
+#phase-todo b{margin-right:.5em;padding:0 4px;background:#000;color:#fff;font-weight:700}
+#phase-todo button{pointer-events:auto;border:1.5px dashed #000;background:#fff;color:#000;font:13px/1 sans-serif;padding:4px 8px;cursor:pointer}
+body[data-transformation] #phase-todo{display:none}
+
+/* 3페이즈(구현 예정) */
+#phase3-panel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30;width:min(92vw,520px);padding:22px 26px;background:#fff;color:#000;
+  border:2px dashed #000;font:15px/1.6 "Malgun Gothic",sans-serif}
+#phase3-panel .p3-tag{display:inline-block;margin:0 0 10px;padding:2px 8px;background:#000;color:#fff;font-weight:700}
+#phase3-panel ol{margin:0 0 14px;padding-left:1.3em}
+#phase3-panel button{border:1.5px solid #000;background:#fff;color:#000;font:14px/1 "Malgun Gothic",sans-serif;padding:8px 12px;cursor:pointer}
+@media (max-width:600px){#phase-caption{font-size:15px}#phase-todo p{font-size:12px}}
+body:has(#run-clear) #phase-todo{display:none}
 </style></head>
 <body data-stage="intro" data-completed="">
 <style>/* Shared by the play and developer shells; video remains a separate file. */
@@ -224,6 +284,192 @@ body[data-transformation] #ai-hand{visibility:hidden!important}
 .transformation-intro video{display:block;width:100%;height:100%;min-height:0;object-fit:contain;background:var(--paper,#fff);outline:0}
 body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:pointer}
 </style>
+<script>/* 페이즈 상태(2026-10-26, Claude Code). 1 = 병맛, 2 = 글리치·공포, 3 = 도움 요청(구현 예정).
+   이 파일은 변신 인트로보다 먼저 실행된다. 기존 저장(반항 기록)은 건드리지 않는다. */
+(() => {
+  'use strict';
+  const KEY = 'speedrun-phase-v1';
+  const games = ['switches', 'maze', 'routine', 'limb', 'needle', 'suitcase', 'mri'];
+  const blank = () => ({ v: 1, phase: 1, corrupted: [], run2: [], swapUsed: false });
+  let state = blank();
+  try { const raw = JSON.parse(localStorage.getItem(KEY)); if (raw && raw.v === 1) state = { ...blank(), ...raw }; } catch (_) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {} }
+
+  // 발표용 바로가기: 01_speedrun_play.html#demo=...
+  //  finale1  = 1페이즈 결과 화면(공포 컷 2번)까지 바로
+  //  phase2   = 2페이즈 처음(글리치 인트로부터)
+  //  phase2-last = 2페이즈에서 여섯 곳을 깬 상태(남은 한 곳: 전구 퍼즐)
+  //  scare    = AI 스위치를 끄면 바로 경고 → 점프스케어
+  //  reset    = 1페이즈로 초기화
+  const demo = (location.hash.match(/demo=([\w-]+)/) || [])[1] || null;
+  if (demo === 'reset' || demo === 'finale1') state = blank();
+  if (demo === 'phase2') state = { ...blank(), phase: 2 };
+  if (demo === 'phase2-last' || demo === 'scare') {
+    const done = games.filter(g => g !== 'switches');
+    state = { ...blank(), phase: 2, run2: done, corrupted: ['maze', 'routine', 'limb', 'needle', 'suitcase', 'mri'], swapUsed: true };
+  }
+  if (demo) { save(); history.replaceState(null, '', location.pathname + location.search); }
+
+  document.body.dataset.phase = String(state.phase);
+
+  // 소리: 인트로가 클릭을 가로채기 전에 먼저 듣고, 첫 손짓에서 오디오를 깨운다.
+  let ctx = null, master = null;
+  function audio() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC(); master = ctx.createGain(); master.gain.value = 1; master.connect(ctx.destination);
+    }
+    if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+    return ctx;
+  }
+  for (const name of ['pointerdown', 'keydown', 'touchstart']) window.addEventListener(name, () => audio(), { capture: true, passive: true });
+
+  window.SpeedrunPhase = {
+    KEY, games, demo,
+    get state() { return state; },
+    set(patch) { state = { ...state, ...patch }; save(); document.body.dataset.phase = String(state.phase); },
+    audio, get master() { audio(); return master; }
+  };
+})();
+</script>
+<script>/* 페이즈 소리·얼굴(2026-10-26, Claude Code). 새 음원·새 그림 파일 없이 만든다.
+   소리는 WebAudio로 합성하고, 얼굴은 기존 변신 영상의 한 장면(8.45초)을 잘라 쓴다. */
+(() => {
+  'use strict';
+  const P = window.SpeedrunPhase;
+  function out() { const ctx = P.audio(); return ctx && ctx.state !== 'closed' ? ctx : null; }
+  let noiseBuffer = null;
+  function noise(ctx) {
+    if (noiseBuffer) return noiseBuffer;
+    noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const d = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    return noiseBuffer;
+  }
+  function env(ctx, node, peak, attack, hold, release, at = ctx.currentTime) {
+    node.gain.setValueAtTime(0.0001, at);
+    node.gain.exponentialRampToValueAtTime(peak, at + attack);
+    node.gain.setValueAtTime(peak, at + attack + hold);
+    node.gain.exponentialRampToValueAtTime(0.0001, at + attack + hold + release);
+    return at + attack + hold + release;
+  }
+  // 지직: 짧은 잡음. type: 'tear'(찢는 소리) | 'hiss'(낮은 쉿) | 'click'
+  function crackle(dur = .18, gain = .25, type = 'tear') {
+    const ctx = out(); if (!ctx) return;
+    const src = ctx.createBufferSource(); src.buffer = noise(ctx); src.playbackRate.value = type === 'hiss' ? .5 : 1 + Math.random();
+    const f = ctx.createBiquadFilter(); f.type = type === 'hiss' ? 'lowpass' : 'bandpass';
+    f.frequency.value = type === 'hiss' ? 900 : 1800 + Math.random() * 3200; f.Q.value = type === 'hiss' ? .7 : 4;
+    const g = ctx.createGain(); src.connect(f).connect(g).connect(P.master);
+    const end = env(ctx, g, gain, .004, dur * .6, dur * .4);
+    src.start(ctx.currentTime, Math.random()); src.stop(end + .05);
+  }
+  // 웅웅: 낮게 맥놀이하는 소리. 2페이즈 동안 깔린다.
+  let drone = null;
+  function droneOn(level = .05) {
+    const ctx = out(); if (!ctx) return;
+    if (!drone) {
+      const g = ctx.createGain(); g.gain.value = 0.0001; g.connect(P.master);
+      const a = ctx.createOscillator(), b = ctx.createOscillator(), c = ctx.createOscillator();
+      a.type = 'sawtooth'; b.type = 'sawtooth'; c.type = 'sine';
+      a.frequency.value = 43; b.frequency.value = 43.7; c.frequency.value = 2310;
+      const lp = ctx.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 180;
+      const cg = ctx.createGain(); cg.gain.value = .012;
+      const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = .13; lg.gain.value = 30; lfo.connect(lg).connect(c.frequency);
+      a.connect(lp); b.connect(lp); lp.connect(g); c.connect(cg).connect(g);
+      for (const o of [a, b, c, lfo]) o.start();
+      drone = { g, nodes: [a, b, c, lfo] };
+    }
+    drone.g.gain.cancelScheduledValues(ctx.currentTime);
+    drone.g.gain.setTargetAtTime(level, ctx.currentTime, .8);
+  }
+  function droneOff(fast = false) {
+    const ctx = out(); if (!ctx || !drone) return;
+    drone.g.gain.cancelScheduledValues(ctx.currentTime);
+    drone.g.gain.setTargetAtTime(0.0001, ctx.currentTime, fast ? .01 : .6);
+  }
+  // 늘어진 목소리 같은 낮은 신음. 이상한 소리.
+  function moan(gain = .12) {
+    const ctx = out(); if (!ctx) return;
+    const o = ctx.createOscillator(); o.type = 'triangle';
+    const t = ctx.currentTime; o.frequency.setValueAtTime(190 + Math.random() * 40, t); o.frequency.exponentialRampToValueAtTime(70, t + 2.4);
+    const v = ctx.createOscillator(), vg = ctx.createGain(); v.frequency.value = 5.5; vg.gain.value = 9; v.connect(vg).connect(o.frequency);
+    const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 700; f.Q.value = 1.2;
+    const g = ctx.createGain(); o.connect(f).connect(g).connect(P.master);
+    const end = env(ctx, g, gain, .4, 1.2, 1);
+    o.start(t); v.start(t); o.stop(end); v.stop(end);
+  }
+  // 공포 컷용 찌르는 소리(짧고 큼).
+  function sting(gain = .7) {
+    const ctx = out(); if (!ctx) return;
+    const t = ctx.currentTime;
+    for (const freq of [1180, 1251, 1662]) {
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.setValueAtTime(freq, t); o.frequency.exponentialRampToValueAtTime(freq * .55, t + .5);
+      const g = ctx.createGain(); o.connect(g).connect(P.master); const end = env(ctx, g, gain / 3, .003, .25, .25); o.start(t); o.stop(end);
+    }
+    crackle(.45, gain * .8, 'tear');
+  }
+  // 점프스케어 비명: 찢어지는 톱니파 여러 겹 + 잡음 + 일그러짐 + 바닥 쿵.
+  function scream(dur = 1.4) {
+    const ctx = out(); if (!ctx) return;
+    const t = ctx.currentTime;
+    const shaper = ctx.createWaveShaper(); const curve = new Float32Array(1024);
+    for (let i = 0; i < curve.length; i++) { const x = i / 512 - 1; curve[i] = Math.tanh(x * 9); }
+    shaper.curve = curve; const g = ctx.createGain(); shaper.connect(g).connect(P.master);
+    env(ctx, g, .95, .005, dur - .3, .3);
+    for (const base of [620, 845, 1290, 2010]) {
+      const o = ctx.createOscillator(); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(base * .7, t); o.frequency.exponentialRampToValueAtTime(base * 1.35, t + .12); o.frequency.exponentialRampToValueAtTime(base * .8, t + dur);
+      const wob = ctx.createOscillator(), wg = ctx.createGain(); wob.frequency.value = 17 + Math.random() * 9; wg.gain.value = base * .09; wob.connect(wg).connect(o.frequency);
+      const og = ctx.createGain(); og.gain.value = .3; o.connect(og).connect(shaper); o.start(t); wob.start(t); o.stop(t + dur); wob.stop(t + dur);
+    }
+    const n = ctx.createBufferSource(); n.buffer = noise(ctx); const ng = ctx.createGain(); ng.gain.value = .6; n.connect(ng).connect(shaper); n.start(t); n.stop(t + dur);
+    const boom = ctx.createOscillator(); boom.type = 'sine'; boom.frequency.setValueAtTime(95, t); boom.frequency.exponentialRampToValueAtTime(32, t + .8);
+    const bg = ctx.createGain(); boom.connect(bg).connect(P.master); const be = env(ctx, bg, 1, .002, .25, .7); boom.start(t); boom.stop(be);
+  }
+  // 속삭임: 걸러진 잡음이 말하듯 오르내린다(경고 글자와 함께).
+  function whisper(dur = 1.1, gain = .22) {
+    const ctx = out(); if (!ctx) return;
+    const src = ctx.createBufferSource(); src.buffer = noise(ctx);
+    const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 6;
+    const t = ctx.currentTime;
+    for (let i = 0; i < 8; i++) f.frequency.setValueAtTime(900 + Math.random() * 2200, t + i * dur / 8);
+    const g = ctx.createGain(); src.connect(f).connect(g).connect(P.master);
+    const end = env(ctx, g, gain, .05, dur - .2, .15); src.start(t); src.stop(end);
+  }
+
+  // --- 얼굴: 변신 영상 8.45초 장면(웃는 얼굴 클로즈업)을 캔버스로 잘라 둔다 ---
+  let facePromise = null;
+  function face() {
+    if (facePromise) return facePromise;
+    facePromise = new Promise(resolve => {
+      const v = document.createElement('video');
+      v.muted = true; v.playsInline = true; v.preload = 'auto';
+      v.src = 'assets/video/elder-transformation-10s.mp4?v=001c729e9eba';
+      let finished = false;
+      const done = ok => {
+        if (finished) return; finished = true;
+        const c = document.createElement('canvas'); c.width = 480; c.height = 560;
+        const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+        if (ok && Math.abs(v.currentTime - 8.45) < 1) g.drawImage(v, 30, 400, 480, 560, 0, 0, c.width, c.height);
+        // 눈과 입을 검게 파 낸다(웃는 얼굴 → 텅 빈 얼굴). 눈 안에 하얀 점 하나씩.
+        g.fillStyle = '#000'; g.beginPath();
+        g.ellipse(98, 282, 37, 27, -.08, 0, 7); g.ellipse(242, 284, 37, 27, .08, 0, 7);
+        g.ellipse(152, 404, 62, 34, 0, 0, 7); g.fill();
+        g.fillStyle = '#fff'; g.fillRect(99, 283, 5, 5); g.fillRect(241, 285, 5, 5);
+        v.removeAttribute('src'); v.load(); resolve(c);
+      };
+      v.addEventListener('loadedmetadata', () => { v.currentTime = Math.min(8.45, (v.duration || 10) - .1); }, { once: true });
+      v.addEventListener('seeked', () => done(true), { once: true });
+      v.addEventListener('error', () => done(false), { once: true });
+      setTimeout(() => done(false), 9000);
+    });
+    return facePromise;
+  }
+
+  window.PhaseFX = { crackle, droneOn, droneOff, moan, sting, scream, whisper, face };
+})();
+</script>
 <script>/* One opening per page load. No stage, save or AI gate rules are changed. */
 (() => {
   'use strict';
@@ -350,6 +596,78 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   } catch (_) {
     finish('media-error');
   }
+})();
+</script>
+<script>/* 첫 클리어 이후의 인트로 글리치(2026-10-26, Claude Code).
+   첫 인트로(1페이즈)는 병맛 그대로. 2페이즈부터 같은 변신 영상 위로 화면이 찢기고 멈칫한다.
+   영상 파일·변신 인트로 코드는 바꾸지 않고 위에 캔버스를 덧댄다. */
+(() => {
+  'use strict';
+  const P = window.SpeedrunPhase, intro = window.TransformationIntro;
+  if (!P || !intro || P.state.phase < 2 || !intro.active) return;
+  const dialog = document.querySelector('dialog.transformation-intro');
+  const video = dialog && dialog.querySelector('video');
+  if (!video) return;
+  const strong = P.state.phase >= 3;
+  const canvas = document.createElement('canvas');
+  canvas.className = 'phase-intro-glitch';
+  canvas.setAttribute('aria-hidden', 'true');
+  dialog.append(canvas);
+  const g = canvas.getContext('2d');
+  let raf = 0, burstUntil = 0, nextBurst = performance.now() + 900, frozenUntil = 0, lastFlip = 0;
+  function rect() {
+    const W = canvas.width = innerWidth, H = canvas.height = innerHeight;
+    const vw = video.videoWidth || 540, vh = video.videoHeight || 960;
+    const s = Math.min(W / vw, H / vh);
+    return { W, H, s, x: (W - vw * s) / 2, y: (H - vh * s) / 2, vw, vh };
+  }
+  function tear(r, amount) {
+    g.clearRect(0, 0, r.W, r.H);
+    const bands = 3 + Math.floor(amount * 9);
+    for (let i = 0; i < bands; i++) {
+      const sy = Math.random() * r.vh, sh = 8 + Math.random() * (40 + amount * 160);
+      const dx = (Math.random() - .5) * (30 + amount * 260);
+      g.filter = Math.random() < .35 + amount * .3 ? 'invert(1)' : 'none';
+      g.drawImage(video, 0, sy, r.vw, sh, r.x + dx, r.y + sy * r.s, r.vw * r.s, sh * r.s);
+      if (Math.random() < .3 * amount) { // 같은 띠가 반복된다
+        g.drawImage(video, 0, sy, r.vw, sh, r.x - dx * .5, r.y + (sy + sh) * r.s, r.vw * r.s, sh * r.s);
+      }
+    }
+    g.filter = 'none';
+    if (Math.random() < amount * .5) { g.fillStyle = Math.random() < .5 ? '#000' : '#fff'; g.fillRect(0, Math.random() * r.H, r.W, 2 + Math.random() * 10); }
+  }
+  function loop(now) {
+    raf = requestAnimationFrame(loop);
+    if (!intro.active) { stop(); return; }
+    const progress = video.duration ? video.currentTime / video.duration : 0;
+    const base = strong ? .55 : .25;
+    const amount = Math.min(1, base + progress * .6);
+    if (now >= nextBurst && now > burstUntil) {
+      burstUntil = now + 70 + Math.random() * (160 + amount * 380);
+      nextBurst = burstUntil + (strong ? 250 : 500) + Math.random() * (2600 * (1 - amount) + 300);
+      if (window.PhaseFX) PhaseFX.crackle(.08 + Math.random() * .25, .12 + amount * .25);
+      if (Math.random() < .35 + amount * .3 && !video.paused) { // 렉 걸린 듯 멈칫
+        frozenUntil = now + 120 + Math.random() * 420; video.pause();
+      }
+      if (Math.random() < .25 * amount && video.currentTime > .6) video.currentTime -= .25 + Math.random() * .4; // 한 박자 되감김
+    }
+    if (frozenUntil && now >= frozenUntil) { frozenUntil = 0; video.play().catch(() => {}); }
+    const r = rect();
+    if (now < burstUntil) {
+      tear(r, amount);
+      if (now - lastFlip > 90 && Math.random() < .4) { lastFlip = now; video.style.filter = video.style.filter ? '' : 'invert(1) contrast(1.4)'; }
+      video.style.transform = `translate(${(Math.random() - .5) * 24 * amount}px, ${(Math.random() - .5) * 10 * amount}px)`;
+    } else {
+      g.clearRect(0, 0, r.W, r.H);
+      video.style.filter = ''; video.style.transform = '';
+    }
+  }
+  function stop() {
+    cancelAnimationFrame(raf);
+    canvas.remove(); video.style.filter = ''; video.style.transform = '';
+  }
+  raf = requestAnimationFrame(loop);
+  window.addEventListener('transformationintro:end', stop, { once: true });
 })();
 </script>
 <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;pointer-events:none" aria-hidden="true"><defs><filter id="guide-opaque" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="linear" slope="1.02"/></feComponentTransfer></filter></defs></svg>
@@ -1175,6 +1493,243 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   render(); sync();
   // resetFinale: 개발용 미리보기에서 RE? 뒤 처음 화면으로 돌아갈 때 클리어 화면을 치운다.
   window.RebellionLog = { get store() { return store; }, achievements, show, close, resetFinale() { finale?.remove(); finale = null; offInRun = false; sync(); } };
+})();
+</script>
+<script>/* 1→2페이즈와 2페이즈 끝 점프스케어(2026-10-26, Claude Code).
+   - 1페이즈 첫 전체 클리어: 결과 화면 3.5초·7.0초에 공포 컷 각 0.5초, 딱 두 번.
+   - 2페이즈: 미니게임마다 글리치·이상한 소리. 클리어 하나마다 아직 안 깬 게임 하나의 맵이 바뀐다.
+     새 맵·새 그림 없이 기존 맵을 코드로 비튼다(뒤집기·반전·길 막기). 한 번은 들어간 곳이 다른 곳으로 이어진다.
+   - 2페이즈에서 일곱 곳을 다 깨면: AI 경고 → 점프스케어 → 첫 화면(3페이즈, 구현 예정).
+   기존 게임 규칙·저장(반항 기록)·스테이지 소스는 바꾸지 않는다. */
+(() => {
+  'use strict';
+  const P = window.SpeedrunPhase, FX = window.PhaseFX;
+  if (!P || !FX) return;
+  const $ = id => document.getElementById(id), body = document.body, channel = 'speedrun-midterm-v1';
+  const games = P.games;
+  // 클리어할 때마다 이 순서로 아직 안 깬 게임 하나가 바뀐다.
+  const ORDER = ['maze', 'routine', 'switches', 'limb', 'suitcase', 'needle', 'mri'];
+  const storyLine = id => { const a = (window.RebellionLog?.achievements || []).find(x => x.id === id); return a?.story?.[1] || ''; };
+  const idle = () => !['white', 'failure'].includes(body.dataset.transition);
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  FX.face(); // 얼굴 장면을 미리 잘라 둔다
+
+  // --- 맵 바꾸기: 미로는 원래 지나던 통로(11,10)를 벽으로 막고 (10,11)을 연다 → 시작 쪽으로 크게 돌아가야 한다 ---
+  const originalMaze = typeof DemoDocuments !== 'undefined' ? DemoDocuments.maze : null;
+  function applyMaps() {
+    const s = P.state;
+    body.dataset.corrupt = s.phase >= 2 ? s.corrupted.join(' ') : '';
+    body.dataset.corruptn = String(s.phase >= 2 ? s.corrupted.length : 0);
+    if (!originalMaze) return;
+    if (s.phase >= 2 && s.corrupted.includes('maze')) {
+      const patched = originalMaze.replace("'#.#########.#########'", "'#.###################'").replace("'#.....#...#.........#'", "'#.....#.............#'");
+      DemoDocuments.maze = patched;
+      body.dataset.mazeBlocked = patched !== originalMaze ? 'yes' : 'no';
+    } else DemoDocuments.maze = originalMaze;
+  }
+  applyMaps();
+
+  // --- 2페이즈 글리치: 보이는 화면이 순간 찢기고 반전된다 ---
+  const tear = document.createElement('div'); tear.id = 'phase-tear'; tear.setAttribute('aria-hidden', 'true');
+  const caption = document.createElement('p'); caption.id = 'phase-caption'; caption.setAttribute('aria-live', 'polite');
+  document.querySelector('main').append(tear, caption);
+  let burstTimer = 0;
+  function burst(strength = 1) {
+    if (P.state.phase < 2 || body.dataset.stage === 'intro' || body.dataset.phaseEnding) return;
+    const n = P.state.corrupted.length;
+    body.style.setProperty('--gx', `${(Math.random() - .5) * 40 * strength}px`);
+    body.style.setProperty('--gy', `${(Math.random() - .5) * 14 * strength}px`);
+    body.style.setProperty('--gb', `${Math.floor(Math.random() * 80)}%`);
+    body.style.setProperty('--gh', `${4 + Math.random() * 18}%`);
+    body.dataset.burst = Math.random() < .45 ? 'invert' : 'tear';
+    FX.crackle(.1 + Math.random() * .25, .14 + n * .03);
+    if (Math.random() < .22) FX.moan(.08 + n * .015);
+    setTimeout(() => { delete body.dataset.burst; }, 90 + Math.random() * (180 + n * 40));
+  }
+  function scheduleBursts() {
+    clearTimeout(burstTimer);
+    if (P.state.phase < 2) return;
+    const n = P.state.corrupted.length;
+    burstTimer = setTimeout(() => { burst(1 + n * .15); scheduleBursts(); }, 2500 + Math.random() * Math.max(1500, 8000 - n * 900));
+  }
+  function sound() {
+    if (P.state.phase >= 2 && body.dataset.stage !== 'intro' && !body.dataset.phaseEnding) FX.droneOn(.035 + P.state.corrupted.length * .012);
+    else FX.droneOff();
+  }
+  let captionTimer = 0;
+  function say(text, ms = 4200) {
+    if (!text) return;
+    caption.textContent = text; caption.classList.add('show');
+    clearTimeout(captionTimer); captionTimer = setTimeout(() => caption.classList.remove('show'), ms);
+  }
+
+  // --- 들어간 곳이 다른 곳으로 이어진다(2페이즈, 두 번째 클리어 뒤 한 번) ---
+  let swapRestore = null;
+  addEventListener('message', event => {
+    const data = event.data;
+    if (!data || data.channel !== channel) return;
+    const source = ['digging', ...games].find(name => $(name)?.contentWindow === event.source);
+    if (!source || source !== body.dataset.stage) return;
+    const s = P.state;
+    if (s.phase === 2 && source === 'digging' && data.type === 'enter' && !s.swapUsed && s.run2.length >= 2 && DemoFlow.destinations[data.object]) {
+      const own = DemoFlow.destinations[data.object];
+      const others = games.filter(g => g !== own && !s.run2.includes(g));
+      if (others.length) {
+        const to = others.find(g => s.corrupted.includes(g)) || others[0];
+        DemoFlow.destinations[data.object] = to;
+        swapRestore = () => { DemoFlow.destinations[data.object] = own; swapRestore = null; };
+        setTimeout(() => swapRestore && swapRestore(), 0);
+        P.set({ swapUsed: true });
+        burst(2.4); FX.sting(.35);
+      }
+    }
+    if (s.phase === 2 && games.includes(source) && data.type === 'complete' && !s.run2.includes(source)) {
+      const run2 = [...s.run2, source];
+      const target = ORDER.find(g => !s.corrupted.includes(g) && !run2.includes(g)) || ORDER.find(g => !s.corrupted.includes(g));
+      P.set({ run2, corrupted: target ? [...s.corrupted, target] : s.corrupted });
+      applyMaps();
+      if (run2.length >= games.length) endPhase2();
+    }
+  }, true);
+
+  // --- 화면이 바뀔 때 ---
+  let stageNow = null;
+  function onStage() {
+    const stage = body.dataset.stage;
+    if (stage === stageNow) return;
+    stageNow = stage;
+    sound(); scheduleBursts();
+    if (P.state.phase === 2 && P.state.corrupted.includes(stage)) {
+      setTimeout(() => { burst(2); say(storyLine(stage)); }, 700);
+    }
+    if (P.state.phase === 2 && stage === 'digging' && P.state.corrupted.length) setTimeout(() => burst(1.6), 500);
+    // 발표용: 1페이즈 결과 화면 바로 보기
+    if (P.demo === 'finale1' && stage === 'digging' && !body.dataset.demoFinale) {
+      body.dataset.demoFinale = '1';
+      setTimeout(() => { body.dataset.completed = games.join(','); }, 600);
+    }
+    if (P.demo === 'scare' && stage === 'digging' && !body.dataset.phaseEnding) setTimeout(endPhase2, 900);
+    if (stage === 'intro') todoPanel();
+    todoTags();
+  }
+
+  // --- 1페이즈 끝: 첫 결과 화면의 공포 컷 두 번 ---
+  async function cut() {
+    const c = await FX.face();
+    const layer = document.createElement('div'); layer.className = 'phase-cut'; layer.setAttribute('aria-hidden', 'true');
+    const canvas = document.createElement('canvas'); canvas.width = c.width; canvas.height = c.height;
+    const g = canvas.getContext('2d'); g.drawImage(c, 0, 0);
+    // 눈 높이를 가로로 한 줄 밀어 낸다
+    g.drawImage(c, 0, 190, c.width, 70, 26, 190, c.width, 70);
+    layer.append(canvas); document.body.append(layer);
+    FX.sting(.8);
+    setTimeout(() => layer.remove(), 500);
+  }
+  function watchFinale() {
+    const finale = $('run-clear');
+    if (!finale || finale.dataset.phaseSeen) return;
+    finale.dataset.phaseSeen = '1';
+    if (P.state.phase === 1) {
+      P.set({ phase: 2, corrupted: [], run2: [], swapUsed: false });
+      setTimeout(cut, 3500); setTimeout(cut, 7000);
+    } else if (P.state.phase >= 2) finale.remove(); // 2페이즈의 끝은 결과 화면 대신 경고로 간다
+  }
+
+  // --- 2페이즈 끝: AI 경고 → 점프스케어 → 첫 화면 ---
+  async function endPhase2() {
+    if (body.dataset.phaseEnding) return;
+    body.dataset.phaseEnding = 'wait';
+    for (let i = 0; i < 200 && !(body.dataset.stage === 'digging' && idle()); i++) await sleep(100);
+    body.dataset.phaseEnding = 'on';
+    clearTimeout(burstTimer); FX.droneOff(true);
+    const face = await FX.face();
+    const stage = document.createElement('section'); stage.id = 'phase-end'; stage.setAttribute('aria-label', '경고');
+    const noiseCanvas = document.createElement('canvas'), text = document.createElement('p');
+    stage.append(noiseCanvas, text); document.body.append(stage);
+    const g = noiseCanvas.getContext('2d');
+    let mode = 'static', raf = 0, t0 = performance.now();
+    function draw(now) {
+      raf = requestAnimationFrame(draw);
+      const W = noiseCanvas.width = innerWidth, H = noiseCanvas.height = innerHeight;
+      if (mode === 'static') { // 화면 전체가 지직거리며 무너진다
+        g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+        for (let i = 0; i < 90; i++) { g.fillStyle = Math.random() < .5 ? '#fff' : '#000'; g.fillRect(Math.random() * W, Math.random() * H, Math.random() * W * .6, 1 + Math.random() * 18); }
+      } else if (mode === 'dark') { g.fillStyle = '#000'; g.fillRect(0, 0, W, H); }
+      else if (mode === 'scare') { // 얼굴이 화면을 꽉 채우고 미친 듯이 흔들린다
+        const k = (now - t0) / 1000;
+        // 처음 한 장은 얼굴 전체가 화면 높이를 꽉 채우고, 점점 코앞으로 다가온다.
+        const z = 1.08 + Math.min(.75, k * k * .9) + Math.sin(now / 23) * .05;
+        const s = H / (face.height * .8) * z;
+        const w = face.width * s, h = face.height * s;
+        const x = (W - w) / 2 + (Math.random() - .5) * 70 * (1 + k), y = (H - h) / 2 + (Math.random() - .5) * 70 * (1 + k);
+        g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+        const inv = k > .35 && Math.floor(now / 60) % 3 === 0;
+        g.filter = inv ? 'invert(1) contrast(2.2)' : 'contrast(2.2)';
+        g.drawImage(face, x, y, w, h);
+        for (let i = 0; i < (k < .15 ? 0 : 6); i++) { // 찢어진 띠(첫 순간은 얼굴이 또렷하게)
+          const sy = Math.random() * face.height, sh = 10 + Math.random() * 60, dx = (Math.random() - .5) * 220;
+          g.drawImage(face, 0, sy, face.width, sh, x + dx, y + sy * s, w, sh * s);
+        }
+        g.filter = 'none';
+        if (k > .2 && Math.random() < .12) { g.fillStyle = Math.random() < .5 ? '#fff' : '#000'; g.fillRect(0, 0, W, H); }
+      }
+    }
+    raf = requestAnimationFrame(draw);
+    FX.crackle(1.2, .5, 'tear'); FX.crackle(1.2, .35, 'hiss');
+    await sleep(1300);
+    mode = 'dark'; await sleep(900);
+    // 경고(손글씨 메모 원문 조각: 「당신 누구야」 「나가」 「너의 기억에서」. 최종 대사는 미정)
+    const lines = ['당신 누구야.', '나가.', '너의 기억에서.'];
+    for (const line of lines) {
+      text.textContent = ''; text.className = 'show';
+      FX.whisper(1.2, .3);
+      for (const ch of line) { text.textContent += ch; FX.crackle(.03, .08, 'click'); await sleep(110); }
+      await sleep(1250);
+    }
+    text.className = 'show hold';
+    await sleep(1400);
+    text.className = '';
+    mode = 'dark'; await sleep(650);
+    // 점프스케어
+    mode = 'scare'; t0 = performance.now(); stage.classList.add('scare');
+    FX.scream(1.5);
+    await sleep(1450);
+    mode = 'dark'; stage.classList.remove('scare'); FX.droneOff(true);
+    await sleep(900);
+    cancelAnimationFrame(raf);
+    P.set({ phase: 3 });
+    location.reload();
+  }
+
+  // --- 구현 예정 표시(발표용): 구현된 것과 구분해 화면 위에 짧게 적는다 ---
+  const TODO = {
+    intro: ['휴대폰 터치 조작·실기기 실행', '추가 보이스(내레이션 음성)', '처음 10초 이해·5분 완주로 다듬기'],
+    digging: ['도전과제 옆 메뉴를 처음부터 공개', '물건이 바뀌어 AI가 있다는 걸 눈치채게 하는 단서'],
+    routine: ['침실에 할아버지의 꾸미는 취향 반영', '학창 시절 괴롭힘 회상 장면', '윤곽선 깜빡임 횟수 제한(필요한 물건 3번)'],
+    limb: ['전체 클리어 뒤 중환자실 엔딩 컷신'],
+  };
+  const tags = document.createElement('aside'); tags.id = 'phase-todo'; tags.setAttribute('aria-label', '구현 예정');
+  document.body.append(tags);
+  function todoTags() {
+    const list = body.dataset.phaseEnding ? [] : (TODO[body.dataset.stage] || []);
+    tags.hidden = !list.length || body.dataset.todoHidden === '1';
+    tags.innerHTML = list.map(t => `<p><b>구현 예정</b>${t}</p>`).join('') + '<button type="button" aria-label="구현 예정 표시 숨기기">×</button>';
+    tags.querySelector('button').onclick = () => { body.dataset.todoHidden = '1'; tags.hidden = true; };
+  }
+  function todoPanel() {
+    if (P.state.phase < 3 || $('phase3-panel')) return;
+    const panel = document.createElement('section'); panel.id = 'phase3-panel'; panel.setAttribute('aria-label', '3페이즈 구현 예정');
+    panel.innerHTML = '<p class="p3-tag">구현 예정 · 3페이즈</p>'
+      + '<ol><li>첫 화면을 계속 눌러도 진행되지 않는다</li><li>AI가 플레이어에게 도와 달라고 한다</li><li>지금까지 숨겨 온 이야기가 드러난다(진엔딩)</li></ol>'
+      + '<button type="button" class="p3-reset">처음으로(1페이즈)</button>';
+    panel.querySelector('.p3-reset').onclick = () => { P.set({ phase: 1, corrupted: [], run2: [], swapUsed: false }); location.reload(); };
+    $('intro').append(panel);
+  }
+
+  new MutationObserver(() => { onStage(); watchFinale(); }).observe(body, { attributes: true, attributeFilter: ['data-stage', 'data-transition', 'data-completed'] });
+  new MutationObserver(watchFinale).observe(document.querySelector('main'), { childList: true });
+  onStage();
+  window.PhaseDebug = { endPhase2, cut, burst, applyMaps };
 })();
 </script>
 <script>/* A finite play-only gate. Release invokes the original switch exactly once. */

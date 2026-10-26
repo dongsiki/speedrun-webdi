@@ -1,0 +1,60 @@
+/* 페이즈(2026-10-26, Claude Code). 흑백 1-bit 그대로, 새 그림 없음. */
+.phase-intro-glitch{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:2}
+
+/* 2페이즈: 클리어마다 바뀐 맵. 입력 좌표는 브라우저가 변환을 따라가므로 조작은 그대로 된다. */
+body[data-phase="2"][data-corrupt~="maze"] #maze{filter:invert(1)}
+body[data-phase="2"][data-corrupt~="routine"] #routine{transform:scaleX(-1)}
+body[data-phase="2"][data-corrupt~="switches"] #switches{transform:rotate(180deg)}
+body[data-phase="2"][data-corrupt~="limb"] #limb{transform:scaleX(-1)}
+body[data-phase="2"][data-corrupt~="suitcase"] #suitcase{transform:scaleX(-1);filter:invert(1)}
+body[data-phase="2"][data-corrupt~="needle"] #needle{transform:rotate(180deg)}
+body[data-phase="2"][data-corrupt~="mri"] #mri{filter:invert(1) contrast(1.3);animation:phase-sway 7s ease-in-out infinite}
+/* 땅파기 로비도 점점: 세 곳 이상 바뀌면 좌우가 뒤집히고, 다섯 곳 이상이면 색까지 뒤집힌다. */
+body[data-phase="2"][data-corruptn="3"] #digging,body[data-phase="2"][data-corruptn="4"] #digging{transform:scaleX(-1)}
+body[data-phase="2"][data-corruptn="5"] #digging,body[data-phase="2"][data-corruptn="6"] #digging,body[data-phase="2"][data-corruptn="7"] #digging{transform:scaleX(-1);filter:invert(1)}
+@keyframes phase-sway{0%,100%{translate:0 0}50%{translate:6px -3px}}
+
+/* 순간 글리치 */
+body[data-burst] iframe.stage:not([hidden]){translate:var(--gx,0) var(--gy,0)}
+body[data-burst="invert"] iframe.stage:not([hidden]){filter:invert(1) contrast(1.8)!important}
+#phase-tear{position:fixed;left:0;right:0;top:var(--gb,40%);height:var(--gh,8%);z-index:60;pointer-events:none;display:none;
+  background:repeating-linear-gradient(0deg,#000 0 2px,#fff 2px 5px,#000 5px 6px,transparent 6px 11px);mix-blend-mode:difference;transform:translateX(var(--gx,0))}
+body[data-burst] #phase-tear{display:block}
+
+/* 바뀐 곳에 들어가면 그 게임의 기존 이야기 한 줄이 깨진 자막으로 */
+#phase-caption{position:fixed;left:50%;bottom:7vh;z-index:61;margin:0;transform:translateX(-50%);max-width:min(88vw,720px);padding:.35em .7em;
+  font:18px/1.5 "Batang","바탕",serif;color:#fff;background:#000;letter-spacing:.02em;opacity:0;pointer-events:none;transition:opacity .25s steps(3)}
+#phase-caption.show{opacity:1;animation:phase-jitter .18s steps(2) infinite}
+@keyframes phase-jitter{0%{translate:0 0}50%{translate:2px -1px}100%{translate:-2px 1px}}
+
+/* 공포 컷(1페이즈 결과 화면, 0.5초 × 2) */
+.phase-cut{position:fixed;inset:0;z-index:2147483000;background:#000;display:grid;place-items:center;pointer-events:none}
+.phase-cut canvas{height:125vh;width:auto;filter:contrast(2.4);transform:scale(1.08) rotate(-2deg)}
+
+/* 2페이즈 끝: 경고 → 점프스케어 */
+#phase-end{position:fixed;inset:0;z-index:2147483100;background:#000;cursor:none}
+#phase-end canvas{position:absolute;inset:0;width:100%;height:100%}
+#phase-end p{position:absolute;left:0;right:0;top:50%;margin:0;transform:translateY(-50%);text-align:center;color:#fff;
+  font:700 clamp(30px,6vw,76px)/1.2 "Courier New","Malgun Gothic",monospace;letter-spacing:.08em;opacity:0}
+#phase-end p.show{opacity:1;animation:phase-jitter .12s steps(2) infinite}
+#phase-end p.hold{animation:phase-grow 1.4s linear forwards}
+@keyframes phase-grow{to{transform:translateY(-50%) scale(1.35);letter-spacing:.3em;filter:blur(.6px)}}
+#phase-end.scare{animation:phase-quake .05s steps(2) infinite}
+@keyframes phase-quake{0%{transform:translate(18px,-14px) rotate(1.5deg)}50%{transform:translate(-22px,12px) rotate(-2deg)}100%{transform:translate(10px,20px)}}
+
+/* 구현 예정 표시(발표용). 게임 화면과 구분되게 점선 쪽지로. */
+#phase-todo{position:fixed;top:10px;left:50%;transform:translateX(-50%);z-index:70;display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:min(96vw,900px);pointer-events:none}
+#phase-todo[hidden]{display:none}
+#phase-todo p{margin:0;padding:4px 9px;background:#fff;color:#000;border:1.5px dashed #000;font:13px/1.35 "Malgun Gothic",sans-serif;pointer-events:auto}
+#phase-todo b{margin-right:.5em;padding:0 4px;background:#000;color:#fff;font-weight:700}
+#phase-todo button{pointer-events:auto;border:1.5px dashed #000;background:#fff;color:#000;font:13px/1 sans-serif;padding:4px 8px;cursor:pointer}
+body[data-transformation] #phase-todo{display:none}
+
+/* 3페이즈(구현 예정) */
+#phase3-panel{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30;width:min(92vw,520px);padding:22px 26px;background:#fff;color:#000;
+  border:2px dashed #000;font:15px/1.6 "Malgun Gothic",sans-serif}
+#phase3-panel .p3-tag{display:inline-block;margin:0 0 10px;padding:2px 8px;background:#000;color:#fff;font-weight:700}
+#phase3-panel ol{margin:0 0 14px;padding-left:1.3em}
+#phase3-panel button{border:1.5px solid #000;background:#fff;color:#000;font:14px/1 "Malgun Gothic",sans-serif;padding:8px 12px;cursor:pointer}
+@media (max-width:600px){#phase-caption{font-size:15px}#phase-todo p{font-size:12px}}
+body:has(#run-clear) #phase-todo{display:none}
