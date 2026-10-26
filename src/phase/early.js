@@ -23,6 +23,8 @@
     state = { ...blank(), phase: 2, run2: done, corrupted: ['maze', 'routine', 'limb', 'needle', 'suitcase', 'mri'], swapUsed: true };
   }
   if (demo) { save(); history.replaceState(null, '', location.pathname + location.search); }
+  // 02의 바로가기로 들어오면 이미 본 인트로는 건너뛴다. 단 '2페이즈 처음부터'는 글리치 인트로가 볼거리라 그대로 둔다.
+  if (demo && demo !== 'phase2') window.SpeedrunIntroOnce = true;
 
   document.body.dataset.phase = String(state.phase);
 

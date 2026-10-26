@@ -309,6 +309,8 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     state = { ...blank(), phase: 2, run2: done, corrupted: ['maze', 'routine', 'limb', 'needle', 'suitcase', 'mri'], swapUsed: true };
   }
   if (demo) { save(); history.replaceState(null, '', location.pathname + location.search); }
+  // 02의 바로가기로 들어오면 이미 본 인트로는 건너뛴다. 단 '2페이즈 처음부터'는 글리치 인트로가 볼거리라 그대로 둔다.
+  if (demo && demo !== 'phase2') window.SpeedrunIntroOnce = true;
 
   document.body.dataset.phase = String(state.phase);
 
@@ -492,6 +494,16 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
 (() => {
   'use strict';
   if (window.TransformationIntro) return;
+  // 10/26 사용자: 개발자용에서 누를 때마다 인트로가 다시 나오지 않게(한 번 보면 이 탭에서는 생략).
+  // SpeedrunIntroOnce는 개발자용 02와 02의 발표용 바로가기(#demo)만 켠다. 본편 01을 그냥 열면 늘 나온다.
+  const seenKey = 'speedrun-intro-seen';
+  let seen = false;
+  try { seen = sessionStorage.getItem(seenKey) === '1'; } catch (_) {}
+  if (seen && window.SpeedrunIntroOnce) {
+    window.TransformationIntro = Object.freeze({ active: false, status: 'seen', finished: Promise.resolve('seen') });
+    return;
+  }
+  try { sessionStorage.setItem(seenKey, '1'); } catch (_) {}
   const body = document.body;
   const originalFocus = document.activeElement;
   const dialog = document.createElement('dialog');
