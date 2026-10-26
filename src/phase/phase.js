@@ -122,7 +122,7 @@
     // 발표용: 1페이즈 결과 화면 바로 보기
     if (P.demo === 'finale1' && stage === 'digging' && !body.dataset.demoFinale) {
       body.dataset.demoFinale = '1';
-      setTimeout(() => { body.dataset.completed = games.join(','); }, 600);
+      body.dataset.completed = games.join(',');
     }
     // 발표용: 점프스케어 직전의 마지막 한 게임(정상화된 전구 퍼즐)으로 바로 들어간다
     if (P.demo === 'phase2-last' && stage === 'digging' && !body.dataset.demoEnter) {
@@ -138,16 +138,50 @@
   }
 
   // --- 1페이즈 끝: 첫 결과 화면의 공포 컷 두 번 ---
-  async function cut() {
-    const c = await FX.face();
+  // 10/27 사용자: 「1페이즈 끝 결과화면에서 점프스퀘어를 하지말고 글리치만 해」 「글리치 혹은 데이터모쉬 하여튼 등등의 오류이펙트를 해」
+  // → 노인 얼굴 없이, 결과 화면 자체가 0.5초 동안 깨진다(띠 찢김·색 반전·데이터모쉬 블록·번짐). 점스는 3페이즈 직전 것만.
+  function cut() {
+    const finale = $('run-clear');
     const layer = document.createElement('div'); layer.className = 'phase-cut'; layer.setAttribute('aria-hidden', 'true');
-    const canvas = document.createElement('canvas'); canvas.width = c.width; canvas.height = c.height;
-    const g = canvas.getContext('2d'); g.drawImage(c, 0, 0);
-    // 눈 높이를 가로로 한 줄 밀어 낸다
-    g.drawImage(c, 0, 190, c.width, 70, 26, 190, c.width, 70);
-    layer.append(canvas); document.body.append(layer);
-    FX.sting(.8);
-    setTimeout(() => layer.remove(), 500);
+    const canvas = document.createElement('canvas'); layer.append(canvas); document.body.append(layer);
+    const g = canvas.getContext('2d');
+    const W = canvas.width = innerWidth, H = canvas.height = innerHeight;
+    // 데이터모쉬: 지난 프레임을 지우지 않고 블록째 옆·아래로 끌어 번지게 한다
+    const smear = () => {
+      for (let i = 0; i < 26; i++) {
+        const bs = 16 * (1 + (Math.random() * 4 | 0)), x = (Math.random() * W / bs | 0) * bs, y = (Math.random() * H / bs | 0) * bs;
+        const w = bs * (1 + (Math.random() * 6 | 0)), h = bs * (1 + (Math.random() * 3 | 0));
+        if (Math.random() < .55) g.drawImage(canvas, x, y, w, h, x + (Math.random() - .5) * bs * 2, y + bs * (Math.random() < .5 ? 1 : .5), w, h);
+        else { const v = [0, 40, 128, 200, 255][Math.random() * 5 | 0]; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(x, y, w, h); }
+      }
+    };
+    const tearBands = () => {
+      for (let i = 0; i < 7; i++) {
+        const y = Math.random() * H, h = 2 + Math.random() * 28;
+        g.fillStyle = Math.random() < .5 ? '#000' : '#fff'; g.fillRect(0, y, W, h);
+        for (let x = 0; x < W; x += 3 + Math.random() * 9) { g.fillStyle = Math.random() < .5 ? '#000' : '#fff'; g.fillRect(x, y, 2, h); }
+      }
+    };
+    let n = 0;
+    const tick = () => {
+      if (!layer.isConnected) return;
+      n++;
+      if (n % 3 === 1) tearBands();
+      smear();
+      if (finale) {
+        finale.style.translate = `${(Math.random() - .5) * 60}px ${(Math.random() - .5) * 16}px`;
+        finale.style.filter = n % 2 ? 'invert(1) contrast(2)' : 'contrast(3) blur(.6px)';
+        const y1 = Math.random() * 100, y2 = Math.min(100, y1 + 4 + Math.random() * 25);
+        finale.style.clipPath = Math.random() < .5 ? `polygon(0 0,100% 0,100% ${y1}%,0 ${y1}%,0 ${y2}%,100% ${y2}%,100% 100%,0 100%)` : '';
+      }
+      setTimeout(tick, 33 + Math.random() * 30);
+    };
+    tick();
+    FX.crackle(.5, .45, 'tear'); FX.crackle(.45, .25, 'hiss');
+    setTimeout(() => {
+      layer.remove();
+      if (finale) { finale.style.translate = ''; finale.style.filter = ''; finale.style.clipPath = ''; }
+    }, 500);
   }
   function watchFinale() {
     const finale = $('run-clear');
@@ -176,7 +210,7 @@
       document.querySelector('main').append(f); requestAnimationFrame(() => { f.classList.add('show'); f.querySelectorAll('p,button').forEach(x => x.classList.add('show')); });
     }
     watchFinale();
-    await sleep(3400); // 클리어 화면을 3초쯤 보여 안심시킨 뒤
+    await sleep(1900); // 10/26 사용자: 클리어 화면 1초 뒤 텍스트와 점스(「클리어」 글자가 0.9초에 떠서 그 뒤 1초)
     body.dataset.phaseEnding = 'on';
     const stage = document.createElement('section'); stage.id = 'phase-end'; stage.setAttribute('aria-label', '경고');
     const noiseCanvas = document.createElement('canvas'), text = document.createElement('p');
@@ -237,8 +271,7 @@
   const TODO = {
     intro: ['휴대폰 터치 조작·실기기 실행', '추가 보이스(내레이션 음성)', '처음 10초 이해·5분 완주로 다듬기'],
     digging: ['도전과제 옆 메뉴를 처음부터 공개', '물건이 바뀌어 AI가 있다는 걸 눈치채게 하는 단서'],
-    routine: ['침실에 할아버지의 꾸미는 취향 반영', '학창 시절 괴롭힘 회상 장면', '윤곽선 깜빡임 횟수 제한(필요한 물건 3번)'],
-    limb: ['전체 클리어 뒤 중환자실 엔딩 컷신'],
+    routine: ['침실에 할아버지의 꾸미는 취향 반영', '윤곽선 깜빡임 횟수 제한(필요한 물건 3번)'],
   };
   const tags = document.createElement('aside'); tags.id = 'phase-todo'; tags.setAttribute('aria-label', '구현 예정');
   document.body.append(tags);
@@ -256,6 +289,33 @@
       + '<button type="button" class="p3-reset">처음으로(1페이즈)</button>';
     panel.querySelector('.p3-reset').onclick = () => { P.set({ phase: 1, corrupted: [], run2: [], swapUsed: false }); location.reload(); };
     $('intro').append(panel);
+  }
+
+  // --- 발표용 바로가기 자동 시작: 흰 화면 뒤에서 AI 스위치(쪽지 치우기 → 길게 누르기)를 대신 넘기고, 목표 장면이 뜨면 흰 화면을 걷는다 ---
+  const cover = $('phase-demo-cover');
+  if (cover) {
+    const uncover = () => { if (cover.isConnected) cover.remove(); };
+    const t = P.autoTarget;
+    const ready = () => ((t === 'finale' || t === 'scare') && !!$('run-clear')) || (t === 'last' && body.dataset.stage === 'switches' && idle())
+      || (t === 'lobby' && body.dataset.stage === 'digging' && idle());
+    (async () => {
+      for (let i = 0; i < 100 && window.TransformationIntro && window.TransformationIntro.active; i++) await sleep(50);
+      const btn = $('ai-switch'), dismiss = $('ai-gate-dismiss'), hold = $('ai-gate-stop');
+      try {
+        btn.click(); await sleep(120);
+        if (dismiss && !dismiss.closest('[hidden]')) { dismiss.click(); await sleep(560); }
+        btn.click(); await sleep(120);
+        if (hold && !hold.hidden) {
+          hold.focus({ preventScroll: true });
+          hold.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space', bubbles: true, cancelable: true }));
+          for (let i = 0; i < 60 && body.dataset.stage === 'intro'; i++) await sleep(50);
+          hold.dispatchEvent(new KeyboardEvent('keyup', { key: ' ', code: 'Space', bubbles: true, cancelable: true }));
+        }
+      } catch (_) {}
+      for (let i = 0; i < 300 && !ready(); i++) await sleep(50);
+      uncover();
+    })();
+    setTimeout(uncover, 20000);
   }
 
   new MutationObserver(() => { onStage(); watchFinale(); }).observe(body, { attributes: true, attributeFilter: ['data-stage', 'data-transition', 'data-completed'] });

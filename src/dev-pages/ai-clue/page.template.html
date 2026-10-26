@@ -1,0 +1,34 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>새로 만든 부분 — AI 단서(물건이 바뀜)</title>
+<style>/* @inline src/dev-pages/ai-clue/style.css */</style></head>
+<body>
+<p id="clue-new" class="clue-new">새로 만든 부분: AI 단서(물건이 바뀜)</p>
+<main id="clue-app" aria-label="AI 단서: 다시 들어가면 물건 하나가 바뀌어 있음">
+  <ol id="clue-dots" class="clue-dots" aria-label="찾은 단서"><li></li><li></li><li></li></ol>
+  <section id="clue-stage" class="clue-stage" aria-live="polite">
+    <div id="clue-frame" class="clue-frame">
+      <img id="clue-img" alt="" draggable="false">
+      <img id="clue-ghost-a" class="clue-ghost" alt="" aria-hidden="true" draggable="false">
+      <img id="clue-ghost-b" class="clue-ghost" alt="" aria-hidden="true" draggable="false">
+      <span id="clue-round" class="clue-round">1</span>
+      <div id="clue-box" class="clue-box" hidden><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div id="clue-miss" class="clue-miss" hidden></div>
+      <div id="clue-noise" class="clue-noise" aria-hidden="true"></div>
+    </div>
+    <div id="clue-paper" class="clue-paper" hidden><p id="clue-line"></p></div>
+  </section>
+  <div class="clue-actions">
+    <button id="clue-enter" type="button">다시 들어가기</button>
+    <button id="clue-hint" type="button" hidden>못 찾겠어요</button>
+    <button id="clue-next" type="button" hidden>다음 장소</button>
+    <button id="clue-again" type="button" hidden>처음부터</button>
+  </div>
+  <section id="clue-final" class="clue-final" hidden aria-label="모은 단서">
+    <div id="clue-thumbs" class="clue-thumbs"></div>
+    <p id="clue-who" class="clue-who"></p>
+  </section>
+  <aside class="clue-plan" aria-label="본편 배치 예정"><b>구현 예정</b> 본편 2페이즈: 다시 들어간 곳마다 물건 하나가 바뀜 (짐 싸기 → 기억 → 미로)</aside>
+</main>
+<script>window.AIClueImages = /* @clue-images */ {};</script>
+<script>/* @inline src/dev-pages/ai-clue/game.js */</script>
+<a class="portable-back" href="../02_speedrun_dev.html" aria-label="개발용 목록으로 돌아가기" title="돌아가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5 7 12l7 7M7 12h13"/></svg></a>
+</body></html>

@@ -10,3 +10,19 @@ canvas:focus-visible{outline:2px solid #000;outline-offset:-3px}
 .demo-back svg{width:24px;height:24px;pointer-events:none}
 .demo-back:focus-visible{outline:2px solid #000;outline-offset:2px}
 @media(prefers-reduced-motion:reduce-off){#keys{transition:none}}
+/* 중환자실 엔딩 컷신 (2026-10-27) */
+.lw-end{position:fixed;inset:0;z-index:3;background:#000;overflow:hidden;isolation:isolate;touch-action:none;user-select:none}
+.lw-end[hidden]{display:none}
+.lw-shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform-origin:50% 50%;will-change:transform,opacity}
+.lw-shot.on{opacity:1}
+.lw-breath{position:absolute;z-index:5;inset:0;width:100%;height:100%;pointer-events:none}
+.lw-grain{position:absolute;z-index:6;inset:-50%;pointer-events:none;opacity:.07;background-image:repeating-radial-gradient(circle at 17% 32%,#fff 0 1px,transparent 1px 3px);animation:lw-grain .4s steps(2) infinite}
+@keyframes lw-grain{0%{transform:translate(0,0)}50%{transform:translate(-2%,1%)}100%{transform:translate(1%,-2%)}}
+.lw-veil{position:absolute;z-index:7;inset:0;background:#fff;opacity:0;pointer-events:none;transition:opacity var(--veil,1200ms) linear}
+.lw-veil.black{background:#000}
+.lw-line{position:absolute;z-index:8;left:50%;bottom:max(64px,calc(env(safe-area-inset-bottom) + 48px));transform:translateX(-50%);margin:0;max-width:min(90vw,760px);box-sizing:border-box;padding:4px 14px;text-align:center;font:clamp(16px,2.4vw,22px)/1.5 "Malgun Gothic",sans-serif;color:#fff;background:rgba(0,0,0,.72)}
+.lw-line:empty{display:none}
+.lw-keys{position:absolute;z-index:8;left:50%;bottom:max(20px,env(safe-area-inset-bottom));transform:translateX(-50%);margin:0;padding:4px 10px;background:#fff;color:#000;font:600 15px/1.4 "Malgun Gothic",sans-serif;white-space:nowrap;transition:opacity .6s}
+.lw-keys[hidden]{display:block;opacity:0}
+.lw-keys kbd{display:inline-block;min-width:1.2em;padding:0 5px;border:2px solid #000;font:inherit;text-align:center}
+@media (max-width:600px){.lw-keys{font-size:13px}}

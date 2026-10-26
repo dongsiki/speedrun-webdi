@@ -79,28 +79,32 @@
         // lettering and interior facets keep their original fine line weight.
         vec2 uv = (pixel + 0.5) / pixels;
         float outside = 0.0;
+        float litNear = 0.0;
         float inside = texture2D(silhouettes, uv).r;
         for (int y = -2; y <= 2; y++) {
           for (int x = -2; x <= 2; x++) {
             float distanceSquared = float(x * x + y * y);
             if (distanceSquared <= 4.0) {
-              float sampleMask = texture2D(silhouettes, uv + vec2(float(x), float(y)) / pixels).r;
+              vec4 sampleTexel = texture2D(silhouettes, uv + vec2(float(x), float(y)) / pixels);
+              float sampleMask = sampleTexel.r;
               outside = max(outside, sampleMask);
+              litNear = max(litNear, sampleTexel.r * sampleTexel.g);
               if (distanceSquared <= 1.0) inside = min(inside, sampleMask);
             }
           }
         }
         float outline = step(0.5, outside - inside);
         // 2026-10-13: 윤곽선 전체가 0.5초마다 검정 → 흰색 → 검정. 흰 차례엔 흰 선이 물건을 둘러 보이도록 바깥쪽 1px은 검정으로 남긴다.
-        float lit = step(0.5, fract(blinkTime));
+        // 2026-10-27: 물건마다 정해진 횟수만 흰색으로 깜빡이고, 다 깜빡이면 검정 굵은 선으로 멈춘다(마스크 G 채널 = 지금 흰 차례).
+        float lit = step(0.5, litNear);
         float rim = 0.0;
         for (int y = -3; y <= 3; y++) {
           for (int x = -3; x <= 3; x++) {
             float d = float(x * x + y * y);
-            if (d > 4.0 && d <= 9.0) rim = max(rim, texture2D(silhouettes, uv + vec2(float(x), float(y)) / pixels).r);
+            if (d > 4.0 && d <= 9.0) { vec4 rimTexel = texture2D(silhouettes, uv + vec2(float(x), float(y)) / pixels); rim = max(rim, rimTexel.r * rimTexel.g); }
           }
         }
-        rim *= (1.0 - outside) * lit;
+        rim *= (1.0 - outside);
         gl_FragColor = vec4(vec3(mix(ink, lit, outline) * (1.0 - rim)), 1.0);
       }
     `
@@ -120,9 +124,14 @@
   }
   const edgeMaterial = new THREE.LineBasicMaterial({ color: C.ink });
   const fineMaterial = new THREE.LineBasicMaterial({ color: C.ink });
-  function emphasize(object) {
+  // 깜빡임 횟수 제한: 물건(묶음)마다 마스크 재질을 따로 두고 횟수를 센다.
+  // userData는 복제 때 JSON으로 복사되므로 묶음 번호만 넣는다.
+  const blinkGroups = [];
+  function emphasize(object, key = 'etc') {
+    const group = { key, object, mask: new THREE.MeshBasicMaterial({ color: new THREE.Color(1, 0, 0), side: THREE.DoubleSide }), start: null, flashes: 0, count: 0 };
+    blinkGroups.push(group);
     object.traverse(part => {
-      if (part.isMesh && part.material.visible) part.userData.boldOutline = true;
+      if (part.isMesh && part.material.visible) { part.userData.boldOutline = true; part.userData.blinkGroupIndex = blinkGroups.length - 1; }
     });
     return object;
   }
@@ -270,7 +279,7 @@
     box(basin, -1.29, .997, -2.02, .14, .04, .75, C.white);
     box(basin, .09, .997, -2.02, .14, .04, .75, C.white);
     cylinder(basin, -.6, .99, -2.02, .047, .047, .01, C.ink, 12, false);
-    emphasize(basin);
+    emphasize(basin,'basin');
     const tap = new THREE.Group(); group.add(tap); tap.position.set(-.6, .999, -2.34);
     cylinder(tap, 0, .025, 0, .077, .077, .05, C.ink);
     rod(tap, [0, .025, 0], [0, .25, 0], .038, C.gray);
@@ -278,7 +287,7 @@
     rod(tap, [0, .25, .22], [0, .20, .22], .036, C.gray);
     const handle = new THREE.Group(); tap.add(handle); handle.position.set(0, .275, 0);
     rod(handle, [0, 0, 0], [.18, .025, 0], .016, C.ink);
-    emphasize(tap);
+    emphasize(tap,'tap');
     const cabinet = new THREE.Group(); group.add(cabinet); cabinet.position.set(-.63, 2.04, -2.55);
     box(cabinet, 0, 0, .015, 1.91, 1.18, .03, C.white);
     for(const x of [-.93,.93])box(cabinet,x,0,.16,.06,1.18,.32,C.white);
@@ -306,7 +315,7 @@
     line(mirrorDoor,[[.16,-.31,.043],[.59,.46,.043]],true);
     line(mirrorDoor,[[.32,-.31,.044],[.74,.46,.044]],true);
     rod(mirrorDoor,[1.79,-.38,.06],[1.79,-.17,.06],.019,C.ink);
-    emphasize(mirrorDoor);
+    emphasize(mirrorDoor,'mirror');
     const mirrorHit=box(mirrorDoor,.95,0,.055,1.91,1.18,.08,C.white,false);
     mirrorHit.material=new THREE.MeshBasicMaterial({visible:false});
     box(group, -.63, 1.424, -2.4, 2.03, .06, .27, C.white);
@@ -325,7 +334,7 @@
     box(group, 1.72, .79, -2.23, .63, .67, .30, C.white);
     box(group, 1.72, 1.15, -2.23, .69, .07, .34, C.white);
     const flushButton=box(group,1.90,1.198,-2.23,.17,.026,.11,C.white);
-    emphasize(flushButton);
+    emphasize(flushButton,'flush');
     const flushHit=box(group,1.90,1.22,-2.20,.29,.15,.26,C.white,false);
     flushHit.material=new THREE.MeshBasicMaterial({visible:false});
     const bowl = cylinder(group, 1.72, .33, -1.84, .32, .20, .51, C.white, 12); bowl.scale.z = 1.28;
@@ -353,7 +362,7 @@
     mesh(cream,new THREE.TubeGeometry(creamPath,18,.012,6,false),material(C.white),true);
     const dollop=mesh(lotion,new THREE.SphereGeometry(.036,12,8),material(C.white),true);
     dollop.position.set(0,-.01,.34);dollop.scale.set(1,.52,1);dollop.visible=false;
-    emphasize(lotion);
+    emphasize(lotion,'lotion');
     const lotionHit=box(lotion,0,.19,.04,.31,.49,.31,C.white,false);
     lotionHit.material=new THREE.MeshBasicMaterial({visible:false});
     rod(group, [2.46, .98, -2.18], [2.46, .98, -1.94], .018, C.ink);
@@ -417,14 +426,14 @@
     box(fridgeDoor,-.455,.73,0,.91,1.36,.055,C.white);
     rod(fridgeDoor,[-.81,.99,.050],[-.81,1.31,.050],.014,C.ink);
     const fridgeDoorHit=box(fridgeDoor,-.455,.73,.065,.91,1.36,.11,C.white,false);
-    fridgeDoorHit.material=new THREE.MeshBasicMaterial({visible:false});fridgeDoorHit.userData.interaction='fridge';emphasize(fridgeDoor);
+    fridgeDoorHit.material=new THREE.MeshBasicMaterial({visible:false});fridgeDoorHit.userData.interaction='fridge';emphasize(fridgeDoor,'fridge');
     const fridgeHit=box(group,1.58,.73,-1.70,.91,1.36,.09,C.white,false);
     fridgeHit.material=new THREE.MeshBasicMaterial({visible:false});fridgeHit.userData.interaction='fridge';
-    const morningNote=note(group,.29,2.00,-2.58,'아침에',[['차 따르기','식사하기']],1.18,1.08,.022);
-    const secondNote=note(group,.29,2.00,-2.58,'아침에',[['냉장고 열기','차·식사하기']],1.18,1.08,.022);
+    const morningNote=note(group,.29,2.00,-2.58,'아침에',[['차 따르기','앉아서 음식 먹기']],1.18,1.08,.022);
+    const secondNote=note(group,.29,2.00,-2.58,'아침에',[['냉장고 열기','음식 먹기','차도 마시기']],1.18,1.08,.022);
     secondNote.visible=false;
-    const thirdNote=note(group,.29,2.00,-2.58,'아침에',[['차 따르기','식사하기']],1.18,1.08,.022,{write:[['두 잔!',150,650,150,-.06]]});
-    const fourthNote=note(group,.29,2.00,-2.58,'아침에',[['냉장고 열기','차·식사하기']],1.18,1.08,.022,{erase:[[120,270,330,110],[390,390,300,110]]});
+    const thirdNote=note(group,.29,2.00,-2.58,'아침에',[['차 따르기','앉아서 음식 먹기']],1.18,1.08,.022,{write:[['두 잔!',150,650,150,-.06]]});
+    const fourthNote=note(group,.29,2.00,-2.58,'아침에',[['냉장고 열기','음식 먹기','차도 마시기']],1.18,1.08,.022,{erase:[[120,270,330,110],[390,390,300,110]]});
     thirdNote.visible=fourthNote.visible=false;
     const kitchenNotes=[morningNote,secondNote,thirdNote,fourthNote];
     const fridgeFood=new THREE.Group();group.add(fridgeFood);fridgeFood.position.set(1.58,.735,-1.97);
@@ -434,7 +443,7 @@
       box(piece,0,0,0,.12,.075,.15,C.white);
       line(piece,[[-.044,.041,-.047],[.040,.041,.045]],true);
     }
-    emphasize(fridgeFood);
+    emphasize(fridgeFood,'fridgeFood');
     const fridgeFoodHit=box(group,1.58,.815,-1.97,.66,.27,.47,C.white,false);
     fridgeFoodHit.material=new THREE.MeshBasicMaterial({visible:false});fridgeFoodHit.userData.interaction='takeFood';
     const table = new THREE.Group(); group.add(table); table.position.set(-.35, 0, -.94);
@@ -447,7 +456,7 @@
     for (const x of [-.22, .22]) box(chair, x, .77, -.25, .04, .62, .04, C.ink);
     box(chair, 0, .94, -.25, .50, .24, .04, C.white);
     const chairHit=box(chair,0,.64,-.09,.68,1.04,.69,C.white,false);
-    chairHit.material=new THREE.MeshBasicMaterial({visible:false});chairHit.userData.interaction='chair';emphasize(chair);
+    chairHit.material=new THREE.MeshBasicMaterial({visible:false});chairHit.userData.interaction='chair';emphasize(chair,'chair');
     // A faceted kettle assembled as one group so the pour is a spatial action.
     const kettle = new THREE.Group(); group.add(kettle); kettle.position.set(-.63, .991, -1.04);
     cylinder(kettle, 0, .18, 0, .18, .23, .34, C.white, 10);
@@ -465,7 +474,7 @@
     const mugHandle = torus(cup, .136, .134, 0, .072, .014, C.white, Math.PI * 1.7, 20); mugHandle.rotation.z = -Math.PI * .83;
     const liquid = cylinder(cup, 0, .03, 0, .10, .10, .006, C.ink, 24, false);
     liquid.name = 'tea';
-    emphasize(kettle); emphasize(cup);
+    emphasize(kettle,'kettle'); emphasize(cup,'cup');
     const plate=new THREE.Group();group.add(plate);plate.position.set(-.10,.998,-.62);
     cylinder(plate,0,.014,0,.215,.215,.028,C.white,18);
     const plateRim=torus(plate,0,.030,0,.19,.008,C.ink);plateRim.rotation.x=-Math.PI/2;
@@ -476,7 +485,7 @@
       line(bite,[[-.03,.03,-.04],[.022,.03,.015]],true);
       bites.push(bite);
     }
-    emphasize(plate);
+    emphasize(plate,'plate');
     const foodHit=box(plate,0,.06,0,.43,.18,.43,C.white,false);
     foodHit.material=new THREE.MeshBasicMaterial({visible:false});foodHit.userData.interaction='food';
     const spoon = rod(table, [.81, 1.005, .23], [1.0, 1.005, -.02], .012, C.ink, 6);
@@ -500,8 +509,8 @@
       line(steam, Array.from({ length: 16 }, (_, j) => [(i - 1) * .055 + Math.sin(j * .48 + i) * .018, .27 + j * .014, 0]), true);
     }
     const hit = box(kettle, .04, .23, 0, .64, .53, .40, C.white, false); hit.material = new THREE.MeshBasicMaterial({ visible: false });
-    return { group, chairHit, fridgeDoor, fridgeDoorHit, fridgeHit, fridgeFood, fridgeFoodHit, morningNote, secondNote, notes: kitchenNotes, otherCup, chairMarks, foodHit, bites, kettle, cup, liquid, pour, pourPoints, steam, hit, name: '주방', label: '주전자', reminder: '벽의 메모. 아침에: 차 따르기, 식사하기.',
-      reminders: ['벽의 메모. 아침에: 차 따르기, 식사하기.','벽의 메모. 아침에: 냉장고 열기, 차 따르기, 식사하기.','벽의 메모. 아침에: 차 따르기, 식사하기. 옆에 두 잔이라고 적혀 있다.','벽의 메모. 아침에: 열기, 차·식사. 나머지 글씨는 지워졌다.'] };
+    return { group, chairHit, fridgeDoor, fridgeDoorHit, fridgeHit, fridgeFood, fridgeFoodHit, morningNote, secondNote, notes: kitchenNotes, otherCup, chairMarks, foodHit, bites, kettle, cup, liquid, pour, pourPoints, steam, hit, name: '주방', label: '주전자', reminder: '벽의 메모. 아침에: 차 따르기, 앉아서 음식 먹기.',
+      reminders: ['벽의 메모. 아침에: 차 따르기, 앉아서 음식 먹기.','벽의 메모. 아침에: 냉장고 열기, 음식 먹기, 차도 마시기.','벽의 메모. 아침에: 차 따르기, 앉아서 음식 먹기. 옆에 두 잔이라고 적혀 있다.','벽의 메모. 아침에: 열기, 음식, 차도 마시기. 나머지 글씨는 지워졌다.'] };
   }
 
   function entryway(){
@@ -525,7 +534,7 @@
     box(door,.71,.77,.052,1.17,1.02,.014,C.white);
     const peephole=cylinder(door,.71,1.72,.057,.026,.026,.015,C.ink,12,false);peephole.rotation.x=Math.PI/2;
     const knob=cylinder(door,1.24,1.13,.09,.055,.055,.09,C.ink,12);knob.rotation.x=Math.PI/2;
-    emphasize(door);
+    emphasize(door,'door');
     const hit=box(group,0,1.38,-2.46,1.48,2.66,.18,C.white,false);
     hit.material=new THREE.MeshBasicMaterial({visible:false});
     box(group,0,.022,-1.73,.85,.024,.53,C.white);
@@ -580,6 +589,7 @@
     for(const z of [-2.4,-1.4,-.4,.6,1.6,2.6])line(group,[[-2.69,.008,z],[2.69,.008,z]],true);
     for(const x of [-2.5,-1.25,0,1.25,2.5])line(group,[[x,.009,-2.78],[x,.009,3.02]],true);
     const bed=new THREE.Group();group.add(bed);bed.position.set(-.22,0,.96);
+    const bedParts=[];
     // Real bed topology, uniformly scaled: mattress, wooden frame, feet,
     // a continuous cover with a folded white cuff, and a separate pillow.
     const importedBed=/* @json assets/models/memory-game-imported-bed-d312f94a19.json */ null;
@@ -606,14 +616,17 @@
       }
       const piece=mesh(bed,geometry,clothMaterial);
       piece.name='Kenney '+part.name+' '+part.material;
+      bedParts.push({piece,geometry,part});
     }
-    emphasize(bed);
+    emphasize(bed,'bed');
     const stand=box(group,-1.55,.47,1.32,.61,.76,.53,C.white);
     box(group,-1.55,.88,1.32,.67,.06,.58,C.white);
     cylinder(group,-1.55,1.17,1.32,.105,.105,.45,C.white,9);
     cylinder(group,-1.55,1.40,1.32,.22,.12,.10,C.white,10);
     box(group,1.95,1.79,-2.72,.65,.67,.025,C.white);
     line(group,[[1.64,1.64,-2.695],[2.25,1.64,-2.695]],true);
+    // 2026-10-27: 할아버지의 꾸미는 취향(이불·베개 무늬, 교복, 협탁 소품, 액자). bedroom-taste.js
+    if(window.BedroomTaste)window.BedroomTaste.decorate({THREE,group,bed,bedParts,renderer,material,mesh,emphasize});
     const hit=box(bed,0,.49,-.23,1.15,.30,1.72,C.white,false);
     hit.material=new THREE.MeshBasicMaterial({visible:false});
     return {group,hit,name:'침실',label:'침대에서 일어나기',reminder:'침대에 누워 있습니다.'};
@@ -631,7 +644,7 @@
     // Keep invisible click targets out of the mask; keep all visible surfaces
     // as depth-tested occluders so outlines cannot reveal objects through walls.
     if (!object.material || !object.material.visible) return;
-    outlineObjects.push({ object, original: object.material, mask: object.isMesh ? (object.userData.boldOutline ? maskForeground : maskOccluder) : maskHidden });
+    outlineObjects.push({ object, original: object.material, mask: object.userData.tasteCutout ? maskHidden : object.isMesh ? (object.userData.boldOutline ? (object.userData.blinkGroupIndex !== undefined ? blinkGroups[object.userData.blinkGroupIndex].mask : maskForeground) : maskOccluder) : maskHidden });
   });
   let stageIndex = 3;
   let round = 1;
@@ -734,6 +747,7 @@
   }
   function setRoom(index) {
     stageIndex = index;
+    for (const group of blinkGroups) { group.start = null; group.flashes = 0; }
     stages.forEach((s, i) => s.group.visible = i === index);
     $('room-name').textContent = stages[index].name;
     action.setAttribute('aria-label', stages[index].label);
@@ -1280,6 +1294,36 @@
     canvas.dataset.mirror4=mirrorFrozen?'stayed':'late';
     return laggedView;
   }
+  // 필요한 물건 = 3번, 필요 없는 물건 = 1~2번 (todo.md 기록 기준). 정해지지 않은 강조 물건은 3번.
+  const BLINK_RULES = {
+    bed: 3, basin: 3, tap: 3, chair: 3, kettle: 3, cup: 3, plate: 3, door: 3,
+    fridge: () => foodInFridge() ? 3 : 2,
+    fridgeFood: 3,
+    flush: 1, mirror: 1, lotion: 2,
+  };
+  // 냉장고 안 음식은 문이 열렸을 때부터 센다(닫힌 문 뒤에서 횟수를 다 써 버리지 않게).
+  const BLINK_READY = { fridgeFood: () => fridgeOpen };
+  const shownInWorld = object => { for (let o = object; o; o = o.parent) if (!o.visible) return false; return true; };
+  function updateBlinkMasks() {
+    const t = performance.now() / 1000, report = [];
+    for (const group of blinkGroups) {
+      const rule = BLINK_RULES[group.key];
+      group.count = typeof rule === 'function' ? rule() : (rule ?? 3);
+      // 눈을 뜨는 중·방 이동 중에는 세지 않는다. 조작할 수 있게 된(ready) 때부터 센다.
+      const ready = phase === 'ready' && shownInWorld(group.object) && (!BLINK_READY[group.key] || BLINK_READY[group.key]());
+      if (ready && group.start === null) group.start = t;
+      let lit = 0;
+      if (group.start !== null) {
+        const age = t - group.start;
+        // 0.5초 검정 → 0.5초 흰색을 1번으로 센다. 정해진 횟수가 끝나면 검정 선으로 멈춘다.
+        group.flashes = Math.min(group.count, Math.floor(age + .5));
+        lit = age < group.count && age % 1 >= .5 ? 1 : 0;
+      }
+      group.mask.color.setRGB(1, lit, 0);
+      if (shownInWorld(group.object)) report.push(group.key + ':' + group.flashes + '/' + group.count);
+    }
+    canvas.dataset.blinkCounts = report.join(' ');
+  }
   function frame(now) {
     requestAnimationFrame(frame);
     const dt = document.hidden ? 0 : Math.min((now - lastTime) / 1000, .05);
@@ -1295,6 +1339,7 @@
     canvas.dataset.headYaw=pose.yaw.toFixed(3);canvas.dataset.headPitch=pose.pitch.toFixed(3);
     renderer.setRenderTarget(bitmapTarget);
     renderer.render(scene, camera);
+    updateBlinkMasks();
     outlineObjects.forEach(({ object, mask }) => object.material = mask);
     renderer.setClearColor(C.ink);
     renderer.setRenderTarget(outlineTarget);

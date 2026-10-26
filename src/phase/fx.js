@@ -128,7 +128,7 @@
     facePromise = new Promise(resolve => {
       const v = document.createElement('video');
       v.muted = true; v.playsInline = true; v.preload = 'auto';
-      v.src = 'assets/video/elder-transformation-10s.mp4?v=001c729e9eba';
+      v.src = 'assets/video/elder-transformation-10s.mp4?v=13eb1e890d6b';
       let finished = false;
       const done = ok => {
         if (finished) return; finished = true;

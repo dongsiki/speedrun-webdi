@@ -1,13 +1,45 @@
 {
   "assets/video/elder-transformation-10s.mp4": {
     "mime": "video/mp4",
-    "sha256": "001c729e9eba200b16e6d45087b9d5fc64c3f98e05182dc56983a3794217e007",
-    "bytes": 6686869,
+    "sha256": "13eb1e890d6bed546f08a1207f9ee065059480d2541177e25dc889cbbc4bdd2e",
+    "bytes": 7251052,
     "delivery": "external",
-    "usedBy": ["src/intro/transformation.js", "01_speedrun_play.html", "02_speedrun_dev.html"],
-    "source": "texture-applied-r03 render using a real PNG atlas as MeshLambertMaterial.map; original mesh Lucas Pope / 3909, Return of the Obra Dinn GDC 2016 demo v0.1.23",
-    "sourcePngSha256": "9a31e3ecbca063a6770e36401c12f5fdb1b1070c40f79445adab1daddbe11c72",
+    "usedBy": [
+      "src/intro/transformation.js",
+      "src/phase/fx.js",
+      "01_speedrun_play.html",
+      "02_speedrun_dev.html"
+    ],
+    "source": "image-texture-r07 render: r06 ImageGen sailor collar/bow plus ImageGen-painted lower body (white leotard, bare legs, knee-high boots with V top and trim, boot feet) in the original body UV map; original 3D skirt is the only separate costume geometry. Original mesh Lucas Pope / 3909, Return of the Obra Dinn GDC 2016 demo v0.1.23",
+    "sourcePngSha256": "d9093e2fd133c4ca3e2a1db85eea8c48ab524920322013e008a253ef8a26dd73",
+    "imagegenSourceSha256": "0d73aa72d9b7c4221a67b4d633cd42e8d1841ac9d6debe9e37f08cb4701e46cb",
     "rightsStatus": "Original mesh provenance recorded. No separate reuse license located; no assertion of rights clearance or legal determination."
+  },
+  "assets/images/elder-sailor-image-atlas-r05.png": {
+    "mime": "image/png",
+    "sha256": "d8f955c76391f7fa604579aeb0dbfab13bac6a53ec0667345208b1cd23684934",
+    "bytes": 3477969,
+    "delivery": "source-only",
+    "usedBy": [],
+    "source": "Historical r05 atlas, preserved for comparison. Does not satisfy the latest skirt-only extra-geometry requirement; not used by the current r06 video."
+  },
+  "assets/images/elder-sailor-image-atlas-r06.png": {
+    "mime": "image/png",
+    "sha256": "eb696c119cfc42ec4175c2453d405354d072c81a334703fcf588ec7317612491",
+    "bytes": 3467091,
+    "delivery": "source-only",
+    "usedBy": [],
+    "source": "r06 ImageGen-painted V collar and large bow on the original body UV atlas; protected original face, hands and exposed neck pixels restored. Original 3D skirt retained as the sole clothing geometry. Not embedded again in game HTML. Superseded by r07 for the current video."
+  },
+  "assets/images/elder-sailor-image-atlas-r07.png": {
+    "mime": "image/png",
+    "sha256": "d9093e2fd133c4ca3e2a1db85eea8c48ab524920322013e008a253ef8a26dd73",
+    "bytes": 3447569,
+    "delivery": "source-only",
+    "usedBy": [
+      "assets/video/elder-transformation-10s.mp4"
+    ],
+    "source": "r07: r06 upper costume kept; ImageGen-painted lower body (leotard, bare legs, knee-high boots, boot feet) on the original UV islands; protected face, hands and exposed neck pixels unchanged. Original 3D skirt retained as the sole clothing geometry. Not embedded in game HTML."
   },
   "assets/images/switches-art-switch-art-5d069cc6f3-372c5a1cab55.svg": {
     "mime": "image/svg+xml",
@@ -229,5 +261,207 @@
     "usedBy": [
       "src/extras/clear-screen/style.css"
     ]
+  },
+  "assets/images/bedroom-taste-quilt.png": {
+    "mime": "image/png",
+    "sha256": "b027d70a51bf47348a82a01ea5e5f381d27ca3df6c761b7907d191f029c7e4e9",
+    "bytes": 33473,
+    "usedBy": [
+      "src/stages/memory/bedroom-taste.js"
+    ]
+  },
+  "assets/images/bedroom-taste-pillow.png": {
+    "mime": "image/png",
+    "sha256": "d7f971947a8a4c334e1811b66dcb574001032a96d6fdceda79fd6e059febf623",
+    "bytes": 49296,
+    "usedBy": [
+      "src/stages/memory/bedroom-taste.js"
+    ]
+  },
+  "assets/images/bedroom-taste-uniform.png": {
+    "mime": "image/png",
+    "sha256": "64913a6766c552118a6f80d304fbedba4d06dbb9c9449db4394dc573c22557ec",
+    "bytes": 39528,
+    "usedBy": [
+      "src/stages/memory/bedroom-taste.js"
+    ]
+  },
+  "assets/images/bedroom-taste-vanity.png": {
+    "mime": "image/png",
+    "sha256": "bca49b36ab059f9b29abd9268913d89abb85521329735a9c949758d252723ac0",
+    "bytes": 27950,
+    "usedBy": [
+      "src/stages/memory/bedroom-taste.js"
+    ]
+  },
+  "assets/images/bedroom-taste-poster.png": {
+    "mime": "image/png",
+    "sha256": "b41ccb35b60714f6d23eafadb847cd67882b4909b5a11b35827cb4cfbf73a66e",
+    "bytes": 22308,
+    "usedBy": [
+      "src/stages/memory/bedroom-taste.js"
+    ]
+  },
+  "assets/audio/voice/f-1.wav": {
+    "mime": "audio/wav",
+    "sha256": "19e26e9ca8971f540b7922749286bb5061b1e8d457b6af5e90d942c8d2230503",
+    "bytes": 190508,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/f-2.wav": {
+    "mime": "audio/wav",
+    "sha256": "5322fd09d545b76f2e09786f0ffb3ac981c2ef503f9fc76227995df613a1798c",
+    "bytes": 116780,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/f-3.wav": {
+    "mime": "audio/wav",
+    "sha256": "e0ea60abbb88ee2f3b3c6bf13ceee01868ebced2a9fb5b570a32d855a98d52ea",
+    "bytes": 344108,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/f-4.wav": {
+    "mime": "audio/wav",
+    "sha256": "c67f632ae7862ca4ff8050ebd98134611a0d5a9f86cd14e32dae4e58f7f84b25",
+    "bytes": 141356,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/n-limb.wav": {
+    "mime": "audio/wav",
+    "sha256": "b95a43d444b6841cd28d47d0fd71a49957c475da0dee4d19c41c4734a36742c1",
+    "bytes": 374828,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/n-maze.wav": {
+    "mime": "audio/wav",
+    "sha256": "e3d1f53a9d0581770290747054b6334c89524265f0635b70f916703fad7f76c3",
+    "bytes": 362540,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/n-mri.wav": {
+    "mime": "audio/wav",
+    "sha256": "f1b0244512d3559814c38787b1747a367a9914370fef990c60a04d06fa43a5f7",
+    "bytes": 411692,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/n-needle.wav": {
+    "mime": "audio/wav",
+    "sha256": "6a45b40941bf47c672b0fe16f9edd2fbed6e2dd1af3856be27a84d60ab472fe1",
+    "bytes": 399404,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/n-routine.wav": {
+    "mime": "audio/wav",
+    "sha256": "6a70d577aa94302239b52dc26e3f0610233d4b79072be03abb1c4d18901121aa",
+    "bytes": 307244,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/n-suitcase.wav": {
+    "mime": "audio/wav",
+    "sha256": "7a2bb341244d119d50f11f90de78043f2219ed251e691c2abc62ca0cf4bc2be8",
+    "bytes": 479276,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/n-switches.wav": {
+    "mime": "audio/wav",
+    "sha256": "95f7b5ae2c5e01cdc3512c1682463c18ae66606a84899bd60ecbccc2442e1a52",
+    "bytes": 485420,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/t-done.wav": {
+    "mime": "audio/wav",
+    "sha256": "077e7bb8fb20776eadbf81693838e6431214d9c640c16ffe7d0c6357db03ff9b",
+    "bytes": 159788,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/t-hold.wav": {
+    "mime": "audio/wav",
+    "sha256": "dd00c37f8478071566d924b9ade67058da417bfa7cb40a70c0c670daf724298a",
+    "bytes": 215084,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/t-moved.wav": {
+    "mime": "audio/wav",
+    "sha256": "65e1e2be541269bf4c2b96b10a20e8d3784a27c93c38297e9ba8269da74de523",
+    "bytes": 215084,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/t-paper.wav": {
+    "mime": "audio/wav",
+    "sha256": "010d124b3ed869f4f28e143868d2080359535fae9497bd5b2f30494cc8702105",
+    "bytes": 233516,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/w-1.wav": {
+    "mime": "audio/wav",
+    "sha256": "d74329b9debe65b3ce7bcfe92e9e5d73c3a7f4ceeedfae8fabcdfba0a08a256e",
+    "bytes": 153644,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/w-2.wav": {
+    "mime": "audio/wav",
+    "sha256": "4cb30eebf5699cb963e6e1df2c661e0e0c13cb242ac34f5ecde760cbcd22f9e8",
+    "bytes": 135212,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/audio/voice/w-3.wav": {
+    "mime": "audio/wav",
+    "sha256": "d38e6f1fd13d4e7a9def2c79f9015f269dc00bbaf03f0ad1aa57ee1b59cf7506",
+    "bytes": 165932,
+    "usedBy": [
+      "src/voice/voice.js"
+    ],
+    "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
   }
 }

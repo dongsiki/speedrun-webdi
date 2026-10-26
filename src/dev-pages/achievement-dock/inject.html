@@ -1,0 +1,24 @@
+<!-- 개발자용 새 항목(src/dev-pages/achievement-dock): 도전과제 옆 메뉴 처음부터 보이기 (2026-10-26 Claude Code).
+     본편(01)과 같은 게임을 그대로 쓰고, 두 가지만 앞에 끼운다.
+     1) 기록 칸 분리: 이 페이지의 저장 기록은 'devnew-dock:' 이름표를 붙여 따로 둔다. 01의 기록을 읽거나 덮지 않아서 늘 '처음 하는 사람' 상태로 시작한다.
+     2) RebellionForceReveal = true: 클리어 0번이어도 땅파기 로비 오른쪽 아래 도전과제·반항 기록 버튼이 보인다. -->
+<script>
+(() => {
+  const prefix = 'devnew-dock:';
+  try {
+    const proto = Storage.prototype, get = proto.getItem, set = proto.setItem, remove = proto.removeItem;
+    const own = store => store === window.localStorage;
+    proto.getItem = function (key) { return get.call(this, own(this) ? prefix + key : key); };
+    proto.setItem = function (key, value) { return set.call(this, own(this) ? prefix + key : key, value); };
+    proto.removeItem = function (key) { return remove.call(this, own(this) ? prefix + key : key); };
+  } catch (_) {}
+  window.RebellionForceReveal = true;
+  // 이 페이지에선 이미 만들어졌으므로 로비 위 '구현 예정 · 도전과제 옆 메뉴…' 표시 한 줄만 뺀다(다른 예정 표시는 그대로).
+  const drop = () => document.querySelectorAll('#phase-todo p').forEach(p => { if (p.textContent.includes('도전과제 옆 메뉴')) p.remove(); });
+  new MutationObserver(drop).observe(document.documentElement, { childList: true, subtree: true });
+})();
+</script>
+<style>
+#devnew-label{position:fixed;left:8px;top:6px;z-index:2147483000;margin:0;padding:2px 7px;font:11px/1.4 "Malgun Gothic",sans-serif;color:#000;background:rgba(255,255,255,.85);border:1px solid #000;pointer-events:none}
+</style>
+<p id="devnew-label">새로 만든 부분: 도전과제 옆 메뉴 처음부터 보이기</p>

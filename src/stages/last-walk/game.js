@@ -13,12 +13,9 @@
     stepLength: .34, stepTime: .32, settle: .26, stumbleTime: 1.1,
     oxygenDecay: .06, stepCost: .015, stumbleCost: .05, holdPenalty: .05,
     inhaleRate: .55, exhaleRate: .45, breathGain: .42,
-    dryRate: .07, childSpeed: 3.2,
-    icuNeed: 8, icuInhale: 2.2, icuExhale: 2.6, icuMatch: .65
+    dryRate: .07
   });
-
-  // Ventilator breaths after the player's 8 (ending, 2026-10-12).
-  const MACHINE_BREATHS = 3;
+  // 2026-10-27: 노인이 끝까지 걸으면 아이·교통사고·중환자실 장면 대신 중환자실 엔딩 컷신(ending.js)이 이어짐.
 
   let width = 1, height = 1, scale = 1, ppm = 100;
   let raf = 0, last = 0, paused = false, ended = false, clock = 0;
@@ -30,9 +27,7 @@
       lung: .35, lungPeak: .35, breathing: false, holdAtFull: 0, oxygen: 1, breaths: 0,
       dryness: 0, blink: 0, blinks: 0,
       inhaledSinceLow: false, holdWarned: false, holdWarns: 0, shallow: 0, frozenPress: 0, pops: {},
-      childRun: 0, crash: 0,
-      icu: { t: 0, good: 0, misses: 0, cycle: 0, match: 0, samples: 0, beat: 0, lastResult: null },
-      fade: 0, hintUsed: { feet: false, breath: false, eyes: false, arrow: false, icu: false }
+      hintUsed: { feet: false, breath: false, eyes: false }
     };
   }
   s = fresh();
@@ -62,11 +57,6 @@
     noiseGain.gain.setTargetAtTime(Math.min(.06, Math.abs(rate) * .09), audio.currentTime, .05);
     noiseFilter.frequency.setTargetAtTime(inhale ? 1100 : 520, audio.currentTime, .08);
   }
-  function brake() {
-    if (!audio) return;
-    tone(1900, 1.3, .05, 'sawtooth', 700); tone(2300, 1.3, .025, 'square', 900);
-    if (noiseGain) { noiseFilter.frequency.setTargetAtTime(3000, audio.currentTime, .05); noiseGain.gain.setTargetAtTime(.08, audio.currentTime, .05); noiseGain.gain.setTargetAtTime(0, audio.currentTime + 1.2, .05); }
-  }
   function silence() { if (noiseGain && audio) noiseGain.gain.setTargetAtTime(0, audio.currentTime, .03); }
   // Knees give and the cane scrapes: louder than a step so the freeze is heard.
   function stumbleSound() { tone(95, .34, .08, 'triangle', 55); tone(1500, .05, .03, 'square'); setTimeout(() => tone(1250, .05, .02, 'square'), 90); }
@@ -75,17 +65,13 @@
 
   // ---------- hints (fade once each control has been used) ----------
   const hints = {
-    elder: '<kbd>A</kbd> <kbd>D</kbd> 번갈아 걷기 &nbsp; <kbd>Space</kbd> 꾹 눌러 원을 점선 밖까지 · 떼면 내쉬기 &nbsp; <kbd>E</kbd> 눈 깜빡이기',
-    child: '<kbd>→</kbd>',
-    icu: '<kbd>Space</kbd>'
+    elder: '<kbd>A</kbd> <kbd>D</kbd> 번갈아 걷기 &nbsp; <kbd>Space</kbd> 꾹 눌러 원을 점선 밖까지 · 떼면 내쉬기 &nbsp; <kbd>E</kbd> 눈 깜빡이기'
   };
   let hintKey = '';
   function showHint(key) { if (hintKey === key) return; hintKey = key; keysHint.innerHTML = hints[key]; keysHint.dataset.hidden = 'false'; }
   function updateHint() {
     const u = s.hintUsed;
     if (s.phase === 'elder') { showHint('elder'); if (u.feet && u.breath && u.eyes && clock > 6) keysHint.dataset.hidden = 'true'; }
-    else if (s.phase === 'child') { showHint('child'); if (u.arrow) keysHint.dataset.hidden = 'true'; }
-    else if (s.phase === 'icu') { showHint('icu'); if (s.icu.good >= 2) keysHint.dataset.hidden = 'true'; }
     else keysHint.dataset.hidden = 'true';
   }
 
@@ -122,7 +108,6 @@
       if (k === 'KeyE') blinkEyes();
       if (k === 'Space') s.hintUsed.breath = true;
     }
-    if (s.phase === 'child' && (k === 'ArrowRight' || k === 'KeyD')) s.hintUsed.arrow = true;
   });
   canvas.addEventListener('keyup', e => { held.delete(e.code); });
   const breathHeld = () => held.has('Space');
@@ -142,7 +127,12 @@
     if (embedded) parent.postMessage({ channel, type: 'complete' }, '*');
     else setTimeout(restart, 1600);
   }
-  function restart() { s = fresh(); ended = false; held.clear(); hintKey = ''; setPhase('elder'); clock = 0; }
+  function restart() { LastWalkEnding.stop(); s = fresh(); ended = false; held.clear(); hintKey = ''; setPhase('elder'); clock = 0; }
+  // 노인이 끝까지 걸으면 중환자실 엔딩 컷신 → 끝나면 이 게임 완료.
+  function startEnding() {
+    setPhase('ending'); silence(); held.clear(); status.textContent = '';
+    LastWalkEnding.play({ onDone: complete });
+  }
 
   function updateElder(dt) {
     // Feet
@@ -182,78 +172,15 @@
     // Eyes
     s.blink = Math.max(0, s.blink - dt);
     s.dryness = Math.min(1, s.dryness + T.dryRate * dt);
-    if (s.x >= T.shiftAt) { setPhase('shift'); silence(); status.textContent = ''; }
-  }
-  function updateShift(dt) {
-    // Dementia spreads: a slow white-out, then the same corridor as a child.
-    s.fade = Math.min(1, s.phaseTime / 1.4) * (1 - Math.max(0, (s.phaseTime - 2.0) / 1.0));
-    if (s.phaseTime >= 3.0) { s.fade = 0; setPhase('child'); }
-  }
-  function updateChild(dt) {
-    const dir = (held.has('ArrowRight') || held.has('KeyD') ? 1 : 0) - (held.has('ArrowLeft') || held.has('KeyA') ? 1 : 0);
-    s.x = Math.max(T.shiftAt - 1, s.x + dir * T.childSpeed * dt);
-    if (dir) s.childRun += dt * 9;
-    if (s.x >= T.curbAt + .3) { setPhase('crash'); brake(); status.textContent = ''; }
-  }
-  function updateCrash(dt) {
-    if (s.phaseTime < .5) s.x += T.childSpeed * .7 * dt;
-    if (s.phaseTime >= 3.0) { setPhase('icu'); s.icu.beat = .3; }
-  }
-  function updateIcu(dt) {
-    const icu = s.icu, period = T.icuInhale + T.icuExhale;
-    icu.t += dt;
-    const phaseT = icu.t % period, wantInhale = phaseT < T.icuInhale;
-    canvas.dataset.icuWant = String(wantInhale);
-    const inhaling = breathHeld(), before = s.lung;
-    s.lung = Math.max(0, Math.min(1, s.lung + (inhaling ? 1 / T.icuInhale : -1 / T.icuExhale) * dt));
-    breathSound((s.lung - before) / Math.max(dt, 1e-3) * .6, inhaling);
-    if (icu.t > .6) { icu.samples += dt; if (inhaling === wantInhale) icu.match += dt; }
-    const cycle = Math.floor(icu.t / period);
-    if (cycle !== icu.cycle) {
-      const ratio = icu.samples ? icu.match / icu.samples : 0;
-      if (ratio >= T.icuMatch) { icu.good++; icu.lastResult = 'good'; }
-      else { icu.misses++; icu.lastResult = 'miss'; tone(880, .12, .03, 'square'); setTimeout(() => tone(880, .12, .03, 'square'), 180); }
-      icu.cycle = cycle; icu.match = icu.samples = 0;
-      status.textContent = `숨 ${icu.good} / ${T.icuNeed}`;
-      if (icu.good >= T.icuNeed) { setPhase('machine'); icu.machineFrom = cycle; status.textContent = ''; }
-    }
-    icu.beat -= dt; if (icu.beat <= 0) { icu.beat = .95; tone(960, .07, .025); }
-  }
-  // The machine breathes on its own: the lung locks onto the ventilator ring whatever the player presses.
-  function updateMachine(dt) {
-    const icu = s.icu, period = T.icuInhale + T.icuExhale;
-    icu.t += dt;
-    const p = icu.t % period, inhale = p < T.icuInhale, before = s.lung;
-    const target = inhale ? p / T.icuInhale : 1 - (p - T.icuInhale) / T.icuExhale;
-    s.lung = before + (target - before) * Math.min(1, dt * 10);
-    canvas.dataset.icuWant = String(inhale);
-    breathSound((s.lung - before) / Math.max(dt, 1e-3) * .6, inhale);
-    const cycle = Math.floor(icu.t / period);
-    if (cycle !== icu.cycle) {
-      icu.cycle = cycle; icu.good++;
-      tone(180, .06, .02, 'square');
-      status.textContent = `숨 ${icu.good}`;
-      if (cycle - icu.machineFrom >= MACHINE_BREATHS) { setPhase('icuEnd'); silence(); return; }
-    }
-    icu.beat -= dt; if (icu.beat <= 0) { icu.beat = .95; tone(960, .07, .025); }
-  }
-  function updateIcuEnd() {
-    s.fade = Math.min(1, s.phaseTime / 1.6);
-    if (s.phaseTime >= 1.9) complete();
+    if (s.x >= T.shiftAt) startEnding();
   }
   function update(dt) {
     clock += dt; s.phaseTime += dt;
     for (const k in s.pops) { const p = s.pops[k]; p.t += dt; if (p.t >= p.life) delete s.pops[k]; }
     s.frozenPress = Math.max(0, s.frozenPress - dt);
     if (s.phase === 'elder') updateElder(dt);
-    else if (s.phase === 'shift') updateShift(dt);
-    else if (s.phase === 'child') updateChild(dt);
-    else if (s.phase === 'crash') updateCrash(dt);
-    else if (s.phase === 'icu') updateIcu(dt);
-    else if (s.phase === 'machine') updateMachine(dt);
-    else if (s.phase === 'icuEnd') updateIcuEnd(dt);
     updateHint();
-    Object.assign(canvas.dataset, { x: s.x.toFixed(2), oxygen: s.oxygen.toFixed(3), lung: s.lung.toFixed(2), dryness: s.dryness.toFixed(2), stumbles: String(s.stumbles), steps: String(s.steps), breaths: String(s.breaths), icuGood: String(s.icu.good), icuMisses: String(s.icu.misses) });
+    Object.assign(canvas.dataset, { x: s.x.toFixed(2), oxygen: s.oxygen.toFixed(3), lung: s.lung.toFixed(2), dryness: s.dryness.toFixed(2), stumbles: String(s.stumbles), steps: String(s.steps), breaths: String(s.breaths) });
   }
 
   // ---------- drawing (1-bit) ----------
@@ -326,7 +253,6 @@
   }
 // Kinematic cutout rigs: the renderer follows the game state; it does not own it.
 const elderArt = createLastWalkArtwork(LIMB_MODEL_ART, false);
-const childArt = createLastWalkArtwork(CHILD_MODEL_ART, true);
 const P = (x,y) => ({x,y});
 function bodyAt(p,angle=0) {
   return {getPosition:()=>p,getAngle:()=>angle,getWorldPoint:q=>P(p.x+q.x*Math.cos(angle)-q.y*Math.sin(angle),p.y+q.x*Math.sin(angle)+q.y*Math.cos(angle))};
@@ -381,93 +307,6 @@ function drawElder(px,fy) {
     ctx.fillStyle='#000';ctx.fillRect(tip.x-.023*ppm,fy-.016*ppm,.046*ppm,.016*ppm);
   });
 }
-function drawChild(px,fy) {
-  const running=held.has('ArrowRight')||held.has('KeyD')||held.has('ArrowLeft')||held.has('KeyA');
-  const run=s.childRun, wave=running?Math.sin(run):0;
-  const hip=P(0,.565+(running&&!reducedQuery.matches?Math.abs(Math.cos(run))*.026:0));
-  const shoulder=P(.048,hip.y+.328),neck=P(.056,shoulder.y+.01),head=P(.08,neck.y+.149);
-  const feet=[0,1].map(i=> {
-    const swing=i? -wave:wave;
-    return P(swing*.23,.065+(running?Math.max(0,swing)*.15:0));
-  });
-  const elbows=[P(shoulder.x-wave*.13,shoulder.y-.20),P(shoulder.x+wave*.13,shoulder.y-.20)];
-  const hands=[P(elbows[0].x+.18,elbows[0].y+.07),P(elbows[1].x+.18,elbows[1].y+.07)];
-  if(!running) {elbows[0]=P(.025,shoulder.y-.20);elbows[1]=P(.07,shoulder.y-.20);hands[0]=P(.02,shoulder.y-.37);hands[1]=P(.06,shoulder.y-.37);}
-  const rig=rigAt({hip,shoulder,neck,head,feet,hands,elbows,child:true,tilt:-.10,headTilt:-.035});
-  const project=p=>P(px+p.x*ppm,fy-p.y*ppm);
-  childArt.drawFigure(ctx,rig,project,ppm,()=>{});
-}
-function drawPatient(cx,fy,u) {
-  const rise=s.lung*.06,head=P(cx-1.19*u,fy-1.055*u);
-  ctx.lineJoin='round';ctx.lineCap='round';ctx.fillStyle='#fff';ctx.strokeStyle='#000';
-  // Mattress, raised back, pillow and two caster legs.
-  ctx.lineWidth=Math.max(1.5,u*.017);
-  ctx.beginPath();ctx.moveTo(cx-1.49*u,fy-.78*u);ctx.lineTo(cx-1.17*u,fy-.59*u);ctx.lineTo(cx+1.28*u,fy-.59*u);ctx.lineTo(cx+1.28*u,fy-.45*u);ctx.lineTo(cx-1.21*u,fy-.45*u);ctx.lineTo(cx-1.58*u,fy-.66*u);ctx.closePath();ctx.fill();ctx.stroke();
-  for(const x of [-1.05,1.12]) {line(cx+x*u,fy-.45*u,cx+x*u,fy-.08*u,3);ctx.beginPath();ctx.arc(cx+x*u,fy-.055*u,.05*u,0,Math.PI*2);ctx.stroke();}
-  ctx.beginPath();ctx.ellipse(cx-1.21*u,fy-.82*u,.29*u,.10*u,-.55,0,Math.PI*2);ctx.fill();ctx.stroke();
-  // The same elderly face returns in the ICU, now reclining.
-  elderArt.drawHead(ctx,head.x,head.y,u*1.34,-.48);
-  ctx.beginPath();ctx.moveTo(cx-1.035*u,fy-.95*u);ctx.lineTo(cx-.82*u,fy-.78*u);ctx.strokeStyle='#000';ctx.lineWidth=.09*u;ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=.068*u;ctx.stroke();
-  elderArt.drawTorso(ctx,cx-.72*u,fy-(.77+rise*.38)*u,u,-1.05);
-  // Blanket obscures the lower body; its chest moves only with the actual lung.
-  ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=Math.max(1.5,u*.015);
-  ctx.beginPath();ctx.moveTo(cx-.98*u,fy-.76*u);
-  ctx.quadraticCurveTo(cx-.67*u,fy-(1.045+rise)*u,cx-.20*u,fy-.85*u);
-  ctx.quadraticCurveTo(cx+.58*u,fy-.85*u,cx+1.2*u,fy-.67*u);
-  ctx.lineTo(cx+1.21*u,fy-.52*u);ctx.lineTo(cx-1.04*u,fy-.55*u);ctx.closePath();ctx.fill();ctx.stroke();
-  // Sparse dots, anchored to the cloth instead of regenerating noise each frame.
-  for(let y=0;y<8;y++)for(let x=0;x<58;x++) {
-    const xx=cx+(-.95+x*.037)*u,yy=fy-(.56+y*.026)*u;
-    if((x*13+y*7)%17<4)ctx.fillRect(xx,yy,Math.max(1,u*.007),Math.max(1,u*.007));
-  }
-  ctx.strokeStyle='#000';line(cx-.22*u,fy-.79*u,cx-.31*u,fy-.56*u,1.5);
-  line(cx+.57*u,fy-.73*u,cx+.65*u,fy-.55*u,1.5);
-  // A relaxed visible hand and a low guard rail; neither covers the face.
-  elderArt.drawHand(ctx,cx-.48*u,fy-.72*u,u,-1.4);
-  line(cx-.88*u,fy-.53*u,cx+.89*u,fy-.53*u,3);
-  // Transparent-looking breathing mask drawn in ink over a readable face.
-  ctx.fillStyle='#fff';ctx.strokeStyle='#000';ctx.lineWidth=Math.max(1,u*.012);
-  ctx.beginPath();ctx.ellipse(head.x+.107*u,head.y+.018*u,.064*u,.077*u,-.45,0,Math.PI*2);ctx.fill();ctx.stroke();
-  const tubeX=head.x+.14*u,tubeY=head.y+.04*u;
-  ctx.beginPath();ctx.moveTo(tubeX,tubeY);ctx.bezierCurveTo(cx-.70*u,fy-1.47*u,cx+1.43*u,fy-1.58*u,cx+1.85*u,fy-1.40*u);
-  ctx.strokeStyle='#000';ctx.lineWidth=.033*u;ctx.stroke();ctx.strokeStyle='#fff';ctx.lineWidth=.014*u;ctx.stroke();ctx.strokeStyle='#000';
-}
-
-  function drawIcu() {
-    const fy = floorY(), u = Math.min(ppm,width/6.7), cx = width * .36;
-    ctx.strokeStyle = '#000'; ctx.fillStyle = '#000'; ctx.lineCap = 'round';
-    line(0, fy, width, fy, 3);
-    drawPatient(cx,fy,u);
-    ctx.fillStyle = '#000'; ctx.strokeStyle = '#000';
-    // monitor: ECG line + breathing ring the player follows + tally of good breaths
-    const mx = cx + 1.7 * u, my = fy - 2.6 * u, mw = 1.7 * u, mh = 1.1 * u;
-    rect(mx, my, mw, mh, 4); line(mx + mw * .5, my + mh, mx + mw * .5, fy, 4);
-    const icu = s.icu;
-    ctx.lineWidth = 2; ctx.beginPath();
-    for (let i = 0; i <= 60; i++) {
-      const tx = i / 60, beatPos = ((icu.t * 1.05 - tx * 2) % 1 + 1) % 1;
-      const spike = beatPos < .05 ? Math.sin(beatPos / .05 * Math.PI) * (beatPos < .025 ? -1 : .6) : 0;
-      const y = my + mh * .32 - spike * mh * .22;
-      i ? ctx.lineTo(mx + 8 + tx * (mw * .55), y) : ctx.moveTo(mx + 8, y);
-    }
-    ctx.stroke();
-    const period = T.icuInhale + T.icuExhale, p = icu.t % period;
-    const target = p < T.icuInhale ? p / T.icuInhale : 1 - (p - T.icuInhale) / T.icuExhale;
-    const rx = mx + mw * .8, ry = my + mh * .38, rmax = mh * .28;
-    ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(rx, ry, rmax, 0, Math.PI * 2); ctx.stroke();
-    ctx.beginPath(); ctx.arc(rx, ry, Math.max(1.5, rmax * s.lung), 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = s.lung > target ? '#fff' : '#000';
-    ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(rx, ry, Math.max(2, rmax * target), 0, Math.PI * 2); ctx.stroke(); ctx.strokeStyle = '#000';
-    for (let i = 0; i < T.icuNeed; i++) {
-      const bx = mx + 10 + i * (mw - 20) / T.icuNeed, by = my + mh * .82;
-      if (i < icu.good) ctx.fillRect(bx, by - 5, (mw - 20) / T.icuNeed - 5, 10); else rect(bx, by - 5, (mw - 20) / T.icuNeed - 5, 10, 1.5);
-    }
-    // Past 8 the boxes are full; the count keeps going on its own.
-    if (icu.good > T.icuNeed) {
-      ctx.fillStyle = '#000'; ctx.font = `700 ${Math.round(Math.max(12, mh * .2))}px "Malgun Gothic", sans-serif`;
-      ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(String(icu.good), mx + 8, my + mh * .6);
-    }
-  }
   // ---------- cues (2026-10-11) ----------
   function cueBox(p, x, y, big) {
     const size = Math.round(Math.max(big ? 16 : 14, (big ? .2 : .15) * ppm)), subSize = Math.round(size * .62);
@@ -512,29 +351,11 @@ function drawPatient(cx,fy,u) {
   function draw() {
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
     const phase = s.phase;
-    if (phase === 'crash' && s.phaseTime > .15) {
-      // Night swallows the frame; headlights grow from the right, then darkness.
-      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, width, height);
-      const t = s.phaseTime;
-      if (t < 1.4) {
-        ctx.fillStyle = '#fff';
-        const r = (.05 + Math.min(1, t / 1.3) * .5) * height;
-        for (const dy of [-.08, .08]) { ctx.beginPath(); ctx.arc(width * (1.05 - Math.min(1, t / 1.3) * .35), height * (.62 + dy), r, 0, Math.PI * 2); ctx.fill(); }
-      }
-      return;
-    }
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height);
-    if (phase === 'icu' || phase === 'machine' || phase === 'icuEnd') {
-      drawIcu();
-      if (s.phaseTime < 1.2 && phase === 'icu') { ctx.globalAlpha = 1 - s.phaseTime / 1.2; ctx.fillStyle = '#000'; ctx.fillRect(0, 0, width, height); ctx.globalAlpha = 1; }
-      if (phase === 'icuEnd') { ctx.globalAlpha = s.fade; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height); ctx.globalAlpha = 1; }
-      return;
-    }
     const camX = s.x;
     drawWorld(camX);
     const px = sx(s.x, camX), fy = floorY();
-    if (phase === 'elder' || phase === 'failed' || (phase === 'shift' && s.phaseTime < 1.4)) drawElder(px, fy);
-    else drawChild(px, fy);
+    drawElder(px, fy);
     if (phase === 'elder' || phase === 'failed') {
       // Low oxygen darkens from the edges; dry eyes cloud them white.
       edgeVeil(Math.max(0, (.45 - s.oxygen) / .45), true);
@@ -542,7 +363,6 @@ function drawPatient(cx,fy,u) {
       if (phase === 'elder') drawCues(px, fy);
       if (s.blink > 0) { ctx.fillStyle = '#000'; const h = height * .5 * Math.sin(s.blink / .14 * Math.PI); ctx.fillRect(0, 0, width, h); ctx.fillRect(0, height - h, width, h); }
     }
-    if (phase === 'shift') { ctx.globalAlpha = s.fade; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, width, height); ctx.globalAlpha = 1; }
   }
 
   // ---------- loop and lifecycle ----------
@@ -558,8 +378,8 @@ function drawPatient(cx,fy,u) {
     canvas.width = Math.round(width * scale); canvas.height = Math.round(height * scale);
     ppm = Math.min(width / (width<600?4.8:8.5), height / 3.6);
   }
-  function pause() { paused = true; held.clear(); silence(); if (audio && audio.state === 'running') audio.suspend().catch(() => {}); }
-  function resume() { paused = false; last = 0; if (audio) audio.resume().catch(() => {}); }
+  function pause() { paused = true; held.clear(); silence(); LastWalkEnding.pause(); if (audio && audio.state === 'running') audio.suspend().catch(() => {}); }
+  function resume() { paused = false; last = 0; LastWalkEnding.resume(); if (audio) audio.resume().catch(() => {}); }
   window.addEventListener('resize', resize);
   document.addEventListener('visibilitychange', () => { held.clear(); last = 0; if (document.hidden) silence(); });
   window.addEventListener('pagehide', () => { ended = true; cancelAnimationFrame(raf); if (audio) audio.close().catch(() => {}); });
@@ -569,7 +389,7 @@ function drawPatient(cx,fy,u) {
     if (e.data.type === 'focus') { resume(); canvas.focus({ preventScroll: true }); }
   });
   $('stage-back').addEventListener('click', function () {
-    this.disabled = true; ended = true; pause();
+    this.disabled = true; ended = true; pause(); LastWalkEnding.stop();
     if (embedded) parent.postMessage({ channel, type: 'back' }, '*'); else { this.disabled = false; restart(); paused = false; }
   });
   resize(); setPhase('elder'); canvas.focus({ preventScroll: true }); raf = requestAnimationFrame(frame);

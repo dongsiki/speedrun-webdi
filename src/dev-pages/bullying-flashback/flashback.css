@@ -1,0 +1,35 @@
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;color:#ddd;font-family:Arial,"Malgun Gothic",sans-serif;overflow:hidden}
+.new-tag{position:fixed;top:8px;left:10px;z-index:20;font-size:11px;color:#888;letter-spacing:.02em;pointer-events:none}
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px}
+.screen[hidden]{display:none}
+.where{margin:0;font-size:13px;color:#777}
+button{font:inherit;font-size:18px;color:#eee;background:none;border:1px solid #666;padding:14px 34px;cursor:pointer}
+button:hover,button:focus-visible{border-color:#eee;outline:none}
+.back{font-size:13px;color:#777}
+
+#scene{cursor:pointer;gap:14px;user-select:none;-webkit-user-select:none}
+.frame{position:relative;width:min(92vw,calc(70vh * 4 / 3));aspect-ratio:4/3;overflow:hidden;background:#111}
+.frame img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1) contrast(1.05) brightness(.92);animation:drift 9s ease-out forwards}
+.frame::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.78) 100%);pointer-events:none}
+.grain{position:absolute;inset:-50%;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.5'/></svg>");opacity:.18;mix-blend-mode:overlay;animation:grain .5s steps(4) infinite;pointer-events:none}
+.placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border:1px dashed #555;color:#666;font-size:14px}
+.placeholder[hidden]{display:none}
+.line{min-height:3em;margin:0;max-width:min(92vw,720px);text-align:center;font-size:clamp(16px,2.4vw,21px);line-height:1.5;word-break:keep-all;color:#e8e8e8;text-shadow:0 0 6px #000}
+.hint{position:fixed;bottom:12px;margin:0;font-size:11px;color:#555}
+
+.glitch{position:fixed;inset:0;z-index:30;pointer-events:none;background:#000}
+.glitch[hidden]{display:none}
+.glitch.on{animation:tear .42s steps(6) forwards}
+
+@keyframes drift{from{transform:scale(1.06)}to{transform:scale(1)}}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-5%,3%)}50%{transform:translate(4%,-4%)}75%{transform:translate(-3%,-2%)}100%{transform:translate(2%,5%)}}
+@keyframes tear{
+  0%{background:#fff;clip-path:inset(0 0 0 0)}
+  20%{background:#000;clip-path:inset(30% 0 52% 0);transform:translateX(-6%)}
+  40%{background:#ccc;clip-path:inset(62% 0 8% 0);transform:translateX(8%)}
+  60%{background:#000;clip-path:inset(10% 0 70% 0);transform:translateX(-3%)}
+  80%{background:#fff;clip-path:inset(45% 0 40% 0)}
+  100%{background:#000;clip-path:inset(0 0 100% 0)}
+}
+@media (prefers-reduced-motion:reduce){.frame img,.grain,.glitch.on{animation:none}}

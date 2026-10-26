@@ -47,6 +47,7 @@
       burstUntil = now + 70 + Math.random() * (160 + amount * 380);
       nextBurst = burstUntil + (strong ? 250 : 500) + Math.random() * (2600 * (1 - amount) + 300);
       if (window.PhaseFX) PhaseFX.crackle(.08 + Math.random() * .25, .12 + amount * .25);
+      if (window.IntroMusic) IntroMusic.glitch(burstUntil - now, amount); // 10/26: 같은 순간 음악도 깨진다
       if (Math.random() < .35 + amount * .3 && !video.paused) { // 렉 걸린 듯 멈칫
         frozenUntil = now + 120 + Math.random() * 420; video.pause();
       }

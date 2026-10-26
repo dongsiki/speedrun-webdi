@@ -62,16 +62,50 @@ function createBuilder() {
   return { render, documents, inputs };
 }
 
+// 2026-10-27 사용자: 「웹디2 여기 안에 폴더 하나 더 만들고 거기다가 실제 플레이용과 데브용 폴더를 만들고, 거기에다가 각자 파일들을 박아놔」
+// → 결과는 게임/플레이용/01_speedrun_play.html, 게임/개발자용/02_speedrun_dev.html 에 쓴다(각 폴더에 인트로 영상도 함께).
+//   저장소 맨 위 01·02는 그 파일로 넘어가는 작은 안내 파일이라 공개 주소(…/01_speedrun_play.html)는 그대로 열린다.
+const PLAY_DIR = '../게임/플레이용', DEV_DIR = '../게임/개발자용'; // 10/27 정리: 저장소는 웹디2/깃허브, 결과는 웹디2/게임
+const INTRO_VIDEO = 'assets/video/elder-transformation-10s.mp4';
+function copyIfChanged(from, to) {
+  fs.mkdirSync(path.dirname(to), { recursive: true });
+  if (fs.existsSync(to) && fs.statSync(to).size === fs.statSync(from).size && fs.readFileSync(to).equals(fs.readFileSync(from))) return;
+  fs.copyFileSync(from, to);
+}
+function copyTree(from, to, patch) {
+  for (const entry of fs.readdirSync(from, { withFileTypes: true })) {
+    const a = path.join(from, entry.name), b = path.join(to, entry.name);
+    if (entry.isDirectory()) copyTree(a, b, patch);
+    else if (patch && patch[entry.name]) { fs.mkdirSync(to, { recursive: true }); const t = patch[entry.name](fs.readFileSync(a, 'utf8')); if (!fs.existsSync(b) || fs.readFileSync(b, 'utf8') !== t) fs.writeFileSync(b, t); }
+    else copyIfChanged(a, b);
+  }
+}
+function stub(target) {
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>speedrun</title>`
+    + `<meta http-equiv="refresh" content="0;url=${encodeURI(target)}"><script>location.replace(${JSON.stringify(encodeURI(target))}+location.search+location.hash)</script></head>`
+    + `<body><a href="${encodeURI(target)}">${target}</a></body></html>\n`;
+}
 function build({ write = false } = {}) {
   const builder = createBuilder();
   const outputs = {};
-  for (const [variant, name] of [['play', '01_speedrun_play.html'], ['dev', '02_speedrun_dev.html']]) {
+  for (const [variant, name, dir] of [['play', '01_speedrun_play.html', PLAY_DIR], ['dev', '02_speedrun_dev.html', DEV_DIR]]) {
     const text = builder.render(`src/shell/${variant}/index.template.html`);
     if (/@@data:|\/\* @(?:inline|json|jsonraw|standalone|documents) /.test(text)) throw new Error('Unexpanded source directive in ' + name);
-    outputs[name] = text;
+    outputs[dir + '/' + name] = text;
     if (write) {
-      const file = path.join(root, name);
+      const file = path.join(root, dir, name);
+      fs.mkdirSync(path.dirname(file), { recursive: true });
       if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== text) fs.writeFileSync(file, text);
+      copyIfChanged(path.join(root, INTRO_VIDEO), path.join(root, dir, INTRO_VIDEO));
+      // 10/27: 맨 위 안내 파일은 만들지 않는다(깃허브에 올릴 때 scripts/publish.cjs가 저장소 맨 위 01·02를 채움).
+    }
+  }
+  if (write) {
+    // 개발자용 시안 중 소스 폴더에 그대로 있는 두 페이지를 개발자용 폴더로 복사(휴대폰 터치는 본편을 옆 플레이용 폴더에서 연다).
+    for (const page of ['icu-ending', 'mobile-touch']) {
+      copyTree(path.join(root, 'src/dev-pages', page), path.join(root, DEV_DIR, 'src/dev-pages', page), {
+        'index.html': t => t.replace("which === 'play' ? '01_speedrun_play.html'", "which === 'play' ? '../플레이용/01_speedrun_play.html'")
+      });
     }
   }
   return { outputs, builder };

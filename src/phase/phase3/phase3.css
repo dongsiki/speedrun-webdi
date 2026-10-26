@@ -1,0 +1,73 @@
+/* 3페이즈(2026-10-26 시안 → 10/27 본편 01 연결, Claude Code). 본편 인트로(src/shell/play/style.css·additional-2.css) 모양을 따라 쓴다.
+   흑백 1-bit, 새 그림 없음. 모두 #p3 안에서만 쓰여 본편 화면에 섞이지 않는다. */
+#p3{--p3-type:Arial,"Malgun Gothic",sans-serif;--p3-typed:Batang,"바탕","BatangChe","Malgun Gothic",serif;--p3-count:clamp(2.25rem,7vw,3.5rem);
+  position:fixed;inset:0;z-index:2147483200;background:#fff;color:#000;font-family:var(--p3-type);overflow:hidden;-webkit-tap-highlight-color:transparent}
+#p3[hidden],#p3 [hidden]{display:none!important}
+#p3 *{box-sizing:border-box}
+#p3 button{font:inherit;color:inherit;cursor:pointer;-webkit-touch-callout:none}
+#p3 button:focus-visible{outline:2px solid currentColor;outline-offset:6px}
+/* 3페이즈가 떠 있으면 본편의 '구현 예정' 쪽지·패널은 숨긴다 */
+body.p3-on #phase3-panel,body.p3-on #phase-todo{display:none!important}
+
+/* 첫 화면 */
+#p3 .p3-first{position:absolute;inset:0;display:grid;place-items:center;background:#fff}
+#p3 .p3-intro{display:grid;justify-items:center;gap:20px;max-width:100%;padding:16px}
+#p3 .p3-tally{display:grid;gap:8px;margin:0;text-align:center;font-size:14px;line-height:1.5}
+#p3 .p3-count{display:block;min-width:7ch;font-size:var(--p3-count);font-variant-numeric:tabular-nums;line-height:1.1}
+#p3 .p3-switch{display:flex;align-items:center;gap:24px;padding:24px;border:0;background:transparent;font-size:22px;min-height:80px}
+#p3 .p3-track{position:relative;display:block;width:88px;height:43px;border:2px solid #000;border-radius:48% 44% 46% 45% / 90% 85% 92% 90%}
+#p3 .p3-knob{position:absolute;right:5px;top:4px;width:31px;height:31px;border:2px solid #000;border-radius:48% 51% 46% 52%;background:#000;transition:right .5s cubic-bezier(.5,0,.3,1)}
+#p3 .p3-switch[aria-checked=false] .p3-knob{right:47px;background:#fff}
+#p3 .p3-switch.half .p3-knob{right:26px;transition:right .18s ease-out}
+#p3 .p3-switch.shake .p3-knob{animation:p3-shake .32s steps(4)}
+@keyframes p3-shake{0%{translate:0 0}25%{translate:-3px 1px}50%{translate:2px -1px}75%{translate:-2px 0}100%{translate:0 0}}
+#p3 .p3-state{min-width:42px;text-align:left;font-size:18px}
+#p3 .p3-speech{min-height:1.8em;margin:0;padding:4px 10px;font:clamp(17px,4vw,21px)/1.6 var(--p3-typed);text-align:center;word-break:keep-all;max-width:calc(100vw - 32px)}
+#p3 .p3-speech.glitch{animation:p3-jitter .16s steps(2) infinite}
+@keyframes p3-jitter{0%{translate:0 0}50%{translate:2px -1px}100%{translate:-2px 1px}}
+
+/* 길게 눌러 끄기(본편 AI 관문의 수동 종료와 같은 모양) */
+#p3 .p3-hold{display:grid;justify-items:center;gap:7px;width:230px;min-height:110px;padding:4px 10px 12px;border:0;background:#fff;font:14px/1.5 var(--p3-typed);--hold:0;touch-action:none;user-select:none}
+#p3 .p3-hold svg{width:52px;height:46px;fill:#fff;stroke:#000;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round;transform:rotate(-4deg)}
+#p3 .p3-ink{position:relative;width:100%;height:8px;border-bottom:1px solid #000;transform:rotate(-1deg)}
+#p3 .p3-ink::after{content:"";position:absolute;left:0;bottom:-1px;height:7px;width:calc(var(--hold) * 100%);background:#000}
+
+/* 까만 화면의 AI 말 */
+#p3 .p3-talk{position:absolute;inset:0;display:grid;place-items:center;background:#000;color:#fff;cursor:pointer}
+#p3 .p3-talk-line{max-width:min(86vw,760px);margin:0;padding:0 8px;font:clamp(22px,4.6vw,38px)/1.55 var(--p3-typed);text-align:center;word-break:keep-all;letter-spacing:.02em}
+#p3 .p3-next{position:absolute;left:50%;bottom:7vh;translate:-50% 0;font-size:14px;opacity:0}
+#p3 .ready .p3-next{opacity:1;animation:p3-blink 1s steps(2) infinite}
+@keyframes p3-blink{50%{opacity:0}}
+
+/* 이야기 공개: 간호 기록지처럼 한 장씩 */
+#p3 .p3-story{position:absolute;inset:0;display:grid;place-items:center;padding:74px 14px 20px;background:#fff;cursor:pointer;overflow:auto}
+#p3 .p3-sheet{position:relative;width:min(760px,100%);display:grid;gap:12px}
+#p3 .p3-head{display:flex;justify-content:space-between;gap:12px;margin:0;padding-bottom:6px;border-bottom:2px solid #000;font:13px/1.4 var(--p3-typed);letter-spacing:.14em}
+#p3 .p3-figure{position:relative;margin:0;border:1.5px solid #000;aspect-ratio:16/10;background:#fff;overflow:hidden;transform:rotate(-.6deg)}
+#p3 .p3-img{display:block;width:100%;height:100%;object-fit:cover;image-rendering:pixelated}
+#p3 .p3-roll{position:absolute;inset:0;display:grid;place-items:center;font:clamp(3rem,13vw,7rem)/1 var(--p3-type);font-variant-numeric:tabular-nums}
+#p3 .p3-lines p{margin:0 0 6px;font:clamp(16px,3.4vw,20px)/1.7 var(--p3-typed);word-break:keep-all}
+#p3 .p3-clue{min-height:1.6em;margin:2px 0 0;font:700 clamp(16px,3.4vw,20px)/1.6 var(--p3-typed);word-break:keep-all}
+#p3 .p3-clue.show{justify-self:start;padding:2px 8px;background:#000;color:#fff;animation:p3-jitter .2s steps(2) 6}
+#p3 .p3-sheet .p3-next{position:static;justify-self:end;translate:none}
+#p3 .p3-story.glitch .p3-figure{filter:invert(1) contrast(1.6);translate:6px 0}
+
+/* 결말 */
+#p3 .p3-end{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:22px;padding:24px;background:#fff;text-align:center}
+#p3 .p3-end-lines p{margin:0 0 10px;font:clamp(22px,4.6vw,36px)/1.6 var(--p3-typed);opacity:0;transition:opacity 1.6s ease}
+#p3 .p3-end-lines p.show{opacity:1}
+#p3 .p3-end-tag{margin:0;padding:2px 10px;border:1.5px solid #000;font:13px/1.5 var(--p3-typed);letter-spacing:.4em;opacity:0;transition:opacity 1.2s}
+#p3 .p3-end-tag.show{opacity:1}
+#p3 .p3-end-buttons{display:flex;gap:18px;opacity:0;transition:opacity 1s;pointer-events:none}
+#p3 .p3-end-buttons.show{opacity:1;pointer-events:auto}
+#p3 .p3-end-buttons button{padding:8px 4px;border:0;border-bottom:1.5px solid #000;background:transparent;color:#000;font:15px/1.4 var(--p3-typed)}
+
+/* 글리치·암전 */
+#p3 .p3-tear{position:absolute;left:0;right:0;top:var(--ty,40%);height:var(--th,8%);z-index:60;pointer-events:none;display:none;
+  background:repeating-linear-gradient(0deg,#000 0 2px,#fff 2px 5px,#000 5px 6px,transparent 6px 11px);mix-blend-mode:difference;transform:translateX(var(--tx,0))}
+#p3[data-burst] .p3-tear{display:block}
+#p3[data-burst=invert] section{filter:invert(1)}
+#p3 .p3-fade{position:absolute;inset:0;z-index:80;pointer-events:none;background:#000;opacity:0;transition:opacity var(--fd,.8s) steps(6)}
+#p3 .p3-fade.on{opacity:1}
+#p3 .p3-fade.white{background:#fff;transition-timing-function:ease}
+@media (max-width:600px){#p3 .p3-switch{gap:16px;padding:16px}}

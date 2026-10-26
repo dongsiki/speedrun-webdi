@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>휴대폰 터치 조작 · 개발용</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#fff;color:#000;font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif;overscroll-behavior:none}
+body{display:flex;flex-direction:column;height:100dvh}
+#bar{flex:none;display:flex;align-items:center;gap:8px;height:28px;padding:0 max(10px,env(safe-area-inset-right)) 0 max(10px,env(safe-area-inset-left));padding-top:env(safe-area-inset-top);box-sizing:content-box;border-bottom:1px solid #000;font-size:11px;white-space:nowrap}
+#bar .new{opacity:.7}
+#bar .mode{margin-left:auto;display:flex;gap:4px}
+#bar a{padding:3px 7px;border:1px solid #000;color:#000;text-decoration:none}
+#bar a[aria-current="page"]{background:#000;color:#fff}
+#state{opacity:.7}
+#game{flex:1;width:100%;border:0;display:block}
+</style>
+</head>
+<body>
+<div id="bar">
+  <span class="new">새로 만든 부분: 휴대폰 터치 조작</span>
+  <span id="state" aria-live="polite"></span>
+  <span class="mode"><a id="to-dev" href="?game=dev">개발자용</a><a id="to-play" href="?game=play">본편</a></span>
+</div>
+<iframe id="game" title="게임" allow="autoplay; fullscreen"></iframe>
+<script src="touch-controls.js"></script>
+<script>
+(() => {
+  const which = new URLSearchParams(location.search).get('game') === 'play' ? 'play' : 'dev';
+  const file = which === 'play' ? '01_speedrun_play.html' : '02_speedrun_dev.html';
+  document.getElementById(which === 'play' ? 'to-play' : 'to-dev').setAttribute('aria-current', 'page');
+  const frame = document.getElementById('game');
+  frame.src = '../../../' + file;
+  const state = document.getElementById('state');
+  const names = { walk: '버튼: 발·숨·눈', maze: '버튼: 이동·회전', none: '' };
+  if (location.protocol === 'file:') state.textContent = '※ 파일로 열면 버튼이 안 붙음, 주소(http)로 열기';
+  else SpeedrunTouch.attach(() => frame.contentWindow, mode => { state.textContent = mode.split(',').map(m => names[m] || '').join(' '); });
+})();
+</script>
+</body>
+</html>

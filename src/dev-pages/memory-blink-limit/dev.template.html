@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>기억 스테이지 — 윤곽선 깜빡임 횟수 제한(개발자용)</title>
+  <style>/* @inline src/stages/memory/style.dev.css */</style>
+</head>
+<body>
+  <svg aria-hidden="true" width="0" height="0" style="position:absolute;pointer-events:none"><defs>
+    <filter id="one-bit-palette" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feComponentTransfer><feFuncR type="discrete" tableValues="0 1"/><feFuncG type="discrete" tableValues="0 1"/><feFuncB type="discrete" tableValues="0 1"/></feComponentTransfer>
+    </filter>
+  </defs></svg>
+  <p class="new-part-badge" aria-label="새로 만든 부분: 기억 윤곽선 깜빡임 횟수 제한">새로 만든 부분: 기억 윤곽선 깜빡임 횟수 제한</p>
+  <main id="experience" aria-label="일상의 흔적, 침실과 화장실, 주방 및 현관">
+    <canvas id="world" tabindex="0" aria-label="침실. 침대에서 일어납니다." aria-describedby="room-note"></canvas>
+    <h1 id="room-name" class="sr-only">침실</h1>
+    <p id="room-note" class="sr-only">침대에 누워 있습니다.</p>
+    <nav class="tools" aria-label="재생 설정">
+      <button id="motion" class="icon-button" type="button" aria-label="전체 이동 연출 켜기" aria-pressed="false" title="전체 이동 연출 켜기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M8 3c-2 0-3 3-3 5s1 4 3 4 2-2 2-4-1-5-2-5Zm8 5c2 0 3 3 3 5s-1 4-3 4-2-2-2-4 1-5 2-5ZM6 15h3v4H6zm9 5h3v2h-3z"/><path class="motion-off" d="M3 3 21 21"/></svg>
+      </button>
+      <button id="sound" class="icon-button" type="button" aria-label="소리 켜기" aria-pressed="false" title="소리 켜기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M10 5 5.5 9H3v6h2.5l4.5 4z"/><path class="sound-on" d="M14 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/><path class="sound-off" d="m15 9 6 6m0-6-6 6"/></svg>
+      </button>
+      <button id="restart" class="icon-button" type="button" aria-label="처음부터 다시 하기" title="처음부터 다시 하기">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M5 8a8 8 0 1 1-1 7M5 3v5h5"/></svg>
+      </button>
+    </nav>
+    <button id="approach" class="object-action" type="button" aria-label="세면대로 다가가기"></button>
+    <button id="action" type="button" aria-label="침대에서 일어나기" aria-describedby="room-note"></button>
+    <button id="prop-flush" class="object-action" type="button" aria-label="변기 물 내리기"></button>
+    <button id="prop-lotion" class="object-action" type="button" aria-label="로션 펌프 누르기"></button>
+    <button id="prop-mirror" class="object-action" type="button" aria-label="거울 수납장 열기" aria-expanded="false"></button>
+    <button id="chair" class="object-action" type="button" aria-label="의자에 앉기"></button>
+    <button id="fridge" class="object-action" type="button" aria-label="냉장고 열기" aria-expanded="false"></button>
+    <button id="fridge-food" class="object-action" type="button" aria-label="냉장고에서 음식 꺼내기"></button>
+    <button id="food" class="object-action" type="button" aria-label="음식 먹기"></button>
+    <p id="caption" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+    <div id="eyelid-top" class="eyelid" aria-hidden="true"></div>
+    <div id="eyelid-bottom" class="eyelid" aria-hidden="true"></div>
+    <div id="reduced-cut" aria-hidden="true"></div>
+    <section id="error" hidden role="alert"><p>3D 화면을 열지 못했습니다.</p><p>하드웨어 가속을 지원하는 브라우저에서 다시 열어 주세요.</p><button type="button" onclick="location.reload()">다시 열기</button></section>
+    <noscript>이 3D 장면은 JavaScript를 켠 브라우저에서 실행할 수 있습니다.</noscript>
+  </main>
+  <script>/* @inline src/stages/memory/three.js */</script>
+  <script>/* @inline src/stages/memory/reflector-imports.js *//* @inline src/stages/memory/reflector.js *//* @inline src/stages/memory/reflector-shader.js *//* @inline src/stages/memory/prop-rules.js *//* @inline src/stages/memory/reflection-intro.js *//* @inline src/stages/memory/elder-model.js *//* @inline src/dev-pages/memory-blink-limit/game.blink.js */</script>
+<style>/* @inline src/stages/memory/additional-2.css */</style><style>/* @inline src/dev-pages/memory-blink-limit/badge.css */</style><a class="portable-back" href="00-index.html" aria-label="개발용 목록으로 돌아가기" title="돌아가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5 7 12l7 7M7 12h13"/></svg></a><script>/* @inline src/shell/standalone/switches/navigation.js */</script></body>
+</html>

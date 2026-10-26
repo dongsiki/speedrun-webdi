@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>3페이즈 · 개발용</title>
+<!-- 빌드(scripts/build.cjs)가 src/phase/phase3의 파일과 그림·목소리를 이 폴더로 복사한다. 본편 01과 같은 파일이다. -->
+<link rel="stylesheet" href="phase3.css">
+<style>
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#fff}
+/* 개발용 표시(구현 예정 쪽지와 같은 점선 모양) */
+#p3-dev{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2147483600;display:grid;justify-items:center;gap:5px;width:max-content;max-width:calc(100vw - 16px);pointer-events:none}
+#p3-dev>*{pointer-events:auto}
+.p3-new{margin:0;padding:3px 9px;background:#fff;color:#000;border:1.5px dashed #000;font:12px/1.4 "Malgun Gothic",sans-serif}
+.p3-new b{margin-right:.5em;padding:0 4px;background:#000;color:#fff}
+.p3-new i{font-style:normal;color:#666}
+#p3-dev nav{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+#p3-dev nav button,#p3-dev nav a{padding:3px 7px;border:1px dashed #000;background:#fff;color:#000;font:11px/1.3 "Malgun Gothic",sans-serif;text-decoration:none;cursor:pointer}
+#p3-dev nav button[aria-current=true]{background:#000;color:#fff}
+body:has(.p3-talk:not([hidden])) #p3-dev{opacity:.35}
+body:has(.p3-talk:not([hidden])) .p3-new{background:#000;color:#fff;border-color:#fff}
+@media (max-width:600px){.p3-new{font-size:11px}}
+</style>
+</head>
+<body>
+<header id="p3-dev" aria-label="개발용 표시">
+  <p class="p3-new"><b>새로 만든 부분</b>3페이즈 · 진행 거부 → AI 도움 요청 → 이야기 공개 → 진엔딩 <i>(본편 01 점프스케어 뒤에도 같은 장면)</i></p>
+  <nav aria-label="장면 바로가기">
+    <button type="button" data-jump="refuse">1 첫 화면</button>
+    <button type="button" data-jump="help">2 도움 요청</button>
+    <button type="button" data-jump="story">3 이야기</button>
+    <button type="button" data-jump="ask">4 결말</button>
+    <a href="../../02_speedrun_dev.html">개발자용 목록</a>
+  </nav>
+</header>
+<script>window.Phase3Dev = true;</script>
+<script src="story.js"></script>
+<script src="phase3.js"></script>
+</body>
+</html>

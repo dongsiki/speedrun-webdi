@@ -18,7 +18,7 @@
   const video = document.createElement('video');
   const inertRoots = new Map();
   const cleanups = [];
-  let active = true, status = 'loading', playPending = false, watchdog;
+  let active = true, status = 'loading', playPending = false, watchdog, music = null;
   let resolveFinished;
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   window.TransformationIntro = Object.freeze({
@@ -42,6 +42,7 @@
     active = false;
     status = reason;
     clearTimeout(watchdog);
+    if (music) music.stop(reason !== 'ended');
     for (const cleanup of cleanups.splice(0)) cleanup();
     video.pause();
     video.removeAttribute('src');
@@ -87,8 +88,10 @@
     if (!active) return;
     if (event.cancelable) event.preventDefault();
     event.stopImmediatePropagation();
+    // 10/26: 브라우저가 소리를 막아 두었으면 첫 클릭·키에서 인트로 음악을 켠다.
+    if (music && /^(pointerdown|mousedown|touchend|keydown)$/.test(event.type) && event.key !== 'Escape') music.unlock();
     if (event.type === 'keydown' && event.key === 'Escape') return finish('skipped');
-    if (event.type === 'keydown' && ['Enter', ' '].includes(event.key)) {
+    if (event.type === 'keydown' && (status === 'awaiting-gesture' || ['Enter', ' '].includes(event.key))) {
       armWatchdog();
       void play();
     } else if (event.type === 'pointerdown' && dialog.contains(event.target)) {
@@ -98,10 +101,10 @@
   }
   dialog.className = 'transformation-intro';
   dialog.setAttribute('aria-label', '변신 인트로');
-  video.src = 'assets/video/elder-transformation-10s.mp4?v=001c729e9eba';
+  video.src = 'assets/video/elder-transformation-10s.mp4?v=13eb1e890d6b';
   video.muted = true;
   video.defaultMuted = true;
-  video.autoplay = true;
+  video.autoplay = false; // 10/27: 음악이 준비되면 같이 시작(아래 prepare)
   video.playsInline = true;
   video.preload = 'auto';
   video.tabIndex = 0;
@@ -111,6 +114,8 @@
   dialog.append(video);
   state('loading');
   body.append(dialog);
+  // 10/26 사용자: 인트로가 나올 때마다 마법소녀 변신풍 음악(src/intro/intro-music.js, 작게).
+  try { if (window.IntroMusic) music = window.IntroMusic.create(video, dialog); } catch (_) { music = null; }
   for (const name of ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'mousedown', 'mousemove', 'mouseup', 'click', 'dblclick', 'touchstart', 'touchmove', 'touchend', 'wheel', 'contextmenu', 'keydown', 'keyup']) {
     on(window, name, guard, { capture: true, passive: false });
   }
@@ -130,7 +135,16 @@
     else dialog.setAttribute('open', '');
     video.focus({ preventScroll: true });
     armWatchdog();
-    void play();
+    // 10/27 사용자: 컷신마다 음악이 처음부터 같이 나오게. 음악 합성이 끝나면(최대 2.5초) 영상을 튼다.
+    // 10/27 사용자: 깃허브 링크로 열어도 음악이 같이. 브라우저가 소리를 막아 둔 첫 인트로는 첫 장면에서 멈춰 기다리다가
+    // 아무 데나 한 번 누르거나 아무 키를 누르면 영상과 음악이 0초부터 같이 시작한다(버튼·글자 없음).
+    const start = () => {
+      if (!active) return;
+      if (music && music.state !== 'running') { clearTimeout(watchdog); state('awaiting-gesture'); }
+      else void play();
+    };
+    if (music && music.prepare) music.prepare(2500).then(start, start);
+    else void play();
   } catch (_) {
     finish('media-error');
   }

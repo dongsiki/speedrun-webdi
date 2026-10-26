@@ -1,0 +1,30 @@
+<!-- 개발자용 새 항목(src/dev-pages/voice-narration): 음성 내레이션·놀리는 음성 (2026-10-26 Claude Code).
+     본편(01)과 같은 게임을 그대로 쓰고 앞에 세 가지만 끼운다.
+     1) 기록 칸 분리: 저장 기록에 'devnew-voice:' 이름표를 붙여 01의 기록을 읽거나 덮지 않는다.
+     2) voice.js: 화면에 뜨는 대사를 보고 같은 문장의 F1 음성을 작게 튼다.
+     3) 왼쪽 위 작은 표시와 '음성' 패널(바로가기·대사 듣기·끄기). -->
+<script>
+(() => {
+  const prefix = 'devnew-voice:';
+  try {
+    const proto = Storage.prototype, get = proto.getItem, set = proto.setItem, remove = proto.removeItem;
+    const own = store => store === window.localStorage;
+    proto.getItem = function (key) { return get.call(this, own(this) ? prefix + key : key); };
+    proto.setItem = function (key, value) { return set.call(this, own(this) ? prefix + key : key, value); };
+    proto.removeItem = function (key) { return remove.call(this, own(this) ? prefix + key : key); };
+  } catch (_) {}
+})();
+</script>
+<style>
+#devnew-label{position:fixed;left:8px;top:6px;z-index:2147483000;margin:0;padding:2px 7px;font:11px/1.4 "Malgun Gothic",sans-serif;color:#000;background:rgba(255,255,255,.85);border:1px solid #000;pointer-events:none}
+#voice-panel{position:fixed;left:8px;top:30px;z-index:2147483000;max-width:min(300px,calc(100vw - 16px));font:12px/1.4 "Malgun Gothic",sans-serif;color:#000;background:#fff;border:1px solid #000}
+#voice-panel summary{cursor:pointer;padding:3px 8px;list-style:none;user-select:none}
+#voice-panel summary::before{content:"▸ "}
+#voice-panel[open] summary::before{content:"▾ "}
+#voice-panel .vp-body{max-height:min(70vh,520px);overflow:auto;padding:0 6px 6px;border-top:1px solid #000}
+#voice-panel .vp-h{margin:8px 0 3px;font-weight:700}
+#voice-panel button{display:block;width:100%;margin:2px 0;padding:4px 6px;text-align:left;font:inherit;color:#000;background:#fff;border:1px solid #000;cursor:pointer}
+#voice-panel button:hover,#voice-panel button:focus-visible{background:#000;color:#fff}
+</style>
+<p id="devnew-label">새로 만든 부분: 음성 내레이션·놀리는 음성</p>
+<script>/* @inline src/dev-pages/voice-narration/voice.js */</script>

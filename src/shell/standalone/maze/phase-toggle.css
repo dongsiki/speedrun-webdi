@@ -1,0 +1,8 @@
+/* 개발자용 02 미로: 1페/2페 버튼(2026-10-27, Claude Code). 흑백 그대로. */
+#dev-phase-bar{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:70;display:flex;gap:0;border:1.5px solid #000;background:#fff;box-shadow:0 0 0 1.5px #fff}
+#dev-phase-bar button{min-height:32px;padding:4px 14px;font:700 14px/1 "Malgun Gothic",sans-serif;border:0;background:#fff;color:#000;cursor:pointer}
+#dev-phase-bar button+button{border-left:1.5px solid #000}
+#dev-phase-bar button[aria-pressed="true"]{background:#000;color:#fff}
+#dev-phase-bar[data-broken]::after{content:"!";padding:4px 8px;font:700 14px/1.6 sans-serif;background:#000;color:#fff}
+/* 본편 2페이즈에서 미로가 바뀌면 미로 화면 전체가 반전된다(phase.css의 #maze 규칙과 같게) */
+body[data-dev-phase="2"] #stage{filter:invert(1)}

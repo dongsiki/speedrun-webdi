@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>학창 시절 회상 — 개발자용</title>
+<link rel="stylesheet" href="flashback.css">
+</head>
+<body>
+<div class="new-tag">새로 만든 부분: 학창 시절 괴롭힘 회상</div>
+
+<section id="start" class="screen">
+  <p class="where">기억 스테이지 · 침실</p>
+  <button id="play" type="button">회상 보기</button>
+  <a class="back" href="../../../02_speedrun_dev.html">개발자 목록으로</a>
+</section>
+
+<section id="scene" class="screen" hidden>
+  <div class="frame">
+    <img id="cut" alt="">
+    <div id="placeholder" class="placeholder" hidden></div>
+    <div class="grain"></div>
+  </div>
+  <p id="line" class="line"></p>
+  <p class="hint">눌러서 넘기기</p>
+</section>
+
+<section id="end" class="screen" hidden>
+  <p class="where">다시 침실</p>
+  <button id="again" type="button">한 번 더</button>
+  <a class="back" href="../../../02_speedrun_dev.html">개발자 목록으로</a>
+</section>
+
+<div id="glitch" class="glitch" hidden></div>
+<audio id="voice" preload="auto"></audio>
+
+<script src="cuts.js"></script>
+<script src="flashback.js"></script>
+</body>
+</html>

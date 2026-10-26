@@ -1,0 +1,59 @@
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#fff;color:#000}
+body{font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+.clue-new{position:fixed;top:8px;right:12px;margin:0;font-size:11px;letter-spacing:.02em;color:#555;z-index:30;background:#fff;padding:2px 6px;border:1px dashed #999}
+#clue-app{max-width:1100px;margin:0 auto;padding:64px 16px 28px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.clue-dots{list-style:none;display:flex;gap:10px;margin:0;padding:0}
+.clue-dots li{width:12px;height:12px;border:1.5px solid #000;border-radius:50%}
+.clue-dots li.on{background:#000}
+.clue-stage{position:relative;width:min(100%,calc(68vh * 16 / 9))}
+.clue-frame{position:relative;width:100%;aspect-ratio:16/9;border:2px solid #000;overflow:hidden;cursor:crosshair;user-select:none;touch-action:manipulation;background:#fff}
+.clue-frame img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;display:block;pointer-events:none}
+.clue-ghost{opacity:0;mix-blend-mode:multiply}
+.clue-round{position:absolute;left:10px;bottom:8px;min-width:26px;height:26px;padding:0 6px;display:grid;place-items:center;border:1.5px solid #000;background:#fff;font:600 14px/1 ui-monospace,Consolas,monospace}
+.clue-noise{position:absolute;inset:0;pointer-events:none;opacity:0;background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px)}
+/* 바뀌는 순간: 같은 화면을 어긋나게 겹쳐 흔드는 글리치 */
+.clue-frame.glitch .clue-noise{animation:clue-noise .42s steps(6) both}
+.clue-frame.glitch #clue-ghost-a{animation:clue-shift-a .42s steps(5) both}
+.clue-frame.glitch #clue-ghost-b{animation:clue-shift-b .42s steps(4) both}
+.clue-frame.glitch #clue-img{animation:clue-flick .42s steps(3) both}
+@keyframes clue-noise{0%{opacity:.9;transform:translateY(0)}50%{opacity:.6;transform:translateY(7px)}100%{opacity:0;transform:translateY(-4px)}}
+@keyframes clue-shift-a{0%{opacity:.8;transform:translateX(-14px);clip-path:inset(10% 0 62% 0)}40%{opacity:.7;transform:translateX(18px);clip-path:inset(48% 0 30% 0)}80%{opacity:.6;transform:translateX(-6px);clip-path:inset(72% 0 8% 0)}100%{opacity:0;transform:none}}
+@keyframes clue-shift-b{0%{opacity:.7;transform:translateX(10px);clip-path:inset(30% 0 50% 0)}50%{opacity:.6;transform:translateX(-22px);clip-path:inset(5% 0 80% 0)}100%{opacity:0;transform:none}}
+@keyframes clue-flick{0%{filter:invert(1)}34%{filter:none}67%{filter:invert(1) contrast(2)}100%{filter:none}}
+/* AI가 손댄 물건: 편집 프로그램처럼 선택 상자 + 손잡이 */
+.clue-box{position:absolute;border:1.5px dashed #000;pointer-events:none;animation:clue-box-in .5s steps(4) both}
+.clue-box i{position:absolute;width:9px;height:9px;background:#fff;border:1.5px solid #000;transform:translate(-50%,-50%)}
+.clue-box i:nth-child(1){left:0;top:0}.clue-box i:nth-child(2){left:50%;top:0}.clue-box i:nth-child(3){left:100%;top:0}.clue-box i:nth-child(4){left:100%;top:50%}
+.clue-box i:nth-child(5){left:100%;top:100%}.clue-box i:nth-child(6){left:50%;top:100%}.clue-box i:nth-child(7){left:0;top:100%}.clue-box i:nth-child(8){left:0;top:50%}
+.clue-box.hint{border-style:dotted;animation:clue-hint 1.1s ease-in-out infinite}
+.clue-box.hint i{display:none}
+@keyframes clue-box-in{0%{opacity:0;transform:scale(1.3)}50%{opacity:1;transform:scale(.94)}100%{opacity:1;transform:none}}
+@keyframes clue-hint{50%{opacity:.25}}
+.clue-miss{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border:1.5px solid #000;border-radius:50%;pointer-events:none;animation:clue-miss .45s ease-out both}
+@keyframes clue-miss{from{opacity:.8;transform:scale(.4)}to{opacity:0;transform:scale(1.4)}}
+/* AI 쪽지: 첫 화면 AI 쪽지와 같은 결 */
+.clue-paper{position:absolute;right:4%;top:6%;max-width:min(380px,80%);word-break:keep-all;padding:18px 22px 14px;background:#fff;border:2px solid #000;border-radius:1% 2% 1% 3%/2% 1% 3% 1%;transform:rotate(-3deg);font-family:Batang,"바탕","Malgun Gothic",serif;animation:clue-paper .35s ease-out both}
+.clue-paper p{margin:0;white-space:nowrap;font-size:clamp(17px,2.4vw,23px);line-height:1.45}
+@keyframes clue-paper{from{opacity:0;transform:rotate(-8deg) translateY(-8px)}to{opacity:1;transform:rotate(-3deg)}}
+.clue-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.clue-actions button{min-height:44px;padding:0 20px;border:2px solid #000;background:#fff;color:#000;font-family:inherit;font-size:16px;font-weight:600;line-height:1;cursor:pointer;border-radius:0}
+.clue-actions button:hover{background:#000;color:#fff}
+.clue-actions button:focus-visible{outline:2px solid #000;outline-offset:3px}
+#clue-hint{border-style:dashed;font-weight:400}
+.clue-final{width:100%;display:flex;flex-direction:column;align-items:center;gap:16px}
+.clue-thumbs{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.clue-thumb{position:relative;aspect-ratio:16/9;border:1.5px solid #000;overflow:hidden}
+.clue-thumb img{width:100%;height:100%;display:block}
+.clue-thumb .clue-box{animation:none}
+.clue-thumb .clue-box{border-width:1px}.clue-thumb .clue-box i{display:none}
+.clue-who{margin:0;font-family:Batang,"바탕","Malgun Gothic",serif;font-size:clamp(22px,4vw,34px);letter-spacing:.04em}
+.clue-who.glitch{animation:clue-who 1.6s steps(8) both}
+@keyframes clue-who{0%{opacity:0;transform:translateX(-6px)}20%{opacity:1;transform:translateX(5px)}35%{transform:skewX(-14deg)}50%{transform:none;filter:invert(0)}70%{transform:translateX(-3px)}100%{opacity:1;transform:none}}
+.clue-plan{margin-top:6px;font-size:12px;color:#333;padding:6px 10px;border:1px dashed #000}
+.clue-plan b{display:inline-block;margin-right:6px;padding:1px 6px;background:#000;color:#fff;font-weight:700}
+@media(max-width:640px){#clue-app{padding-top:58px}.clue-thumbs{grid-template-columns:1fr}.clue-paper{padding:10px 12px 8px}.clue-paper p{font-size:15px}}
+@media(prefers-reduced-motion:reduce){.clue-frame.glitch *{animation:none!important}}
+.clue-dots{order:0}.clue-stage,.clue-final{order:1}.clue-actions{order:2}.clue-plan{order:3}
+@media(max-width:640px){.clue-box i{width:6px;height:6px;border-width:1px}}
+.portable-back{position:fixed;top:max(16px,env(safe-area-inset-top));left:20px;width:44px;height:44px;display:grid;place-items:center;background:#fff;color:#000;text-decoration:none;z-index:20}.portable-back svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5}.portable-back:focus-visible{outline:2px solid #000;outline-offset:4px}
