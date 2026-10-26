@@ -2,16 +2,16 @@
 .phase-intro-glitch{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:2}
 
 /* 2페이즈: 클리어마다 바뀐 맵. 입력 좌표는 브라우저가 변환을 따라가므로 조작은 그대로 된다. */
-body[data-phase="2"][data-corrupt~="maze"] #maze{filter:invert(1)}
-body[data-phase="2"][data-corrupt~="routine"] #routine{transform:scaleX(-1)}
-body[data-phase="2"][data-corrupt~="switches"] #switches{transform:rotate(180deg)}
-body[data-phase="2"][data-corrupt~="limb"] #limb{transform:scaleX(-1)}
-body[data-phase="2"][data-corrupt~="suitcase"] #suitcase{transform:scaleX(-1);filter:invert(1)}
-body[data-phase="2"][data-corrupt~="needle"] #needle{transform:rotate(180deg)}
-body[data-phase="2"][data-corrupt~="mri"] #mri{filter:invert(1) contrast(1.3);animation:phase-sway 7s ease-in-out infinite}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="maze"] #maze{filter:invert(1)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="routine"] #routine{transform:scaleX(-1)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="switches"] #switches{transform:rotate(180deg)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="limb"] #limb{transform:scaleX(-1)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="suitcase"] #suitcase{transform:scaleX(-1);filter:invert(1)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="needle"] #needle{transform:rotate(180deg)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="mri"] #mri{filter:invert(1) contrast(1.3);animation:phase-sway 7s ease-in-out infinite}
 /* 땅파기 로비도 점점: 세 곳 이상 바뀌면 좌우가 뒤집히고, 다섯 곳 이상이면 색까지 뒤집힌다. */
-body[data-phase="2"][data-corruptn="3"] #digging,body[data-phase="2"][data-corruptn="4"] #digging{transform:scaleX(-1)}
-body[data-phase="2"][data-corruptn="5"] #digging,body[data-phase="2"][data-corruptn="6"] #digging,body[data-phase="2"][data-corruptn="7"] #digging{transform:scaleX(-1);filter:invert(1)}
+body[data-phase="2"]:not([data-calm])[data-corruptn="3"] #digging,body[data-phase="2"]:not([data-calm])[data-corruptn="4"] #digging{transform:scaleX(-1)}
+body[data-phase="2"]:not([data-calm])[data-corruptn="5"] #digging,body[data-phase="2"]:not([data-calm])[data-corruptn="6"] #digging,body[data-phase="2"]:not([data-calm])[data-corruptn="7"] #digging{transform:scaleX(-1);filter:invert(1)}
 @keyframes phase-sway{0%,100%{translate:0 0}50%{translate:6px -3px}}
 
 /* 순간 글리치 */
@@ -36,9 +36,9 @@ body[data-burst] #phase-tear{display:block}
 #phase-end canvas{position:absolute;inset:0;width:100%;height:100%}
 #phase-end p{position:absolute;left:0;right:0;top:50%;margin:0;transform:translateY(-50%);text-align:center;color:#fff;
   font:700 clamp(30px,6vw,76px)/1.2 "Courier New","Malgun Gothic",monospace;letter-spacing:.08em;opacity:0}
-#phase-end p.show{opacity:1;animation:phase-jitter .12s steps(2) infinite}
+#phase-end p.show{opacity:1}
 #phase-end p.hold{animation:phase-grow 1.4s linear forwards}
-@keyframes phase-grow{to{transform:translateY(-50%) scale(1.35);letter-spacing:.3em;filter:blur(.6px)}}
+@keyframes phase-grow{to{transform:translateY(-50%) scale(1.25)}}
 #phase-end.scare{animation:phase-quake .05s steps(2) infinite}
 @keyframes phase-quake{0%{transform:translate(18px,-14px) rotate(1.5deg)}50%{transform:translate(-22px,12px) rotate(-2deg)}100%{transform:translate(10px,20px)}}
 

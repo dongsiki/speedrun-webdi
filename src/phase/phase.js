@@ -18,17 +18,30 @@
   FX.face(); // 얼굴 장면을 미리 잘라 둔다
 
   // --- 맵 바꾸기: 미로는 원래 지나던 통로(11,10)를 벽으로 막고 (10,11)을 연다 → 시작 쪽으로 크게 돌아가야 한다 ---
-  const originalMaze = typeof DemoDocuments !== 'undefined' ? DemoDocuments.maze : null;
+  // 10/26 사용자: 점프스케어가 나오는 클리어 한 게임 전부터는 글리치 없이.
+  // 「'아 정상화'됐나보다 생각하게 될 때즘에 빡 조지는 거지」 → 마지막 한 판은 맵·소리·화면 모두 1페이즈처럼 정상.
+  const calm = () => P.state.phase === 2 && P.state.run2.length >= games.length - 1;
+  const has = typeof DemoDocuments !== 'undefined';
+  const originals = {}; if (has) for (const g of games) originals[g] = DemoDocuments[g];
+  // 10/26 사용자 「그래」: 맵이 바뀐 게임은 그 게임 원래 소리도 깨진다(바뀐 게임이 늘수록 깨지는 소리도 늘어남).
+  const soundGlitch = html => html.replace(/<head>/i, () => '<head><script>(' + phaseStageAudioGlitch.toString() + ')();<' + '/script>');
   function applyMaps() {
-    const s = P.state;
+    const s = P.state, quiet = calm(), on = s.phase >= 2 && !quiet;
+    if (quiet) body.dataset.calm = '1'; else delete body.dataset.calm;
     body.dataset.corrupt = s.phase >= 2 ? s.corrupted.join(' ') : '';
     body.dataset.corruptn = String(s.phase >= 2 ? s.corrupted.length : 0);
-    if (!originalMaze) return;
-    if (s.phase >= 2 && s.corrupted.includes('maze')) {
-      const patched = originalMaze.replace("'#.#########.#########'", "'#.###################'").replace("'#.....#...#.........#'", "'#.....#.............#'");
-      DemoDocuments.maze = patched;
-      body.dataset.mazeBlocked = patched !== originalMaze ? 'yes' : 'no';
-    } else DemoDocuments.maze = originalMaze;
+    if (!has) return;
+    for (const g of games) {
+      let html = originals[g];
+      if (on && s.corrupted.includes(g)) {
+        if (g === 'maze') { // 원래 지나던 통로(11,10)를 막고 (10,11)을 연다 → 시작 쪽으로 크게 돌아가야 한다
+          html = html.replace("'#.#########.#########'", "'#.###################'").replace("'#.....#...#.........#'", "'#.....#.............#'");
+          body.dataset.mazeBlocked = html !== originals[g] ? 'yes' : 'no';
+        }
+        html = soundGlitch(html);
+      }
+      DemoDocuments[g] = html;
+    }
   }
   applyMaps();
 
@@ -38,7 +51,7 @@
   document.querySelector('main').append(tear, caption);
   let burstTimer = 0;
   function burst(strength = 1) {
-    if (P.state.phase < 2 || body.dataset.stage === 'intro' || body.dataset.phaseEnding) return;
+    if (P.state.phase < 2 || calm() || body.dataset.stage === 'intro' || body.dataset.phaseEnding) return;
     const n = P.state.corrupted.length;
     body.style.setProperty('--gx', `${(Math.random() - .5) * 40 * strength}px`);
     body.style.setProperty('--gy', `${(Math.random() - .5) * 14 * strength}px`);
@@ -51,12 +64,12 @@
   }
   function scheduleBursts() {
     clearTimeout(burstTimer);
-    if (P.state.phase < 2) return;
+    if (P.state.phase < 2 || calm()) return;
     const n = P.state.corrupted.length;
     burstTimer = setTimeout(() => { burst(1 + n * .15); scheduleBursts(); }, 2500 + Math.random() * Math.max(1500, 8000 - n * 900));
   }
   function sound() {
-    if (P.state.phase >= 2 && body.dataset.stage !== 'intro' && !body.dataset.phaseEnding) FX.droneOn(.035 + P.state.corrupted.length * .012);
+    if (P.state.phase >= 2 && !calm() && body.dataset.stage !== 'intro' && !body.dataset.phaseEnding) FX.droneOn(.035 + P.state.corrupted.length * .012);
     else FX.droneOff();
   }
   let captionTimer = 0;
@@ -74,7 +87,7 @@
     const source = ['digging', ...games].find(name => $(name)?.contentWindow === event.source);
     if (!source || source !== body.dataset.stage) return;
     const s = P.state;
-    if (s.phase === 2 && source === 'digging' && data.type === 'enter' && !s.swapUsed && s.run2.length >= 2 && DemoFlow.destinations[data.object]) {
+    if (s.phase === 2 && source === 'digging' && data.type === 'enter' && !s.swapUsed && s.run2.length >= 2 && !calm() && DemoFlow.destinations[data.object]) {
       const own = DemoFlow.destinations[data.object];
       const others = games.filter(g => g !== own && !s.run2.includes(g));
       if (others.length) {
@@ -90,7 +103,7 @@
       const run2 = [...s.run2, source];
       const target = ORDER.find(g => !s.corrupted.includes(g) && !run2.includes(g)) || ORDER.find(g => !s.corrupted.includes(g));
       P.set({ run2, corrupted: target ? [...s.corrupted, target] : s.corrupted });
-      applyMaps();
+      applyMaps(); scheduleBursts(); sound();
       if (run2.length >= games.length) endPhase2();
     }
   }, true);
@@ -102,14 +115,22 @@
     if (stage === stageNow) return;
     stageNow = stage;
     sound(); scheduleBursts();
-    if (P.state.phase === 2 && P.state.corrupted.includes(stage)) {
+    if (P.state.phase === 2 && !calm() && P.state.corrupted.includes(stage)) {
       setTimeout(() => { burst(2); say(storyLine(stage)); }, 700);
     }
-    if (P.state.phase === 2 && stage === 'digging' && P.state.corrupted.length) setTimeout(() => burst(1.6), 500);
+    if (P.state.phase === 2 && !calm() && stage === 'digging' && P.state.corrupted.length) setTimeout(() => burst(1.6), 500);
     // 발표용: 1페이즈 결과 화면 바로 보기
     if (P.demo === 'finale1' && stage === 'digging' && !body.dataset.demoFinale) {
       body.dataset.demoFinale = '1';
       setTimeout(() => { body.dataset.completed = games.join(','); }, 600);
+    }
+    // 발표용: 점프스케어 직전의 마지막 한 게임(정상화된 전구 퍼즐)으로 바로 들어간다
+    if (P.demo === 'phase2-last' && stage === 'digging' && !body.dataset.demoEnter) {
+      body.dataset.demoEnter = '1';
+      setTimeout(() => {
+        const send = m => $('digging').contentWindow.eval('parent.postMessage(' + JSON.stringify({ channel, ...m }) + ", '*')");
+        try { send({ type: 'found', object: 'bulb' }); setTimeout(() => send({ type: 'enter', object: 'bulb' }), 150); } catch (_) {}
+      }, 900);
     }
     if (P.demo === 'scare' && stage === 'digging' && !body.dataset.phaseEnding) setTimeout(endPhase2, 900);
     if (stage === 'intro') todoPanel();
@@ -135,7 +156,9 @@
     if (P.state.phase === 1) {
       P.set({ phase: 2, corrupted: [], run2: [], swapUsed: false });
       setTimeout(cut, 3500); setTimeout(cut, 7000);
-    } else if (P.state.phase >= 2) finale.remove(); // 2페이즈의 끝은 결과 화면 대신 경고로 간다
+    } else if (body.dataset.phaseEnding) { // 2페이즈 끝: 평범한 클리어 화면으로 안심시킨다(누를 수는 없게)
+      finale.querySelectorAll('button').forEach(b => { b.disabled = true; b.tabIndex = -1; });
+    } else if (P.state.phase >= 2) finale.remove();
   }
 
   // --- 2페이즈 끝: AI 경고 → 점프스케어 → 첫 화면 ---
@@ -143,14 +166,23 @@
     if (body.dataset.phaseEnding) return;
     body.dataset.phaseEnding = 'wait';
     for (let i = 0; i < 200 && !(body.dataset.stage === 'digging' && idle()); i++) await sleep(100);
-    body.dataset.phaseEnding = 'on';
     clearTimeout(burstTimer); FX.droneOff(true);
     const face = await FX.face();
+    // 1) 평범한 클리어 화면(1페이즈와 똑같이). 2~3초 뒤 경고.
+    body.dataset.completed = games.join(',');
+    await sleep(400);
+    if (!$('run-clear')) { // 같은 판에서 이미 결과 화면을 쓴 경우를 위한 대체(같은 모양)
+      const f = document.createElement('section'); f.id = 'run-clear'; f.innerHTML = '<p class="rc-word">클리어</p><button class="rc-again" type="button" disabled>RE?</button>';
+      document.querySelector('main').append(f); requestAnimationFrame(() => { f.classList.add('show'); f.querySelectorAll('p,button').forEach(x => x.classList.add('show')); });
+    }
+    watchFinale();
+    await sleep(3400); // 클리어 화면을 3초쯤 보여 안심시킨 뒤
+    body.dataset.phaseEnding = 'on';
     const stage = document.createElement('section'); stage.id = 'phase-end'; stage.setAttribute('aria-label', '경고');
     const noiseCanvas = document.createElement('canvas'), text = document.createElement('p');
     stage.append(noiseCanvas, text); document.body.append(stage);
     const g = noiseCanvas.getContext('2d');
-    let mode = 'static', raf = 0, t0 = performance.now();
+    let mode = 'dark', raf = 0, t0 = performance.now();
     function draw(now) {
       raf = requestAnimationFrame(draw);
       const W = noiseCanvas.width = innerWidth, H = noiseCanvas.height = innerHeight;
@@ -178,15 +210,12 @@
       }
     }
     raf = requestAnimationFrame(draw);
-    FX.crackle(1.2, .5, 'tear'); FX.crackle(1.2, .35, 'hiss');
-    await sleep(1300);
-    mode = 'dark'; await sleep(900);
+    await sleep(700); // 갑자기 까만 화면. 소리 없음.
     // 경고(손글씨 메모 원문 조각: 「당신 누구야」 「나가」 「너의 기억에서」. 최종 대사는 미정)
     const lines = ['당신 누구야.', '나가.', '너의 기억에서.'];
     for (const line of lines) {
       text.textContent = ''; text.className = 'show';
-      FX.whisper(1.2, .3);
-      for (const ch of line) { text.textContent += ch; FX.crackle(.03, .08, 'click'); await sleep(110); }
+      for (const ch of line) { text.textContent += ch; await sleep(110); }
       await sleep(1250);
     }
     text.className = 'show hold';

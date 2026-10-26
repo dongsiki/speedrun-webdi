@@ -217,16 +217,16 @@ body[data-ai-gate=holding] #ai-gate-stop .shackle{transform:translateY(calc(var(
 .phase-intro-glitch{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:2}
 
 /* 2페이즈: 클리어마다 바뀐 맵. 입력 좌표는 브라우저가 변환을 따라가므로 조작은 그대로 된다. */
-body[data-phase="2"][data-corrupt~="maze"] #maze{filter:invert(1)}
-body[data-phase="2"][data-corrupt~="routine"] #routine{transform:scaleX(-1)}
-body[data-phase="2"][data-corrupt~="switches"] #switches{transform:rotate(180deg)}
-body[data-phase="2"][data-corrupt~="limb"] #limb{transform:scaleX(-1)}
-body[data-phase="2"][data-corrupt~="suitcase"] #suitcase{transform:scaleX(-1);filter:invert(1)}
-body[data-phase="2"][data-corrupt~="needle"] #needle{transform:rotate(180deg)}
-body[data-phase="2"][data-corrupt~="mri"] #mri{filter:invert(1) contrast(1.3);animation:phase-sway 7s ease-in-out infinite}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="maze"] #maze{filter:invert(1)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="routine"] #routine{transform:scaleX(-1)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="switches"] #switches{transform:rotate(180deg)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="limb"] #limb{transform:scaleX(-1)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="suitcase"] #suitcase{transform:scaleX(-1);filter:invert(1)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="needle"] #needle{transform:rotate(180deg)}
+body[data-phase="2"]:not([data-calm])[data-corrupt~="mri"] #mri{filter:invert(1) contrast(1.3);animation:phase-sway 7s ease-in-out infinite}
 /* 땅파기 로비도 점점: 세 곳 이상 바뀌면 좌우가 뒤집히고, 다섯 곳 이상이면 색까지 뒤집힌다. */
-body[data-phase="2"][data-corruptn="3"] #digging,body[data-phase="2"][data-corruptn="4"] #digging{transform:scaleX(-1)}
-body[data-phase="2"][data-corruptn="5"] #digging,body[data-phase="2"][data-corruptn="6"] #digging,body[data-phase="2"][data-corruptn="7"] #digging{transform:scaleX(-1);filter:invert(1)}
+body[data-phase="2"]:not([data-calm])[data-corruptn="3"] #digging,body[data-phase="2"]:not([data-calm])[data-corruptn="4"] #digging{transform:scaleX(-1)}
+body[data-phase="2"]:not([data-calm])[data-corruptn="5"] #digging,body[data-phase="2"]:not([data-calm])[data-corruptn="6"] #digging,body[data-phase="2"]:not([data-calm])[data-corruptn="7"] #digging{transform:scaleX(-1);filter:invert(1)}
 @keyframes phase-sway{0%,100%{translate:0 0}50%{translate:6px -3px}}
 
 /* 순간 글리치 */
@@ -251,9 +251,9 @@ body[data-burst] #phase-tear{display:block}
 #phase-end canvas{position:absolute;inset:0;width:100%;height:100%}
 #phase-end p{position:absolute;left:0;right:0;top:50%;margin:0;transform:translateY(-50%);text-align:center;color:#fff;
   font:700 clamp(30px,6vw,76px)/1.2 "Courier New","Malgun Gothic",monospace;letter-spacing:.08em;opacity:0}
-#phase-end p.show{opacity:1;animation:phase-jitter .12s steps(2) infinite}
+#phase-end p.show{opacity:1}
 #phase-end p.hold{animation:phase-grow 1.4s linear forwards}
-@keyframes phase-grow{to{transform:translateY(-50%) scale(1.35);letter-spacing:.3em;filter:blur(.6px)}}
+@keyframes phase-grow{to{transform:translateY(-50%) scale(1.25)}}
 #phase-end.scare{animation:phase-quake .05s steps(2) infinite}
 @keyframes phase-quake{0%{transform:translate(18px,-14px) rotate(1.5deg)}50%{transform:translate(-22px,12px) rotate(-2deg)}100%{transform:translate(10px,20px)}}
 
@@ -623,6 +623,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   'use strict';
   const P = window.SpeedrunPhase, intro = window.TransformationIntro;
   if (!P || !intro || P.state.phase < 2 || !intro.active) return;
+  if (P.state.phase === 2 && P.state.run2.length >= P.games.length - 1) return; // 점프스케어 직전 한 판은 조용히
   const dialog = document.querySelector('dialog.transformation-intro');
   const video = dialog && dialog.querySelector('video');
   if (!video) return;
@@ -1513,6 +1514,57 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   window.RebellionLog = { get store() { return store; }, achievements, show, close, resetFinale() { finale?.remove(); finale = null; offInRun = false; sync(); } };
 })();
 </script>
+<script>/* 게임 원래 소리에 글리치(2026-10-26, Claude Code). 스테이지 문서 맨 앞에 끼워 넣는다.
+   WebAudio 소리는 목적지 앞에 디스토션·끊김을 끼우고, <audio> 소리는 음높이 흔들림 + (가능하면) 같은 디스토션을 거친다.
+   음량은 압축기로 눌러 원래보다 크지 않게 한다. 사용 여부는 phase.js의 STAGE_SOUND 설정으로 정한다. */
+function phaseStageAudioGlitch() {
+  'use strict';
+  var Native = window.AudioContext || window.webkitAudioContext;
+  if (!Native || Native.__phaseGlitch) return;
+  var destGet = Object.getOwnPropertyDescriptor(BaseAudioContext.prototype, 'destination').get;
+  function chain(ctx) {
+    var real = destGet.call(ctx);
+    var drive = ctx.createGain(); drive.gain.value = 4;
+    var shaper = ctx.createWaveShaper(), curve = new Float32Array(2048);
+    for (var i = 0; i < curve.length; i++) { var x = i / 1024 - 1; curve[i] = Math.round(Math.tanh(x * 10) * 6) / 6; }
+    shaper.curve = curve;
+    var stutter = ctx.createGain();
+    var comp = ctx.createDynamicsCompressor(); comp.threshold.value = -24; comp.ratio.value = 12; comp.attack.value = .003; comp.release.value = .15;
+    var level = ctx.createGain(); level.gain.value = .35;
+    drive.connect(shaper); shaper.connect(stutter); stutter.connect(comp); comp.connect(level); level.connect(real);
+    setInterval(function () { // 가끔 소리가 뚝 끊긴다
+      if (ctx.state !== 'running' || Math.random() > .2) return;
+      var t = ctx.currentTime; stutter.gain.setValueAtTime(0, t); stutter.gain.setValueAtTime(1, t + .04 + Math.random() * .14);
+    }, 450);
+    return drive;
+  }
+  function Glitched(options) {
+    var ctx = new Native(options);
+    var input = chain(ctx);
+    Object.defineProperty(ctx, 'destination', { get: function () { return input; } });
+    return ctx;
+  }
+  Glitched.prototype = Native.prototype; Glitched.__phaseGlitch = true;
+  window.AudioContext = Glitched; if (window.webkitAudioContext) window.webkitAudioContext = Glitched;
+  var mediaCtx = null;
+  document.addEventListener('play', function (event) {
+    var el = event.target;
+    if (!(el instanceof HTMLMediaElement) || el.__phaseGlitch) return;
+    el.__phaseGlitch = true;
+    try { el.preservesPitch = false; } catch (_) {}
+    try {
+      mediaCtx = mediaCtx || new Glitched();
+      if (mediaCtx.state === 'suspended') mediaCtx.resume();
+      if (mediaCtx.state === 'running') mediaCtx.createMediaElementSource(el).connect(mediaCtx.destination);
+    } catch (_) {}
+    setInterval(function () { // 음높이가 순간 꺾인다
+      if (el.paused || Math.random() > .3) return;
+      el.playbackRate = .55 + Math.random() * .9;
+      setTimeout(function () { el.playbackRate = 1; }, 120 + Math.random() * 300);
+    }, 600);
+  }, true);
+}
+</script>
 <script>/* 1→2페이즈와 2페이즈 끝 점프스케어(2026-10-26, Claude Code).
    - 1페이즈 첫 전체 클리어: 결과 화면 3.5초·7.0초에 공포 컷 각 0.5초, 딱 두 번.
    - 2페이즈: 미니게임마다 글리치·이상한 소리. 클리어 하나마다 아직 안 깬 게임 하나의 맵이 바뀐다.
@@ -1533,17 +1585,30 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   FX.face(); // 얼굴 장면을 미리 잘라 둔다
 
   // --- 맵 바꾸기: 미로는 원래 지나던 통로(11,10)를 벽으로 막고 (10,11)을 연다 → 시작 쪽으로 크게 돌아가야 한다 ---
-  const originalMaze = typeof DemoDocuments !== 'undefined' ? DemoDocuments.maze : null;
+  // 10/26 사용자: 점프스케어가 나오는 클리어 한 게임 전부터는 글리치 없이.
+  // 「'아 정상화'됐나보다 생각하게 될 때즘에 빡 조지는 거지」 → 마지막 한 판은 맵·소리·화면 모두 1페이즈처럼 정상.
+  const calm = () => P.state.phase === 2 && P.state.run2.length >= games.length - 1;
+  const has = typeof DemoDocuments !== 'undefined';
+  const originals = {}; if (has) for (const g of games) originals[g] = DemoDocuments[g];
+  // 10/26 사용자 「그래」: 맵이 바뀐 게임은 그 게임 원래 소리도 깨진다(바뀐 게임이 늘수록 깨지는 소리도 늘어남).
+  const soundGlitch = html => html.replace(/<head>/i, () => '<head><script>(' + phaseStageAudioGlitch.toString() + ')();<' + '/script>');
   function applyMaps() {
-    const s = P.state;
+    const s = P.state, quiet = calm(), on = s.phase >= 2 && !quiet;
+    if (quiet) body.dataset.calm = '1'; else delete body.dataset.calm;
     body.dataset.corrupt = s.phase >= 2 ? s.corrupted.join(' ') : '';
     body.dataset.corruptn = String(s.phase >= 2 ? s.corrupted.length : 0);
-    if (!originalMaze) return;
-    if (s.phase >= 2 && s.corrupted.includes('maze')) {
-      const patched = originalMaze.replace("'#.#########.#########'", "'#.###################'").replace("'#.....#...#.........#'", "'#.....#.............#'");
-      DemoDocuments.maze = patched;
-      body.dataset.mazeBlocked = patched !== originalMaze ? 'yes' : 'no';
-    } else DemoDocuments.maze = originalMaze;
+    if (!has) return;
+    for (const g of games) {
+      let html = originals[g];
+      if (on && s.corrupted.includes(g)) {
+        if (g === 'maze') { // 원래 지나던 통로(11,10)를 막고 (10,11)을 연다 → 시작 쪽으로 크게 돌아가야 한다
+          html = html.replace("'#.#########.#########'", "'#.###################'").replace("'#.....#...#.........#'", "'#.....#.............#'");
+          body.dataset.mazeBlocked = html !== originals[g] ? 'yes' : 'no';
+        }
+        html = soundGlitch(html);
+      }
+      DemoDocuments[g] = html;
+    }
   }
   applyMaps();
 
@@ -1553,7 +1618,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   document.querySelector('main').append(tear, caption);
   let burstTimer = 0;
   function burst(strength = 1) {
-    if (P.state.phase < 2 || body.dataset.stage === 'intro' || body.dataset.phaseEnding) return;
+    if (P.state.phase < 2 || calm() || body.dataset.stage === 'intro' || body.dataset.phaseEnding) return;
     const n = P.state.corrupted.length;
     body.style.setProperty('--gx', `${(Math.random() - .5) * 40 * strength}px`);
     body.style.setProperty('--gy', `${(Math.random() - .5) * 14 * strength}px`);
@@ -1566,12 +1631,12 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   }
   function scheduleBursts() {
     clearTimeout(burstTimer);
-    if (P.state.phase < 2) return;
+    if (P.state.phase < 2 || calm()) return;
     const n = P.state.corrupted.length;
     burstTimer = setTimeout(() => { burst(1 + n * .15); scheduleBursts(); }, 2500 + Math.random() * Math.max(1500, 8000 - n * 900));
   }
   function sound() {
-    if (P.state.phase >= 2 && body.dataset.stage !== 'intro' && !body.dataset.phaseEnding) FX.droneOn(.035 + P.state.corrupted.length * .012);
+    if (P.state.phase >= 2 && !calm() && body.dataset.stage !== 'intro' && !body.dataset.phaseEnding) FX.droneOn(.035 + P.state.corrupted.length * .012);
     else FX.droneOff();
   }
   let captionTimer = 0;
@@ -1589,7 +1654,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     const source = ['digging', ...games].find(name => $(name)?.contentWindow === event.source);
     if (!source || source !== body.dataset.stage) return;
     const s = P.state;
-    if (s.phase === 2 && source === 'digging' && data.type === 'enter' && !s.swapUsed && s.run2.length >= 2 && DemoFlow.destinations[data.object]) {
+    if (s.phase === 2 && source === 'digging' && data.type === 'enter' && !s.swapUsed && s.run2.length >= 2 && !calm() && DemoFlow.destinations[data.object]) {
       const own = DemoFlow.destinations[data.object];
       const others = games.filter(g => g !== own && !s.run2.includes(g));
       if (others.length) {
@@ -1605,7 +1670,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
       const run2 = [...s.run2, source];
       const target = ORDER.find(g => !s.corrupted.includes(g) && !run2.includes(g)) || ORDER.find(g => !s.corrupted.includes(g));
       P.set({ run2, corrupted: target ? [...s.corrupted, target] : s.corrupted });
-      applyMaps();
+      applyMaps(); scheduleBursts(); sound();
       if (run2.length >= games.length) endPhase2();
     }
   }, true);
@@ -1617,14 +1682,22 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     if (stage === stageNow) return;
     stageNow = stage;
     sound(); scheduleBursts();
-    if (P.state.phase === 2 && P.state.corrupted.includes(stage)) {
+    if (P.state.phase === 2 && !calm() && P.state.corrupted.includes(stage)) {
       setTimeout(() => { burst(2); say(storyLine(stage)); }, 700);
     }
-    if (P.state.phase === 2 && stage === 'digging' && P.state.corrupted.length) setTimeout(() => burst(1.6), 500);
+    if (P.state.phase === 2 && !calm() && stage === 'digging' && P.state.corrupted.length) setTimeout(() => burst(1.6), 500);
     // 발표용: 1페이즈 결과 화면 바로 보기
     if (P.demo === 'finale1' && stage === 'digging' && !body.dataset.demoFinale) {
       body.dataset.demoFinale = '1';
       setTimeout(() => { body.dataset.completed = games.join(','); }, 600);
+    }
+    // 발표용: 점프스케어 직전의 마지막 한 게임(정상화된 전구 퍼즐)으로 바로 들어간다
+    if (P.demo === 'phase2-last' && stage === 'digging' && !body.dataset.demoEnter) {
+      body.dataset.demoEnter = '1';
+      setTimeout(() => {
+        const send = m => $('digging').contentWindow.eval('parent.postMessage(' + JSON.stringify({ channel, ...m }) + ", '*')");
+        try { send({ type: 'found', object: 'bulb' }); setTimeout(() => send({ type: 'enter', object: 'bulb' }), 150); } catch (_) {}
+      }, 900);
     }
     if (P.demo === 'scare' && stage === 'digging' && !body.dataset.phaseEnding) setTimeout(endPhase2, 900);
     if (stage === 'intro') todoPanel();
@@ -1650,7 +1723,9 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     if (P.state.phase === 1) {
       P.set({ phase: 2, corrupted: [], run2: [], swapUsed: false });
       setTimeout(cut, 3500); setTimeout(cut, 7000);
-    } else if (P.state.phase >= 2) finale.remove(); // 2페이즈의 끝은 결과 화면 대신 경고로 간다
+    } else if (body.dataset.phaseEnding) { // 2페이즈 끝: 평범한 클리어 화면으로 안심시킨다(누를 수는 없게)
+      finale.querySelectorAll('button').forEach(b => { b.disabled = true; b.tabIndex = -1; });
+    } else if (P.state.phase >= 2) finale.remove();
   }
 
   // --- 2페이즈 끝: AI 경고 → 점프스케어 → 첫 화면 ---
@@ -1658,14 +1733,23 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
     if (body.dataset.phaseEnding) return;
     body.dataset.phaseEnding = 'wait';
     for (let i = 0; i < 200 && !(body.dataset.stage === 'digging' && idle()); i++) await sleep(100);
-    body.dataset.phaseEnding = 'on';
     clearTimeout(burstTimer); FX.droneOff(true);
     const face = await FX.face();
+    // 1) 평범한 클리어 화면(1페이즈와 똑같이). 2~3초 뒤 경고.
+    body.dataset.completed = games.join(',');
+    await sleep(400);
+    if (!$('run-clear')) { // 같은 판에서 이미 결과 화면을 쓴 경우를 위한 대체(같은 모양)
+      const f = document.createElement('section'); f.id = 'run-clear'; f.innerHTML = '<p class="rc-word">클리어</p><button class="rc-again" type="button" disabled>RE?</button>';
+      document.querySelector('main').append(f); requestAnimationFrame(() => { f.classList.add('show'); f.querySelectorAll('p,button').forEach(x => x.classList.add('show')); });
+    }
+    watchFinale();
+    await sleep(3400); // 클리어 화면을 3초쯤 보여 안심시킨 뒤
+    body.dataset.phaseEnding = 'on';
     const stage = document.createElement('section'); stage.id = 'phase-end'; stage.setAttribute('aria-label', '경고');
     const noiseCanvas = document.createElement('canvas'), text = document.createElement('p');
     stage.append(noiseCanvas, text); document.body.append(stage);
     const g = noiseCanvas.getContext('2d');
-    let mode = 'static', raf = 0, t0 = performance.now();
+    let mode = 'dark', raf = 0, t0 = performance.now();
     function draw(now) {
       raf = requestAnimationFrame(draw);
       const W = noiseCanvas.width = innerWidth, H = noiseCanvas.height = innerHeight;
@@ -1693,15 +1777,12 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
       }
     }
     raf = requestAnimationFrame(draw);
-    FX.crackle(1.2, .5, 'tear'); FX.crackle(1.2, .35, 'hiss');
-    await sleep(1300);
-    mode = 'dark'; await sleep(900);
+    await sleep(700); // 갑자기 까만 화면. 소리 없음.
     // 경고(손글씨 메모 원문 조각: 「당신 누구야」 「나가」 「너의 기억에서」. 최종 대사는 미정)
     const lines = ['당신 누구야.', '나가.', '너의 기억에서.'];
     for (const line of lines) {
       text.textContent = ''; text.className = 'show';
-      FX.whisper(1.2, .3);
-      for (const ch of line) { text.textContent += ch; FX.crackle(.03, .08, 'click'); await sleep(110); }
+      for (const ch of line) { text.textContent += ch; await sleep(110); }
       await sleep(1250);
     }
     text.className = 'show hold';

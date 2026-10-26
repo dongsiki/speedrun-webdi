@@ -5,6 +5,7 @@
   'use strict';
   const P = window.SpeedrunPhase, intro = window.TransformationIntro;
   if (!P || !intro || P.state.phase < 2 || !intro.active) return;
+  if (P.state.phase === 2 && P.state.run2.length >= P.games.length - 1) return; // 점프스케어 직전 한 판은 조용히
   const dialog = document.querySelector('dialog.transformation-intro');
   const video = dialog && dialog.querySelector('video');
   if (!video) return;
