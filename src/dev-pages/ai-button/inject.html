@@ -1,0 +1,37 @@
+<!-- 개발자용 새 항목(src/dev-pages/ai-button): 처음 AI 버튼 스테이지 + 1페/2페/3페 버튼 (2026-10-29 Claude Code).
+     사용자: 「그리고 처음에 ai버튼도 목차에 넣어」 「없다면 넣고, 이건 1페, 3페버튼만 넣어」 「아니다 2페도 넣어.」 「2페에는 살짝의 글리치」
+     본편(01)과 같은 게임을 그대로 쓰고(인트로만 건너뜀), 위쪽 버튼만 더한다.
+     1페 = 처음 AI 버튼 스테이지 그대로 / 2페 = 같은 화면에 살짝의 글리치만 / 3페 = 이미 있는 3페이즈 시안의 첫 장면(AI 버튼을 막다 도와 달라 함)으로 이동. -->
+<script>
+try { sessionStorage.setItem('speedrun-intro-seen', '1'); } catch (_) {}
+window.SpeedrunIntroOnce = true;
+</script>
+<style>/* @inline src/shell/dev/phase-bar.css */</style>
+<style>body[data-burst] #intro{translate:var(--gx,0) var(--gy,0)}#phase-todo{top:50px}</style>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const body = document.body;
+  const bar = document.createElement('div');
+  bar.id = 'dev-phase-bar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', '페이즈');
+  bar.innerHTML = '<button type="button" data-p="1" aria-pressed="true">1페</button><button type="button" data-p="2" aria-pressed="false">2페</button><button type="button" data-p="3" aria-pressed="false">3페</button>';
+  body.append(bar);
+  let timer = 0;
+  function blip() { // 살짝의 글리치: 아주 짧게 화면이 밀리고 줄이 하나 지나간다
+    body.style.setProperty('--gx', `${(Math.random() - .5) * 14}px`);
+    body.style.setProperty('--gy', `${(Math.random() - .5) * 4}px`);
+    body.style.setProperty('--gb', `${Math.floor(Math.random() * 85)}%`);
+    body.style.setProperty('--gh', `${2 + Math.random() * 5}%`);
+    body.dataset.burst = 'tear';
+    if (window.PhaseFX) PhaseFX.crackle(.08, .06, 'hiss');
+    setTimeout(() => { delete body.dataset.burst; }, 70 + Math.random() * 90);
+    timer = setTimeout(blip, 2800 + Math.random() * 4000);
+  }
+  function set(p) {
+    for (const b of bar.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.p === String(p)));
+    clearTimeout(timer); delete body.dataset.burst;
+    if (p === 2) timer = setTimeout(blip, 600);
+    if (p === 3) location.href = 'phase3/index.html#scene=refuse';
+  }
+  bar.addEventListener('click', e => { const b = e.target.closest('button[data-p]'); if (b) set(Number(b.dataset.p)); });
+});
+</script>

@@ -16,7 +16,8 @@
   const tear = document.createElement('div'); tear.id = 'phase-tear'; tear.setAttribute('aria-hidden', 'true');
   const caption = document.createElement('p'); caption.id = 'phase-caption'; caption.setAttribute('aria-live', 'polite');
   const bar = document.createElement('div'); bar.id = 'dev-phase-bar'; bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', '페이즈');
-  bar.innerHTML = '<button type="button" data-p="1">1페</button><button type="button" data-p="2">2페</button>';
+  // 10/29 사용자: 「1페2페3페 버튼을 각 게임화면의 위에 배치시켜줘」 → 3페 버튼만 더함(3페 내용은 아직 없어 눌러도 그대로).
+  bar.innerHTML = '<button type="button" data-p="1">1페</button><button type="button" data-p="2">2페</button><button type="button" data-p="3">3페</button>';
   if (blocked === original) bar.dataset.broken = '1';
   body.append(tear, caption, bar);
 
@@ -57,7 +58,7 @@
   });
   bar.addEventListener('click', event => {
     const b = event.target.closest('button[data-p]');
-    if (b) set(Number(b.dataset.p));
+    if (b && b.dataset.p !== '3') set(Number(b.dataset.p));
   });
   for (const b of bar.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.p === '1'));
   body.dataset.devPhase = '1';
