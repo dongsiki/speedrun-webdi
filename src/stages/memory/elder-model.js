@@ -54,10 +54,16 @@ function createElderModel(T) {
   smilePaint.colorSpace=T.SRGBColorSpace;smilePaint.magFilter=T.NearestFilter;
   smilePaint.minFilter=T.LinearFilter;smilePaint.generateMipmaps=false;
   const smileUniform={value:0};
+  const distortUniform={value:0},distortTimeUniform={value:0},glitchUniform={value:0};
+  const addWarp=shader=>{
+    shader.uniforms.distortAmount=distortUniform;shader.uniforms.distortTime=distortTimeUniform;shader.uniforms.glitchAmount=glitchUniform;
+    shader.vertexShader='uniform float distortAmount;\nuniform float distortTime;\nuniform float glitchAmount;\n'+shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>'+"\n      // 2026-10-31 2페 거울 일그러짐(distortAmount 0~1): 머리가 세로로 늘어나고, 얼굴 앞쪽이 뭉개지고,\n      // 머리가 떨리고, 입 쪽이 처진다. glitchAmount는 가끔 한두 프레임 크게 튀는 값.\n      {\n        float d = distortAmount;\n        float head = smoothstep(1.50, 1.56, transformed.y) * (1.0 - smoothstep(.13, .22, abs(transformed.x)));\n        float face = head * smoothstep(.06, .12, transformed.z);\n        transformed.y = mix(transformed.y, 1.53 + (transformed.y - 1.53) * (1.0 + .35 * d), head);\n        float n = sin(transformed.y * 93.0 + distortTime * 3.1) * sin(transformed.x * 71.0 - distortTime * 2.3) * sin(transformed.z * 57.0 + 1.7);\n        transformed += normal * n * .018 * d * face;\n        transformed.x += sin(distortTime * 37.0) * .006 * d * head;\n        transformed.z += sin(distortTime * 29.0 + 1.3) * .004 * d * head;\n        float mouth = face * smoothstep(1.555, 1.575, transformed.y) * (1.0 - smoothstep(1.61, 1.63, transformed.y));\n        transformed.y -= .03 * d * mouth;\n        transformed += normal * glitchAmount * .07 * head * sin(transformed.y * 40.0 + distortTime * 50.0);\n      }");
+  };
   const painted=new T.MeshLambertMaterial({map:atlas});
   // Preserve the painted face, with a restrained albedo lift. Directional
   // illumination supplies broad form shadows; the print pass supplies dots.
   painted.onBeforeCompile=shader=>{
+    addWarp(shader);
     shader.uniforms.eyePaint={value:eyePaint};
     shader.uniforms.smilePaint={value:smilePaint};shader.uniforms.smileAmount=smileUniform;
     shader.fragmentShader='uniform sampler2D eyePaint;\nuniform sampler2D smilePaint;\nuniform float smileAmount;\n'+shader.fragmentShader;
@@ -76,6 +82,7 @@ function createElderModel(T) {
   const model=new T.Mesh(geometry,painted);model.frustumCulled=false;body.add(model);
   const edge=new T.MeshBasicMaterial({color:0x000000,side:T.BackSide});
   edge.onBeforeCompile=shader=>{
+    addWarp(shader);
     shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>',
       '#include <begin_vertex>\ntransformed += normal * 0.0018;');
   };
@@ -105,6 +112,13 @@ function createElderModel(T) {
     geometry.computeVertexNormals();
   }
   deform(0,0);geometry.computeBoundingSphere();
+  let nextGlitch=0,glitchUntil=0;
+  // 2페 거울 일그러짐 정도(0~1). 절반 이상(3회차쯤)부터 2~3초에 한 번 한두 프레임 크게 튄다.
+  function setDistort(amount,clock){
+    distortUniform.value=amount;distortTimeUniform.value=clock;
+    if(amount>=.5&&clock>nextGlitch){glitchUntil=clock+.05;nextGlitch=clock+2+Math.random();}
+    glitchUniform.value=amount>=.5&&clock<glitchUntil?amount:0;
+  }
   function update(camera,clock,reduced,reflection=0,sway=0,smile=0){
     const lean=reduced?0:Math.max(0,Math.min(1,reflection));
     smileUniform.value=reduced?0:Math.max(0,Math.min(1,smile));
@@ -119,5 +133,5 @@ function createElderModel(T) {
     body.position.set(camera.position.x,camera.position.y-1.665*scale+(reduced?0:Math.sin(clock*1.25)*.002),camera.position.z+.10-lean*.22);
     return {yaw:headYaw,pitch};
   }
-  return {object:body,update};
+  return {object:body,update,setDistort};
 }

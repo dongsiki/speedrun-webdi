@@ -1,0 +1,58 @@
+{
+  "assets/images/switches-phase3-01.png": {
+    "mime": "image/png",
+    "sha256": "0e407dd430c6411863220cc0e54b5c275da5db230686b0d621c970d70e11c237",
+    "bytes": 10364,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-02.png": {
+    "mime": "image/png",
+    "sha256": "a1cf530531012219525d8312ceee2b1d8d7c9db1bdbe149c9216d46af86ea98f",
+    "bytes": 11788,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-03.png": {
+    "mime": "image/png",
+    "sha256": "5b79ff8cc62060883c0def972f3fd5efc794ad05855fbe3bf693f76523620451",
+    "bytes": 12829,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-04.png": {
+    "mime": "image/png",
+    "sha256": "aeb9b18854dbf86f0af52d641e92623d46a9408108a1d64871e5171620a0f351",
+    "bytes": 10511,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-05.png": {
+    "mime": "image/png",
+    "sha256": "887db6a97279021ec7599d126c9b5f8f534ff0510a610df30bc2880bafe506af",
+    "bytes": 14599,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-06.png": {
+    "mime": "image/png",
+    "sha256": "a3aefc0364fc00dea52c848cab7c75d5b4402bf57db591821fa8124defceb033",
+    "bytes": 11434,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-07.png": {
+    "mime": "image/png",
+    "sha256": "4ef6de677ef887f454dc65cf9a84459af99bebcf3b79a5623bda171ac36c8697",
+    "bytes": 10097,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  }
+}

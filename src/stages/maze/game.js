@@ -5,7 +5,7 @@
   let width = 1, height = 1, scale = 1, active = true, raf = 0, last = 0, drag = false, lastPointer = null;
   const trail = E.createTrail(), footprints = trail.marks;
   const motionPreference = matchMedia('(prefers-reduced-motion:reduce-off)');
-  const world = typeof MazeWorld !== 'undefined' ? MazeWorld.create(E,canvas) : null;
+  let world = typeof MazeWorld !== 'undefined' ? MazeWorld.create(E,canvas) : null;
   let worldDelta=0;
   const walkingCamera = { stepLength: .74, amplitude: .010, rise: 12, settle: 10 };
   let cameraTravel = 0, cameraPhase = 0, cameraStrength = 0, cameraOffset = 0;
@@ -445,5 +445,9 @@
     if (event.data.type === 'focus') canvas.focus({ preventScroll: true });
   });
   function resize() { width = Math.max(1, innerWidth); height = Math.max(1, innerHeight); scale = Math.min(devicePixelRatio || 1, 2); canvas.width = wallLayer.width = Math.round(width * scale); canvas.height = wallLayer.height = Math.round(height * scale); draw(); }
+  // 2026-10-29 개발자용 미로 2·3페(Claude Code): 페이즈 스크립트가 쓰는 손잡이만 내놓는다. 본편 01은 쓰지 않아 동작이 같다.
+  window.MazeRuntime = { E, player, canvas, lens, project: (x, z, elevation) => project(x, z, elevation),
+    get world() { return world; },
+    rebuild(options) { world?.dispose(); world = typeof MazeWorld !== 'undefined' ? MazeWorld.create(E, canvas, options) : null; return world; } };
   window.addEventListener('resize', resize); renderLives(); resize(); raf = requestAnimationFrame(tick);
 })();

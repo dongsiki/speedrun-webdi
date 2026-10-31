@@ -10,9 +10,11 @@
 <canvas id="bore" aria-hidden="true"></canvas>
 <canvas id="bug" aria-hidden="true"></canvas>
 <canvas id="elsewhere" aria-hidden="true"></canvas>
-<div id="hold" role="status" aria-live="assertive">검사 중입니다.<br>움직이지 마십시오.<small>아무것도 누르지 마십시오</small></div>
+<canvas id="scare" aria-hidden="true"></canvas>
+<div id="hold" role="status" aria-live="assertive">검사 중입니다.<br>스페이스바를 떼지 마십시오.<small>떼면 처음부터 다시 찍습니다</small></div>
+<div id="press" role="status" aria-live="assertive">스페이스바를<br>누르고 계십시오.<small>누르면 검사가 시작됩니다</small></div>
 <div id="timer" aria-hidden="true">남은 시간 01:30</div>
-<div id="notice" role="alert">움직이셨습니다.<br>처음부터 다시 찍습니다.</div>
+<div id="notice" role="alert">손을 떼셨습니다.<br>처음부터 다시 찍습니다.</div>
 <button id="ask" class="lure" type="button" tabindex="-1">다 됐나요?</button>
 <div id="phone" class="lure"><b>따르릉…</b><span>딸 · 휴대전화</span><button type="button" tabindex="-1">받기</button></div>
 <div id="nurse" class="lure"><em>스피커</em>어르신, 괜찮으세요?<br>괜찮으시면 손 한번 들어 보세요.</div>
@@ -22,7 +24,7 @@
 <section id="intro" class="screen" aria-label="검사 안내"><div>
   <h1>MRI 검사</h1>
   <p>기계 안에 누웠습니다.</p>
-  <p>검사가 시작되면 <b>아무것도 누르거나 움직이면 안 됩니다.</b><br>마우스도, 키보드도, 화면도.</p>
+  <p>검사 동안 <b>스페이스바를 계속 누르고 있어야 합니다.</b><br>떼면 처음부터 다시 찍습니다.</p>
   <button id="start" type="button">검사 시작</button>
 </div></section>
 <section id="done" class="screen" aria-label="검사 끝"><div>
@@ -30,6 +32,7 @@
   <p class="count"></p>
   <p class="record"></p>
 </div></section>
+<section id="gone" class="screen" aria-label="3페이즈"><div><p>3페이즈에는 MRI 검사가 없습니다.</p></div></section>
 <script>/* @inline src/stages/mri/audio.js */</script>
 <script>/* @inline src/stages/mri/game.dev.js */</script>
 <style>/* @inline src/stages/memory/additional-2.css */</style><a class="portable-back" href="00-index.html" aria-label="개발용 목록으로 돌아가기" title="돌아가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5 7 12l7 7M7 12h13"/></svg></a><script>/* @inline src/shell/standalone/switches/navigation.js */</script></body>

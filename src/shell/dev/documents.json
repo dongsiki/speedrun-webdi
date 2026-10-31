@@ -88,5 +88,15 @@
       "title",
       "html"
     ]
+  },
+  "11-ending-credits.html": {
+    "entry": "src/extras/ending-credits/index.template.html",
+    "metadata": {
+      "title": "엔딩 크레딧"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
   }
 }

@@ -101,5 +101,5 @@ const SuitcaseScene=(()=>{
     }
     c.restore();
   }
-  return {STYLE,object,layout,bag,memory,stroke,dots};
+  return {STYLE,object,layout,bag,memory,stroke,dots,path,oval,human,chair};
 })();

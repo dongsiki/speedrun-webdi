@@ -32,6 +32,10 @@
   const elder=createElderModel(THREE),reflectedSelf=elder.object;
   canvas.dataset.character='imported-obra-dinn-3d';
   scene.add(reflectedSelf);
+  // 2026-10-31: 1페 3회차(아이 맵, 엄마가 나오는 회차)에는 거울에 노인 대신 아이가 비친다(Codex 3D 아이 모델).
+  const childSelf=window.MemoryPhaseModels&&MemoryPhaseModels.has('child')?MemoryPhaseModels.build(THREE,'child'):null;
+  if(childSelf){childSelf.group.visible=false;scene.add(childSelf.group);}
+  let mirrorChild=false;
   // Only the imported portrait has a lit material. The room keeps its white
   // paper planes. Front light separates its face, neck and shoulders;
   // no shadow maps or cast shadows are introduced.
@@ -309,8 +313,9 @@
     mirrorSurface.onBeforeRender=function(...args){
       // The outline pass must not overwrite the mirror with mask materials.
       if(renderer.getRenderTarget()===outlineTarget)return;
-      reflectedSelf.visible=true;
-      try{reflect.apply(this,args);}finally{reflectedSelf.visible=false;}
+      const self=mirrorChild?childSelf.group:reflectedSelf;
+      self.visible=true;
+      try{reflect.apply(this,args);}finally{self.visible=false;}
     };
     line(mirrorDoor,[[.16,-.31,.043],[.59,.46,.043]],true);
     line(mirrorDoor,[[.32,-.31,.044],[.74,.46,.044]],true);
@@ -429,7 +434,7 @@
     fridgeDoorHit.material=new THREE.MeshBasicMaterial({visible:false});fridgeDoorHit.userData.interaction='fridge';emphasize(fridgeDoor,'fridge');
     const fridgeHit=box(group,1.58,.73,-1.70,.91,1.36,.09,C.white,false);
     fridgeHit.material=new THREE.MeshBasicMaterial({visible:false});fridgeHit.userData.interaction='fridge';
-    const morningNote=note(group,.29,2.00,-2.58,'아침에',[['차 따르기','앉아서 음식 먹기']],1.18,1.08,.022);
+    const morningNote=note(group,.29,2.00,-2.58,'아침에',[['앉아서,','차 마시고','밥 먹기']],1.18,1.08,.022);
     const secondNote=note(group,.29,2.00,-2.58,'아침에',[['냉장고 열기','음식 먹기','차도 마시기']],1.18,1.08,.022);
     secondNote.visible=false;
     const thirdNote=note(group,.29,2.00,-2.58,'아침에',[['차 따르기','앉아서 음식 먹기']],1.18,1.08,.022,{write:[['두 잔!',150,650,150,-.06]]});
@@ -509,8 +514,8 @@
       line(steam, Array.from({ length: 16 }, (_, j) => [(i - 1) * .055 + Math.sin(j * .48 + i) * .018, .27 + j * .014, 0]), true);
     }
     const hit = box(kettle, .04, .23, 0, .64, .53, .40, C.white, false); hit.material = new THREE.MeshBasicMaterial({ visible: false });
-    return { group, chairHit, fridgeDoor, fridgeDoorHit, fridgeHit, fridgeFood, fridgeFoodHit, morningNote, secondNote, notes: kitchenNotes, otherCup, chairMarks, foodHit, bites, kettle, cup, liquid, pour, pourPoints, steam, hit, name: '주방', label: '주전자', reminder: '벽의 메모. 아침에: 차 따르기, 앉아서 음식 먹기.',
-      reminders: ['벽의 메모. 아침에: 차 따르기, 앉아서 음식 먹기.','벽의 메모. 아침에: 냉장고 열기, 음식 먹기, 차도 마시기.','벽의 메모. 아침에: 차 따르기, 앉아서 음식 먹기. 옆에 두 잔이라고 적혀 있다.','벽의 메모. 아침에: 열기, 음식, 차도 마시기. 나머지 글씨는 지워졌다.'] };
+    return { group, chairHit, fridgeDoor, fridgeDoorHit, fridgeHit, fridgeFood, fridgeFoodHit, morningNote, secondNote, notes: kitchenNotes, otherCup, chairMarks, foodHit, bites, kettle, cup, liquid, pour, pourPoints, steam, hit, name: '주방', label: '주전자', reminder: '벽의 메모. 아침에: 앉아서, 차 마시고 밥 먹기.',
+      reminders: ['벽의 메모. 아침에: 앉아서, 차 마시고 밥 먹기.','벽의 메모. 아침에: 냉장고 열기, 음식 먹기, 차도 마시기.','벽의 메모. 아침에: 차 따르기, 앉아서 음식 먹기. 옆에 두 잔이라고 적혀 있다.','벽의 메모. 아침에: 열기, 음식, 차도 마시기. 나머지 글씨는 지워졌다.'] };
   }
 
   function entryway(){
@@ -633,6 +638,9 @@
   }
 
   const stages = [bathroom(), kitchen(), entryway(), bedroom()];
+  // 2026-10-29 치매 1·2·3페이즈: 설정 phases.js, 장면 phase-scenes.js. 윤곽선 마스크 목록을 만들기 전에 그림을 붙인다.
+  const PH = MemoryPhaseScenes.create({ THREE, scene, stages, renderer, camera, tone: (...a) => tone(...a), audioRef: () => audio });
+  let stagePhase = MemoryPhase.initial(), cfg = MemoryPhase.round(stagePhase, 1), eyeDrop = 0;
   let propState=RoutineProps.create();
   const propIds=['flush','lotion','mirror'];
   let propVisual=RoutineProps.sample(propState);
@@ -651,14 +659,17 @@
   let pendingLobbyReturn = false;
   // Each new morning drifts further: round 3 corrects the notes and sets a second
   // cup; round 4 wears the notes away, tangles the doors and loosens the mirror.
-  const lastRound = 4;
-  const foodInFridge = () => round === 2 || round === 4;
+  // 2026-10-31: 회차 수는 페이즈마다 phases.js에서 읽는다(지금 모두 5회차).
+  const lastRound = () => MemoryPhase.rounds(stagePhase);
+  // 페이즈마다 회차에 쓰는 기존 메모·변화(1~4). 아이 맵은 0(메모 없음).
+  const noteRound = () => cfg.notes || 0;
+  const foodInFridge = () => noteRound() === 2 || noteRound() === 4;
   let entryDetour = false;
   const mirrorHistory = [], laggedView = { position: V(0, 0, 0), quaternion: new THREE.Quaternion() };
   let mirrorFrozen = false;
   let sinkFocused=false;
   let seated=false,fridgeOpen=false,fridgeAmount=0,foodCollected=false,poured=false,eaten=false,pendingRoom=1;
-  let reflectionAmount=0,reflectionSway=0,reflectionSmile=0;
+  let reflectionAmount=0,reflectionSway=0,reflectionSmile=0,reflectionCam=0,cameraRoll=0;
   let phase = 'ready';
   let elapsed = 0, clock = 0, lastTime = performance.now();
   let actionValue = 0;
@@ -720,7 +731,7 @@
   function transition(next) {
     phase = next; elapsed = 0; document.body.dataset.phase = next;
     syncTargets();
-    canvas.setAttribute('aria-busy', String(['waking','rising','leavingBed','approaching','reflection','sitting','acting','eating','leaving','leavingKitchen','closing','opening'].includes(next)));
+    canvas.setAttribute('aria-busy', String(['waking','rising','leavingBed','approaching','reflection','sitting','serving','acting','eating','leaving','leavingKitchen','closing','opening','ending','collapse'].includes(next)));
   }
   function syncTargets(){
     const far=stageIndex===0&&!sinkFocused,ready=phase==='ready';
@@ -731,7 +742,7 @@
       const hidden=stageIndex!==0||(far&&id!=='flush');
       $('prop-'+id).hidden=hidden;$('prop-'+id).disabled=!ready||hidden;
     }
-    for(const [id,hidden] of [['chair',stageIndex!==1||seated||(foodInFridge()&&!foodCollected)],['fridge',stageIndex!==1||seated],['fridge-food',stageIndex!==1||seated||!foodInFridge()||!fridgeOpen||foodCollected],['food',stageIndex!==1||!seated||eaten]]){
+    for(const [id,hidden] of [['chair',stageIndex!==1||seated||(foodInFridge()&&!foodCollected)],['fridge',stageIndex!==1||seated],['fridge-food',stageIndex!==1||seated||!foodInFridge()||!fridgeOpen||foodCollected],['food',stageIndex!==1||!seated||eaten||(PH.child&&!PH.served)]]){
       $(id).hidden=hidden;$(id).disabled=!ready||hidden;
     }
     canvas.dataset.sinkDistance=stageIndex!==0?'away':sinkFocused?'close':phase==='approaching'?'approaching':'far';
@@ -751,9 +762,10 @@
     for (const group of blinkGroups) { group.start = null; group.flashes = 0; }
     stages.forEach((s, i) => s.group.visible = i === index);
     $('room-name').textContent = stages[index].name;
-    action.setAttribute('aria-label', stages[index].label);
-    $('room-note').textContent = index===2?(entryDetour?stages[2].detourReminder:stages[2].reminder):stages[index].reminders?stages[index].reminders[index===0?Math.max(0,round-2):round-1]:stages[index].reminder;
-    if(index===2){stages[2].door.rotation.y=0;stages[2].notes[0].visible=!entryDetour;stages[2].notes[1].visible=entryDetour;}
+    action.setAttribute('aria-label', PH.child&&index===0?'양치하기':stages[index].label);
+    // 2026-10-31: 메모 글은 모든 페이즈·회차에서 1회차 그대로(이상 징후만 회차별로 바뀜).
+    $('room-note').textContent = PH.child?stages[index].name:stages[index].reminder;
+    if(index===2){stages[2].door.rotation.y=0;stages[2].notes[0].visible=!PH.child;stages[2].notes[1].visible=false;}
     for(const id of propIds)$('prop-'+id).hidden=index!==0;
     canvas.setAttribute('aria-label', stages[index].name + '. 드래그하거나 방향키로 둘러봅니다. Tab으로 물건을 선택하고 Enter 또는 Space로 사용합니다.');
     $('caption').textContent = stages[index].name;
@@ -799,17 +811,19 @@
     stages[0].handle.rotation.y = 0; stages[0].water.visible = true;
     sinkFocused=false;
     seated=fridgeOpen=foodCollected=poured=eaten=false;fridgeAmount=0;pendingRoom=1;
+    cfg=MemoryPhase.round(stagePhase,round);PH.setRound(stagePhase,cfg);PH.clearEnding();
+    if(PH.child)poured=true; // 아이 맵: 차는 없고 엄마가 차려 준 음식만 먹는다.
     reflectionAmount=reflectionSway=reflectionSmile=0;canvas.dataset.reflectionShot='idle';
     propState=RoutineProps.create();updateProps(0);
     stages[1].kettle.position.set(-.63, .991, -1.04); stages[1].kettle.rotation.z = 0;
     stages[1].liquid.position.y = .03; stages[1].pour.visible = false; stages[1].steam.visible = false;
     stages[1].fridgeDoor.rotation.y=0;
-    stages[1].notes.forEach((card,i)=>card.visible=i===round-1);
-    stages[0].notes.forEach((card,i)=>card.visible=i===Math.max(0,round-2));
-    stages[1].otherCup.visible=round===3;stages[1].chairMarks.visible=round>=3;
+    stages[1].notes.forEach((card,i)=>card.visible=noteRound()>0&&i===0);
+    stages[0].notes.forEach((card,i)=>card.visible=noteRound()>0&&i===0);
+    stages[1].otherCup.visible=noteRound()===3;stages[1].chairMarks.visible=noteRound()>=3;
     stages[1].fridgeFood.visible=foodInFridge();
-    for(const [i,bite] of stages[1].bites.entries()){bite.visible=!foodInFridge();bite.position.set((i-1)*.084,.07,i===1?-.012:.022);}
-    entryDetour=false;mirrorFrozen=false;mirrorHistory.length=0;
+    for(const [i,bite] of stages[1].bites.entries()){bite.visible=!foodInFridge()&&!PH.child;bite.position.set((i-1)*.084,.07,i===1?-.012:.022);}
+    entryDetour=false;mirrorFrozen=false;mirrorHistory.length=0;cameraRoll=0;
     stages[2].door.rotation.y=0;
     $('fridge').setAttribute('aria-expanded','false');$('fridge').setAttribute('aria-label','냉장고 열기');
     actionValue = 0;
@@ -839,7 +853,10 @@
     if(stageIndex===3){
       keyboardActivation=Boolean(event&&event.type==='click'&&event.detail===0);
       phaseStartPosition.copy(camera.position);camera.getWorldDirection(phaseStartTarget).multiplyScalar(4).add(camera.position);
-      desiredX=desiredY=lookX=lookY=0;startAudio();transition('rising');
+      desiredX=desiredY=lookX=lookY=0;startAudio();
+      // 2페 마지막 회차: 일어나지 못하고 침대에서 떨어지는 컷신(엔딩 아님).
+      if(cfg.cutscene==='collapse'){transition('collapse');$('caption').textContent='침대에서 일어나려고 애씁니다.';return;}
+      transition('rising');
       $('caption').textContent='침대에서 일어납니다.';
       return;
     }
@@ -849,7 +866,7 @@
     startAudio();
     desiredX = desiredY = 0;
     transition('acting'); actionValue = 0;
-    $('caption').textContent = stageIndex === 0 ? '수도꼭지를 돌리고 있습니다.' : stageIndex===1?'차를 따르고 있습니다.':'현관문을 엽니다.';
+    $('caption').textContent = stageIndex === 0 ? (PH.child?'엄마가 이를 닦아 줍니다.':'수도꼭지를 돌리고 있습니다.') : stageIndex===1?'차를 따르고 있습니다.':'현관문을 엽니다.';
     tone(stageIndex === 0 ? 820 : stageIndex===1?1100:300, .08, .018, 'triangle');
   }
   action.addEventListener('click', activate);
@@ -882,7 +899,7 @@
     if(phase!=='ready'||stageIndex!==1||!seated||eaten)return;
     keyboardActivation=Boolean(event&&event.type==='click'&&event.detail===0);
     desiredX=desiredY=0;startAudio();transition('eating');
-    $('caption').textContent='식탁의 음식을 먹습니다.';
+    $('caption').textContent=cfg.food?'접시 위의 것을 입에 넣습니다.':'식탁의 음식을 먹습니다.';
   }
   $('chair').addEventListener('click',sit);
   $('fridge').addEventListener('click',toggleFridge);
@@ -898,6 +915,8 @@
   }
   for(const id of propIds)$('prop-'+id).addEventListener('click',event=>activateProp(id,event));
   $('restart').addEventListener('click', event => { pendingLobbyReturn=false;round=1;wakeAtBed(event.detail===0); });
+  // 페이즈 바꾸기(postMessage, phases.js 설명): 그 페이즈 1회차부터.
+  MemoryPhase.onChange(p => { stagePhase=p;pendingLobbyReturn=false;round=1;wakeAtBed(); });
   $('sound').addEventListener('click', () => {
     soundChoice = !(audio && soundChoice !== false);
     if (soundChoice) startAudio();
@@ -919,7 +938,7 @@
     let targets;
     if(stageIndex===0){targets=[stages[0].hit,...Object.values(stages[0].props.hits)];if(!sinkFocused)targets.push(stages[0].props.approachHit);}
     else if(stageIndex===1){
-      targets=seated?[...(!poured?[stages[1].hit]:[]),...(!eaten?[stages[1].foodHit]:[])]:[
+      targets=seated?[...(!poured?[stages[1].hit]:[]),...(!eaten&&(!PH.child||PH.served)?[stages[1].foodHit]:[])]:[
         ...((!foodInFridge()||foodCollected)?[stages[1].chairHit]:[]),
         stages[1].fridgeDoorHit,
         ...((foodInFridge()&&fridgeOpen&&!foodCollected)?[stages[1].fridgeFoodHit]:[stages[1].fridgeHit])
@@ -1060,17 +1079,18 @@
   }
   function updateAction() {
     if (stageIndex === 0) {
-      actionValue = clamp(elapsed / 1.35);
-      stages[0].handle.rotation.y = -smooth(actionValue) * Math.PI / 2;
+      actionValue = clamp(elapsed / (PH.child ? 3.6 : 1.35));
+      if (PH.child) PH.brushing(actionValue); // 아이 맵: 엄마가 양치해 주고 물도 잠가 준다.
+      stages[0].handle.rotation.y = -smooth(PH.child ? range(actionValue, .82, 1) : actionValue) * Math.PI / 2;
       if (actionValue >= 1) {
         stages[0].water.visible = false;
         tone(620, .10, .027, 'triangle');
         // Round 4: the bathroom door opens onto the entrance instead of the kitchen.
-        entryDetour=round===lastRound;pendingRoom=entryDetour?2:1;
+        entryDetour=noteRound()===4;pendingRoom=entryDetour?2:1;
         if(entryDetour)mirrorFrozen=true;
         phaseStartPosition.copy(camera.position); phaseStartTarget.copy(cameraTarget);
         transition('leaving');
-        $('caption').textContent = '물을 잠갔다. 주방으로 간다.';
+        $('caption').textContent = PH.child ? '엄마가 물을 잠갔다. 주방으로 간다.' : '물을 잠갔다. 주방으로 간다.';
       }
     } else if(stageIndex===1){
       actionValue = clamp(elapsed / 3.7);
@@ -1092,14 +1112,18 @@
     } else {
       actionValue=clamp(elapsed/1.15);
       stages[2].door.rotation.y=-1.35*smooth(actionValue);
+      PH.roadOpen();
       if(actionValue>=1&&entryDetour){
         // The front door leads back into the kitchen; the second visit is a real exit.
         entryDetour=false;pendingRoom=1;transition('closing');
+      } else if(actionValue>=1&&cfg.ending==='road'){
+        // 3페 마지막 회차: 문 밖은 길. 아이가 달려 나간다(phase-scenes.js ending).
+        phaseStartPosition.copy(camera.position);phaseStartTarget.copy(cameraTarget);transition('ending');$('caption').textContent='문 밖은 길이었다. 아이가 달려 나간다.';
       } else if(actionValue>=1){
         const focusCanvas=keyboardActivation;
         // The connected demo ends after the last implemented round, back at the bed.
-        pendingLobbyReturn = round === lastRound;
-        round=Math.min(lastRound,round+1);
+        pendingLobbyReturn = round === lastRound();
+        round=Math.min(lastRound(),round+1);
         wakeAtBed(focusCanvas);
       }
     }
@@ -1115,6 +1139,10 @@
       blink(1-smooth(t));
       camera.position.copy(cameraStart);
       if(t>=1){blink(0);transition(pendingLobbyReturn?'remembered':'ready');$('caption').textContent='침대에서 눈을 떴습니다.';}
+    } else if(phase==='collapse'){
+      const r=PH.collapse(elapsed,camera.position,target,cameraStart,cameraTarget);cameraRoll=r.roll;
+      canvas.dataset.cutscene=elapsed<3?'struggle':elapsed<4?'fall':elapsed<7.2?'cough':elapsed<8?'down':'black';
+      if(r.done){cameraRoll=0;transition('remembered');$('caption').textContent='2페이즈가 끝났습니다.';}
     } else if(phase==='rising'){
       const t=clamp(elapsed/(reduced?.18:1.45)),u=smooth(t);
       camera.position.lerpVectors(phaseStartPosition,V(-.93,1.62,.52),u);
@@ -1133,12 +1161,14 @@
       if(!reduced)camera.position.y+=Math.sin(t*Math.PI*6)*.012*Math.sin(t*Math.PI);
       target.lerpVectors(phaseStartTarget,pose.target,u);
       if(t>=1){
-        sinkFocused=true;frameCamera();transition('reflection');
+        sinkFocused=true;frameCamera();
+        if(PH.child&&PH.phase!==1){transition('ready');$('caption').textContent='세면대 앞에 섰습니다. 엄마가 칫솔을 들고 있습니다.';if(keyboardActivation)action.focus({preventScroll:true});}
+        else{transition('reflection');
         canvas.dataset.reflectionShot='approach';
-        $('caption').textContent='거울 속 자신의 얼굴을 가까이 봅니다.';
+        $('caption').textContent='거울 속 자신의 얼굴을 가까이 봅니다.';}
       }
     } else if(phase==='reflection'){
-      const shot=ReflectionIntro.sample(elapsed,reduced),pose=sinkPose();
+      const shot=ReflectionIntro.sample(elapsed,reduced),pose=sinkPose();reflectionCam=shot.camera;
       camera.position.copy(pose.position);camera.position.z-=shot.camera*.80;
       target.copy(pose.target).lerp(V(-.50,1.96,-2.24),shot.camera);
       reflectionAmount=shot.figure;reflectionSway=shot.sway;reflectionSmile=shot.smile;
@@ -1146,7 +1176,7 @@
       if(shot.done){
         reflectionAmount=reflectionSway=reflectionSmile=0;camera.position.copy(pose.position);target.copy(pose.target);
         canvas.dataset.reflectionShot='idle';transition('ready');
-        $('caption').textContent='거울을 보던 시선이 돌아왔습니다. 이제 물건을 사용할 수 있습니다.';
+        $('caption').textContent=PH.child?'세면대 앞에 섰습니다. 엄마가 칫솔을 들고 있습니다.':'거울을 보던 시선이 돌아왔습니다. 이제 물건을 사용할 수 있습니다.';
         if(keyboardActivation)action.focus({preventScroll:true});
       }
     } else if(phase==='sitting'){
@@ -1154,9 +1184,21 @@
       camera.position.lerpVectors(phaseStartPosition,pose.position,u);
       if(!reduced)camera.position.y+=Math.sin(t*Math.PI*5)*.012*Math.sin(t*Math.PI);
       target.lerpVectors(phaseStartTarget,pose.target,u);
-      if(t>=1){seated=true;frameCamera();transition('ready');$('caption').textContent='의자에 앉았습니다.';if(keyboardActivation)action.focus({preventScroll:true});}
+      if(t>=1){seated=true;frameCamera();
+        if(PH.child&&!PH.served){transition('serving');$('caption').textContent='엄마가 음식을 차려 줍니다.';}
+        else{transition('ready');$('caption').textContent='의자에 앉았습니다.';if(keyboardActivation)action.focus({preventScroll:true});}}
+    } else if(phase==='serving'){
+      const t=clamp(elapsed/(reduced?.6:1.9));PH.serving(t);camera.position.copy(cameraStart);
+      if(t>=1){transition('ready');$('caption').textContent='엄마가 차려 준 음식을 먹을 수 있습니다.';if(keyboardActivation)$('food').focus({preventScroll:true});}
+    } else if(phase==='ending'){
+      const t=elapsed,u=smooth(clamp(t/2.8));
+      camera.position.lerpVectors(phaseStartPosition,V(0,1.55,-4.2),u);
+      if(!reduced)camera.position.y+=Math.sin(t*Math.PI*9)*.02*(1-u);
+      target.lerpVectors(phaseStartTarget,V(0,1.1,-9),u);
+      if(PH.ending(t)){cfg.ending=null;transition('acting');elapsed=1.2;}
     } else if(phase==='eating'){
-      const biteTime=reduced?.75:2.40,t=clamp(elapsed/biteTime);
+      // 2페: 이상한 음식은 오래 씹는다(씹는 소리·삼키는 소리·화면 울렁임은 phase-scenes.js eating).
+      const biteTime=reduced?.75:(cfg.food?4.6:2.40),t=clamp(elapsed/biteTime);PH.eating(t);
       stages[1].bites.forEach((bite,i)=>{
         const segment=clamp(t*3-i);
         bite.visible=segment<1;
@@ -1165,7 +1207,7 @@
       camera.position.copy(cameraStart);
       target.lerpVectors(cameraTarget,V(-.10,1.00,-.62),.25*Math.sin(t*Math.PI));
       if(t>=1){
-        eaten=true;
+        eaten=true;PH.endEating();if(PH.child)PH.ate();
         if(poured){phaseStartPosition.copy(camera.position);phaseStartTarget.copy(cameraTarget);transition('leavingKitchen');$('caption').textContent='식사를 마치고 현관으로 갑니다.';}
         else{transition('ready');$('caption').textContent='음식을 먹었습니다. 주전자로 차를 따를 수 있습니다.';if(keyboardActivation)action.focus({preventScroll:true});}
       }
@@ -1207,7 +1249,10 @@
       camera.position.copy(cameraStart);
     }
     if (phase === 'ready') { target.x += lookX * 5; target.y += lookY * 4; }
+    // 아이 맵: 아이 키 눈높이(그리는 동안만 낮추고 frame()에서 되돌린다).
+    { const y=camera.position.y;PH.childEye(camera.position,target,phase==='reflection'&&mirrorChild?1-reflectionCam:1);eyeDrop=y-camera.position.y; }
     camera.lookAt(target);
+    if(cameraRoll)camera.rotateZ(cameraRoll);
     camera.updateMatrixWorld();
   }
   function positionTarget(target,button) {
@@ -1288,7 +1333,7 @@
   // Round 4: the reflection follows half a second late, and once the tap is shut
   // it stays at the sink instead of following the player out.
   function mirrorView(){
-    if(round!==lastRound||reduced)return camera;
+    if(noteRound()!==4||reduced)return camera;
     if(!mirrorFrozen){
       mirrorHistory.push({time:clock,position:camera.position.clone(),quaternion:camera.quaternion.clone()});
       while(mirrorHistory.length>1&&mirrorHistory[1].time<=clock-.55)mirrorHistory.shift();
@@ -1299,7 +1344,7 @@
   }
   // 필요한 물건 = 3번, 필요 없는 물건 = 1~2번 (todo.md 기록 기준). 정해지지 않은 강조 물건은 3번.
   const BLINK_RULES = {
-    bed: 3, basin: 3, tap: 3, chair: 3, kettle: 3, cup: 3, plate: 3, door: 3,
+    bed: 3, basin: 3, tap: 3, chair: 3, kettle: () => PH.child ? 0 : 3, cup: () => PH.child ? 0 : 3, plate: 3, door: 3,
     fridge: () => foodInFridge() ? 3 : 2,
     fridgeFood: 3,
     flush: 1, mirror: 1, lotion: 2,
@@ -1336,11 +1381,22 @@
     if (phase === 'remembered' && elapsed >= .85) { ConnectedStage.leave('complete'); return; }
     if (phase === 'acting') updateAction();
     updateProps(dt);updateKitchen(dt);updateWater();updateCamera(dt);positionAction();positionNotes();
+    PH.update(dt,{stageIndex});if(phase==='ready')PH.enterRoom(stageIndex);
     // Actual face volumes, eye line and shoulder/head turns follow the camera.
     const pose=elder.update(mirrorView(),clock,reduced,reflectionAmount,reflectionSway,reflectionSmile);
     canvas.dataset.reflectionLean=reflectionAmount.toFixed(3);
     canvas.dataset.reflectionSmile=reflectionSmile.toFixed(3);
     canvas.dataset.headYaw=pose.yaw.toFixed(3);canvas.dataset.headPitch=pose.pitch.toFixed(3);
+    // 2페: 거울 속 노인이 회차마다 더 일그러진다(phases.js distort, 마지막 거울 회차 = 최대).
+    { const d=MemoryPhase.distort(stagePhase,round);elder.setDistort(reduced?0:d,clock);canvas.dataset.mirrorDistort=d.toFixed(2); }
+    mirrorChild=!!childSelf&&PH.child&&PH.phase===1;canvas.dataset.mirrorSelf=mirrorChild?'child':'elder';
+    if(mirrorChild){ // 아이 눈이 카메라 높이에 오게, 얼굴이 카메라 바로 뒤에 오게 세운다.
+      // 아이 키 그대로(엄마 1.6, 아이 1.1). 거울 보기 동안은 눈높이를 올려(발돋움) 얼굴이 거울에 걸린다.
+      const g=childSelf.group,h=childSelf.height,k=1;g.scale.setScalar(k);
+      g.rotation.y=Math.PI+pose.yaw*.22/.78;
+      const back=(g.userData.front??(g.userData.front=Math.max(...Object.values(childSelf.parts).map(p=>p.userData.box.max.z+p.userData.pivot[2]))))*k+.03;
+      g.position.set(camera.position.x-Math.sin(g.rotation.y)*back,camera.position.y-h*.9*k,camera.position.z-Math.cos(g.rotation.y)*back-reflectionAmount*.22);
+    }
     renderer.setRenderTarget(bitmapTarget);
     renderer.render(scene, camera);
     updateBlinkMasks();
@@ -1354,6 +1410,7 @@
     // 사용자 PC는 Windows 애니메이션 효과가 꺼져 있어(동작 줄이기) 예전 반짝임이 멈춰 있었다. 이 반짝임은 쓸 수 있는 물건 표시라 늘 켠다(초당 2번, 선만).
     bitmapMaterial.uniforms.blinkTime.value = performance.now() / 1000;
     renderer.render(bitmapScene, bitmapCamera);
+    if(eyeDrop){camera.position.y+=eyeDrop;camera.updateMatrixWorld();eyeDrop=0;}
   }
   ConnectedStage.configure({
     pause() { drag = null; if (audio?.state === 'running') audio.suspend().catch(() => {}); },

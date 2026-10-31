@@ -85,6 +85,10 @@
     } else src.connect(gain);
     gain.connect(ctx.destination);
     src.start(); current = src;
+    if (Math.random() < .35) { // 10/29 「전체 2」 내레이션에도 마일드 글리치: 아주 짧게 한 번 끊긴다
+      const at = ctx.currentTime + .2 + Math.random() * Math.max(.1, buf.duration - .5), v = gain.gain.value;
+      gain.gain.setValueAtTime(v, at); gain.gain.setValueAtTime(0, at + .001); gain.gain.setValueAtTime(v, at + .05 + Math.random() * .04);
+    }
     src.onended = () => { if (current === src) current = null; };
     document.body.dataset.voice = id;
   }
@@ -132,6 +136,7 @@
   addEventListener('message', event => {
     const d = event.data;
     if (!d || d.channel !== channel || d.type !== 'fail') return;
+    if (window.PhaseTease) return; // 10/29: 실패 놀리기는 src/phase/tease.js(글+목소리, 모든 페이즈, 짐 싸기 제외)가 맡는다
     const phase = window.SpeedrunPhase ? window.SpeedrunPhase.state.phase : 1;
     if (phase !== 1 || performance.now() - failAt < 4000) return;
     const pool = FAIL.filter(id => id !== lastFail);

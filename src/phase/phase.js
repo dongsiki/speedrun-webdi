@@ -38,6 +38,14 @@
           html = html.replace("'#.#########.#########'", "'#.###################'").replace("'#.....#...#.........#'", "'#.....#.............#'");
           body.dataset.mazeBlocked = html !== originals[g] ? 'yes' : 'no';
         }
+        // 10/29 MRI 2페(MRI 스레드): 본편 2페이즈에서 MRI가 바뀌면 MRI 자체 2페 화면으로 연다. 3페이즈에선 MRI 제외(준비만).
+        if (g === 'mri') html = html.replace(/<head>/i, () => '<head><script>window.SpeedrunStagePhase=2<' + '/script>');
+        // 10/29 짐 싸기 2페(짐 싸기 스레드): 잠긴 가방 → 잠시 뒤 통과
+        if (g === 'suitcase') html = html.replace(/<head>/i, () => '<head><script>window.SUITCASE_PHASE=2<' + '/script>');
+        // 10/29 마지막 걸음 2페(걸음 스레드): AI가 대신 해 주며 통제
+        if (g === 'limb') html = html.replace(/<head>/i, () => '<head><script>window.LastWalkPhase=2<' + '/script>');
+        // 10/29 치매 2페(치매 스레드): 어질러진 집
+        if (g === 'routine') html = html.replace(/<head>/i, () => '<head><script>window.MEMORY_PHASE=2<' + '/script>');
         html = soundGlitch(html);
       }
       DemoDocuments[g] = html;
@@ -133,7 +141,7 @@
       }, 900);
     }
     if (P.demo === 'scare' && stage === 'digging' && !body.dataset.phaseEnding) setTimeout(endPhase2, 900);
-    if (stage === 'intro') todoPanel();
+    if (stage === 'intro') { if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', todoPanel, { once: true }); else todoPanel(); } // 3페이즈 스크립트가 다 읽힌 뒤 판단
     todoTags();
   }
 
@@ -282,7 +290,7 @@
     tags.querySelector('button').onclick = () => { body.dataset.todoHidden = '1'; tags.hidden = true; };
   }
   function todoPanel() {
-    if (P.state.phase < 3 || $('phase3-panel')) return;
+    if (P.state.phase < 3 || $('phase3-panel') || window.Phase3) return; // 10/29: 3페이즈가 들어오면 '구현 예정' 판 대신 실제 3페이즈
     const panel = document.createElement('section'); panel.id = 'phase3-panel'; panel.setAttribute('aria-label', '3페이즈 구현 예정');
     panel.innerHTML = '<p class="p3-tag">구현 예정 · 3페이즈</p>'
       + '<ol><li>첫 화면을 계속 눌러도 진행되지 않는다</li><li>AI가 플레이어에게 도와 달라고 한다</li><li>지금까지 숨겨 온 이야기가 드러난다(진엔딩)</li></ol>'

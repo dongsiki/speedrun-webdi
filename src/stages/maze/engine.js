@@ -34,14 +34,28 @@
   const wall = (x, z) => !grid[Math.floor(z)] || !grid[Math.floor(z)][Math.floor(x)] || grid[Math.floor(z)][Math.floor(x)] === '#';
   // Spatial dressing follows distance from the entrance, including wrong turns.
   // It is stable when backtracking and never reveals the shortest exit route.
-  const distances = new Map([['1,1', 0]]), cells = [[1, 1]];
-  for (let i = 0; i < cells.length; i++) {
-    const [x, z] = cells[i];
-    for (const [dx, dz] of [[1,0],[0,1],[-1,0],[0,-1]]) {
-      const nx=x+dx, nz=z+dz, key=`${nx},${nz}`;
-      if (wall(nx,nz) || distances.has(key)) continue;
-      distances.set(key,distances.get(`${x},${z}`)+1); cells.push([nx,nz]);
+  const distances = new Map();
+  function measure() {
+    distances.clear(); distances.set('1,1', 0);
+    const cells = [[1, 1]];
+    for (let i = 0; i < cells.length; i++) {
+      const [x, z] = cells[i];
+      for (const [dx, dz] of [[1,0],[0,1],[-1,0],[0,-1]]) {
+        const nx=x+dx, nz=z+dz, key=`${nx},${nz}`;
+        if (wall(nx,nz) || distances.has(key)) continue;
+        distances.set(key,distances.get(`${x},${z}`)+1); cells.push([nx,nz]);
+      }
     }
+  }
+  measure();
+  // 2026-10-29 개발자용 미로 2·3페(Claude Code): 페이즈 스크립트만 부르는 두 함수. 본편 01은 부르지 않아 그대로다.
+  // exitOpen=false면 출구에 닿아도 끝나지 않는다. setGrid는 같은 크기의 새 맵으로 바꾸고 출구 칸을 옮긴다.
+  let exitOpen = true;
+  function setExitOpen(open) { exitOpen = open !== false; }
+  function setGrid(rows, exitX, exitZ) {
+    if (!Array.isArray(rows) || rows.length !== grid.length) throw new Error('maze grid size');
+    for (let i = 0; i < rows.length; i++) grid[i] = rows[i];
+    exit.x = exitX + .5; exit.z = exitZ + .5; measure();
   }
   const distanceAt = (x,z) => distances.get(`${Math.floor(x)},${Math.floor(z)}`) ?? -1;
   const zoneAt = (x,z) => { const d=distanceAt(x,z); return d<18?'blank':d<32?'care':'town'; };
@@ -90,7 +104,7 @@
         }
       }
       recordTrail(trail, startX, startZ, player.x, player.z);
-      if (Math.hypot(player.x - exit.x, player.z - exit.z) < .32) { player.finished = true; break; }
+      if (exitOpen && Math.hypot(player.x - exit.x, player.z - exit.z) < .32) { player.finished = true; break; }
     }
     return [...contacts];
   }
@@ -176,5 +190,5 @@
     while (current) { points.unshift({ x: current[0] + .5, z: current[1] + .5 }); current = previous.get(current.join(',')); }
     return points;
   }
-  return { grid, exit, speed, radius, motion, dimensions, initial, wall, fits, move, step, stop, reset, look, cast, route, createTrail, distanceAt, zoneAt };
+  return { grid, exit, speed, radius, motion, dimensions, initial, wall, fits, move, step, stop, reset, look, cast, route, createTrail, distanceAt, zoneAt, setExitOpen, setGrid };
 });

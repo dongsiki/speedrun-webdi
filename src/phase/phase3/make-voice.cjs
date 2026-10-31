@@ -2,7 +2,9 @@ const fs = require('fs'), path = require('path'), { execFileSync } = require('ch
 const dir = __dirname, out = require('path').join(__dirname, '../../../assets/audio/phase3'); // story.js를 고친 뒤: node src/phase/phase3/make-voice.cjs  (일부만: … h1,m3)
 const window = {}; eval(fs.readFileSync(dir + '/story.js', 'utf8'));
 const S = window.Phase3Story, jobs = [];
-for (const k of ['refuse', 'help', 'ask']) for (const x of S[k]) if (x.voice) jobs.push([x.voice, x.say]);
+// refuse는 단계별 묶음(10/29)이라 안을 다 훑어 voice가 있는 줄을 모은다.
+(function walk(x) { if (!x || typeof x !== 'object') return; if (x.voice && x.say) jobs.push([x.voice, x.say]); for (const v of Object.values(x)) walk(v); })(S.refuse);
+for (const k of ['help', 'ask']) for (const x of S[k]) if (x.voice) jobs.push([x.voice, x.say]);
 jobs.push([S.holdWait.voice, S.holdWait.say]);
 for (const m of S.memories) jobs.push([m.voice, [...m.lines, m.clue].filter(Boolean).join(' ')]);
 const only = process.argv[2] ? process.argv[2].split(',') : null;

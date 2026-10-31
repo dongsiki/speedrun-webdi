@@ -1,0 +1,17 @@
+/* 엔딩 크레딧: 춤 화면(맨 아래) · 땅(가운데) · 올라가는 크레딧(맨 위) */
+body{background:#fff}
+#dance{position:fixed;inset:0;z-index:0}
+#dance #world{width:100%;height:100%}
+/* 발견 전에는 춤 화면의 버튼·안내를 숨긴다(그림은 땅 아래에 그대로 둔다). */
+body:not(.found) .dance-ui{visibility:hidden}
+#ground{position:fixed;inset:0;z-index:1;display:block;width:100%;height:100%;touch-action:none;cursor:default;outline:none;transition:opacity 1.4s ease}
+#ground:focus-visible{outline:2px solid #000;outline-offset:-3px}
+#roll{position:fixed;inset:0;z-index:2;overflow:hidden;pointer-events:none;color:#fff;mix-blend-mode:difference;transition:opacity 1.2s ease}
+#roll-lines{position:absolute;left:0;right:0;top:0;display:flex;flex-direction:column;align-items:center;gap:34vh;padding:0 24px;text-align:center;will-change:transform}
+#roll-lines section{display:grid;gap:6px}
+#roll-lines h1{margin:0;font:400 clamp(30px,6vw,56px)/1.3 "Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;letter-spacing:.18em}
+#roll-lines h2{margin:0 0 4px;font:400 12px/1.6 "Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;letter-spacing:.32em;text-transform:uppercase}
+#roll-lines p{margin:0;font:400 clamp(15px,2.2vw,19px)/1.7 "Pretendard","Noto Sans KR","Malgun Gothic",sans-serif;letter-spacing:.06em}
+body.found #ground{opacity:0;pointer-events:none}
+body.found #roll{opacity:0}
+#leave{z-index:3}

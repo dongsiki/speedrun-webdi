@@ -307,7 +307,8 @@
     "sha256": "19e26e9ca8971f540b7922749286bb5061b1e8d457b6af5e90d942c8d2230503",
     "bytes": 190508,
     "usedBy": [
-      "src/voice/voice.js"
+      "src/voice/voice.js",
+      "src/phase/tease.js"
     ],
     "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
   },
@@ -316,7 +317,8 @@
     "sha256": "5322fd09d545b76f2e09786f0ffb3ac981c2ef503f9fc76227995df613a1798c",
     "bytes": 116780,
     "usedBy": [
-      "src/voice/voice.js"
+      "src/voice/voice.js",
+      "src/phase/tease.js"
     ],
     "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
   },
@@ -325,7 +327,8 @@
     "sha256": "e0ea60abbb88ee2f3b3c6bf13ceee01868ebced2a9fb5b570a32d855a98d52ea",
     "bytes": 344108,
     "usedBy": [
-      "src/voice/voice.js"
+      "src/voice/voice.js",
+      "src/phase/tease.js"
     ],
     "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
   },
@@ -334,7 +337,8 @@
     "sha256": "c67f632ae7862ca4ff8050ebd98134611a0d5a9f86cd14e32dae4e58f7f84b25",
     "bytes": 141356,
     "usedBy": [
-      "src/voice/voice.js"
+      "src/voice/voice.js",
+      "src/phase/tease.js"
     ],
     "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
   },
@@ -463,5 +467,413 @@
       "src/voice/voice.js"
     ],
     "source": "Supertonic 3 TTS, Korean voice F1 (local CLI, 2026-10-26). Line text from the game itself (phase captions, AI gate, warning) or approved taunt list."
+  },
+  "assets/images/game-start-title.png": {
+    "mime": "image/png",
+    "sha256": "92576dc5d17906394fd0c72d7023e3a17d068eb9c400d48a1474445b56a220cf",
+    "bytes": 1157948,
+    "usedBy": [
+      "src/intro/start-screen.js"
+    ]
+  },
+  "assets/audio/phase3/a1.wav": {
+    "mime": "audio/wav",
+    "sha256": "403b80f1207224f73b2a98e7c4f5018aa4c98596224333fdd5fb9520f6e5a783",
+    "bytes": 212012,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/a2.wav": {
+    "mime": "audio/wav",
+    "sha256": "10898a90f6ada03f5b46cb5e0e9f3d65a47ae5e2aed195171cec849c557bd044",
+    "bytes": 175148,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/a3.wav": {
+    "mime": "audio/wav",
+    "sha256": "25b3ad7a421f078adabef13fcb51ffe0cf10854d65e48af4ce7a4fb57bc6b298",
+    "bytes": 184364,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/b1.wav": {
+    "mime": "audio/wav",
+    "sha256": "a62b99f6d6ba290c4621c6e3793a64a9d35cbd7d93f41021c9f7505afef1afaa",
+    "bytes": 132140,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/b2.wav": {
+    "mime": "audio/wav",
+    "sha256": "acc86ec3926dbd505836a55e1d12b9f029e1bbeec61dd5e29bb1778f46941184",
+    "bytes": 61484,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/c1.wav": {
+    "mime": "audio/wav",
+    "sha256": "30d915bbaf58ed747fb20021493590bd3c8f83779e71e32c51c788d0a4d4ab83",
+    "bytes": 107564,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/c2.wav": {
+    "mime": "audio/wav",
+    "sha256": "a89049fc585c036886a1d4fd7272cead1351c99e2e55621b121e2a8083836f78",
+    "bytes": 64556,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/h1.wav": {
+    "mime": "audio/wav",
+    "sha256": "af9eb606ff6542cc7f57f293899dd216d01d36aef779389f2b13f04b79d91cad",
+    "bytes": 61484,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/h2.wav": {
+    "mime": "audio/wav",
+    "sha256": "2e01121612046e59eeebc9e1cb702371f124fc4242b87e3cfff16c1859c5a1cc",
+    "bytes": 239660,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/h3.wav": {
+    "mime": "audio/wav",
+    "sha256": "6defe5e09b225d2003a1855fab29b7867676f8e0cff539fded052bd27f527ed0",
+    "bytes": 153644,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/h4.wav": {
+    "mime": "audio/wav",
+    "sha256": "fbe3652388a961132d05ff65f03668327cb72d22bba869383d8eb5f3bb2d8b87",
+    "bytes": 92204,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/h5.wav": {
+    "mime": "audio/wav",
+    "sha256": "6fee9c71df93dbd190019aa211b7d6387e219501ff2ff565c2450371a483a0c6",
+    "bytes": 288812,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/h6.wav": {
+    "mime": "audio/wav",
+    "sha256": "2ef52713de61a4b5b72ba6414dae0827901019afdb81c9fedf1754b6b1b034f7",
+    "bytes": 245804,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/m1.wav": {
+    "mime": "audio/wav",
+    "sha256": "16948d59aa44b35cdac02fb65442fd6f133f8a94aedfcb74be71b241a519ab91",
+    "bytes": 574508,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/m2.wav": {
+    "mime": "audio/wav",
+    "sha256": "11604819be5064bb076d8f38a436acd6ed487e3c58b316b27a0f6fcf136e8ec6",
+    "bytes": 393260,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/m3.wav": {
+    "mime": "audio/wav",
+    "sha256": "e6675d2232248abfbefcdbc6867d9172367d932977edacfa6c55275d156d7076",
+    "bytes": 359468,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/m4.wav": {
+    "mime": "audio/wav",
+    "sha256": "c3e2a62bfa14e68211ed0f497a9bdc2681ba0c5422516e962d6df9d523c9e05f",
+    "bytes": 411692,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/m5.wav": {
+    "mime": "audio/wav",
+    "sha256": "7afc9bff867abecd15d7208f5faa32043cd25394a46ba14e2a29ad51e76c8266",
+    "bytes": 405548,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/m6.wav": {
+    "mime": "audio/wav",
+    "sha256": "69b4f9f387e52e8003f44fcb27a8e5047da81937f8e8ed6987df310c8e218f73",
+    "bytes": 399404,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/m7.wav": {
+    "mime": "audio/wav",
+    "sha256": "82a7a44d5d5868ffc9673f218ea35a5e6ee65999ba251b17c9fc2423ab54246d",
+    "bytes": 528428,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/m8.wav": {
+    "mime": "audio/wav",
+    "sha256": "51ae91e5a08ece06ddcc81670488c8cc507f2a9a80db3dab63b5e9a7495a2eb8",
+    "bytes": 534572,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/o1.wav": {
+    "mime": "audio/wav",
+    "sha256": "77c2bf20424b470e44e7746dd9fd3583306a614277a1ea491d68935c6260e0f9",
+    "bytes": 125996,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/o2.wav": {
+    "mime": "audio/wav",
+    "sha256": "ddb50b1687c2f3c22f0accb36b2406c71a3ffcc08f3140d0ad727d83fb2eb926",
+    "bytes": 175148,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/o3.wav": {
+    "mime": "audio/wav",
+    "sha256": "362230489451f5e7aac0bbc0224202a98423e9adb474c4033b4a66b1e064abf5",
+    "bytes": 150572,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/o4.wav": {
+    "mime": "audio/wav",
+    "sha256": "90ac6b80f441e48f47af9e60899ee992bfc910dda73c36191e95e1d9e428a2a6",
+    "bytes": 205868,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/r1.wav": {
+    "mime": "audio/wav",
+    "sha256": "8015e0d9243f7148de4b9c3fde3c8464e051cfc5b181d25d01ee7fb2b42e172a",
+    "bytes": 58412,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/r2.wav": {
+    "mime": "audio/wav",
+    "sha256": "b12cf13248fe2c3fb44fc607e92be5fa2647ca74dfb1c4a6f86c7446c3a3b0c6",
+    "bytes": 70700,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/r3.wav": {
+    "mime": "audio/wav",
+    "sha256": "e8093caaae01d1d14d8ea7bee2eca26cab20808dc508f0bad83ff6485ab212b3",
+    "bytes": 67628,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/r4.wav": {
+    "mime": "audio/wav",
+    "sha256": "b9eb9bfcdfc36307b949fcc09b195b5c7b823e7a8753bb2ab1fb1e1a96b02b34",
+    "bytes": 82988,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/w1.wav": {
+    "mime": "audio/wav",
+    "sha256": "a258ba50aaa81e75d890cf23f8988fa104fb7bcc1bd8350b05852445065dfbc4",
+    "bytes": 101420,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/images/phase3-last-walk.png": {
+    "mime": "image/png",
+    "sha256": "9d83beff9607efbdfb3769e9a7d2c04ca3060b46b27c62eca1624dae5175a451",
+    "bytes": 39409,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/images/phase3-maze.png": {
+    "mime": "image/png",
+    "sha256": "c4c845aa9d1d6f9df7c7fb67f9acc9e7ccc194b6e83fa5f0c912ce4522b7cc5c",
+    "bytes": 70978,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/images/phase3-mri.png": {
+    "mime": "image/png",
+    "sha256": "052bc91308f417a70e0d40df73eb4e9a51e0343bb00a3a85423c9ccc48de0596",
+    "bytes": 88316,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/images/phase3-needle.png": {
+    "mime": "image/png",
+    "sha256": "d3bec316a6748af36712a8ab6e5e5807ec747ff28ec74d204d5b9bfde3d1b02c",
+    "bytes": 54691,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/images/phase3-routine.png": {
+    "mime": "image/png",
+    "sha256": "40620c03dddbf2033fc15746f0c790553c6ce7529d3f142d01bd451ebaeb3d6a",
+    "bytes": 73400,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/images/phase3-suitcase.png": {
+    "mime": "image/png",
+    "sha256": "17f660b25fe993a6afb06da22c0e1258c6f972b641b0b5bc2c91e4beb51bab05",
+    "bytes": 131599,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/images/phase3-switches.png": {
+    "mime": "image/png",
+    "sha256": "dc79d92e55b36537a92dbe5f411929d8019805226a94f1174b4ee2707f48da03",
+    "bytes": 41349,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/images/switches-phase3-01.png": {
+    "mime": "image/png",
+    "sha256": "0e407dd430c6411863220cc0e54b5c275da5db230686b0d621c970d70e11c237",
+    "bytes": 10364,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-02.png": {
+    "mime": "image/png",
+    "sha256": "a1cf530531012219525d8312ceee2b1d8d7c9db1bdbe149c9216d46af86ea98f",
+    "bytes": 11788,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-03.png": {
+    "mime": "image/png",
+    "sha256": "5b79ff8cc62060883c0def972f3fd5efc794ad05855fbe3bf693f76523620451",
+    "bytes": 12829,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-04.png": {
+    "mime": "image/png",
+    "sha256": "aeb9b18854dbf86f0af52d641e92623d46a9408108a1d64871e5171620a0f351",
+    "bytes": 10511,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-05.png": {
+    "mime": "image/png",
+    "sha256": "887db6a97279021ec7599d126c9b5f8f534ff0510a610df30bc2880bafe506af",
+    "bytes": 14599,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-06.png": {
+    "mime": "image/png",
+    "sha256": "a3aefc0364fc00dea52c848cab7c75d5b4402bf57db591821fa8124defceb033",
+    "bytes": 11434,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/images/switches-phase3-07.png": {
+    "mime": "image/png",
+    "sha256": "4ef6de677ef887f454dc65cf9a84459af99bebcf3b79a5623bda171ac36c8697",
+    "bytes": 10097,
+    "usedBy": [
+      "assets/data/switches-phase3-story.json"
+    ]
+  },
+  "assets/audio/voice/f-sw.wav": {
+    "mime": "audio/wav",
+    "sha256": "6b13e8d597527b825796cdab8e0a51f6426f6f29898f8a5966b95da38b05e0d0",
+    "bytes": 233516,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/f-mz.wav": {
+    "mime": "audio/wav",
+    "sha256": "1f8711c06a99333c1a1f00cc228620fb5b5071b273b1ec3b4c50d9b56e284caf",
+    "bytes": 184364,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/f-rt.wav": {
+    "mime": "audio/wav",
+    "sha256": "50b1dd00aed8f10b596e5521b6127f1236e10d2af90dcc24267e0877f0908195",
+    "bytes": 178220,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/f-lw.wav": {
+    "mime": "audio/wav",
+    "sha256": "62d0c02a658701e045f69ded066f0af766c2d7091be16ab64f870558db195922",
+    "bytes": 184364,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/f-nd.wav": {
+    "mime": "audio/wav",
+    "sha256": "5106a16b6c998cbdb4665a0fb77232e25df8ad3738817efaa226b034a85fc761",
+    "bytes": 178220,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/f-mr.wav": {
+    "mime": "audio/wav",
+    "sha256": "50ed84b228100e7db621884101650c8ca0ff2808211cb38e6fe3cef81220fbab",
+    "bytes": 208940,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
   }
 }

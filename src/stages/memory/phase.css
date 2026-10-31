@@ -1,0 +1,10 @@
+/* 기억 스테이지 페이즈(2026-10-29): 엄마 말 자막, 이상한 음식 먹을 때 화면 울렁임, 3페 마지막 흰 빛·암전. 흑백만. */
+#mom-line{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);margin:0;max-width:min(86vw,720px);padding:.42em .9em;background:#fff;color:#000;border:3px solid #000;font:700 clamp(17px,2.4vw,26px)/1.35 "Malgun Gothic",sans-serif;text-align:center;opacity:0;pointer-events:none;z-index:6}
+#mom-line.show{opacity:1}
+#memory-flash{position:absolute;inset:0;pointer-events:none;z-index:7;opacity:0;background:#fff}
+#memory-flash.white{opacity:1;background:#fff}
+#memory-flash.black{opacity:1;background:#000}
+#world.memory-queasy{animation:memory-queasy 1.7s ease-in-out infinite}
+@keyframes memory-queasy{0%,100%{transform:none}25%{transform:skewX(1.6deg) scale(1.02,.985) translateY(4px)}50%{transform:skewX(-.8deg) scale(.99,1.02)}75%{transform:skewX(-1.6deg) scale(1.02,.99) translateY(-3px)}}
+#memory-drops{position:absolute;left:0;right:0;bottom:0;width:100%;height:42%;object-fit:cover;object-position:bottom;pointer-events:none;z-index:6;opacity:0;image-rendering:pixelated}
+#memory-drops.show{opacity:1}

@@ -2,7 +2,10 @@
 /* 실 꿰기 (2026-10-19, Claude Code). 불편함: 정밀한 조작의 긴장 — 생각대로 따라주지 않는 손.
  * 조작: 마우스(또는 방향키)로 실 끝을 옮긴다. 손은 늘 떨린다. 누르고 있으면(Space도) 숨을 참아 덜 떨리지만,
  * 숨은 오래 못 참는다. 바늘 몸에 부딪히면 실 끝이 풀리고, 세 번 풀리면 가위로 끝을 잘라 낸다.
- * 실타래가 다 닳으면 실패. 바늘귀(구멍)를 왼쪽에서 오른쪽으로 통과하면 끝.
+ * 실타래가 다 닳으면 실패. 바늘귀(구멍)를 왼쪽에서 오른쪽으로 통과하면 한 번 꿴 것.
+ * 2026-10-29 사용자 「실꿰기. 1. 3번 꿰야 패스. 2. 2페,3페에도 1페랑 동일하게 가는 걸로.」(Claude Code):
+ * 세 번 꿰야 끝난다. 꿴 실은 바늘귀에 꿰인 채 늘어져 남고, 손은 처음 자리로 돌아와 새 실 끝으로 다시 꿴다.
+ * 실타래는 세 번 내내 이어 쓴다. 페이즈마다 다른 규칙 없음(2·3페도 이 규칙 그대로).
  * 움직임은 Windows 애니메이션 효과(동작 줄이기) 설정과 상관없이 돈다. 그림은 모두 이 파일 안에서 그린다. */
 (() => {
   'use strict';
@@ -16,6 +19,7 @@
   handSprite.src = '@@data:assets/images/game-c92a579205fa.png@@';
   const TAU = Math.PI * 2, clamp = (x, a, b) => Math.max(a, Math.min(b, x)), lerp = (a, b, t) => a + (b - a) * t;
   const T = {
+    passes: 3,           // 이만큼 꿰어야 끝(10/29 사용자 「3번 꿰야 패스」)
     notches: 4,          // 실타래에 남은 실(자를 수 있는 횟수)
     frayMax: 3,          // 이만큼 풀리면 잘라 낸다
     shake: 9.5,          // 평소 떨림(px, 화면 비율 s 곱함)
@@ -38,7 +42,7 @@
       phase: 'play', t: 0, start: performance.now(), target: null, hand: null, tip: { x: 0, y: 0 },
       holding: false, holdT: 0, gaspT: 0, everHeld: false, fray: 0, notches: T.notches, cuts: 0, bumps: 0,
       cool: 0, side: 'L', threading: false, endT: 0, snipT: 0, bits: [], shakeNow: T.shake, guideSeen: false, holdSeen: false,
-      pull: 0, reported: false, near: false, focus: 0
+      pull: 0, reported: false, near: false, focus: 0, done: 0, strands: []
     };
   }
   st = fresh();
@@ -143,8 +147,16 @@
   function finish(kind) {
     if (st.phase !== 'play') return;
     st.phase = kind === 'complete' ? 'pulled' : 'failed'; st.endT = 0; st.holding = false;
-    if (kind === 'complete') { throughSound(); say('실을 꿰었습니다.'); }
+    if (kind === 'complete') { throughSound(); const left = T.passes - st.done - 1; say(left > 0 ? `실을 꿰었습니다. ${left}번 더 꿰어야 합니다.` : '실을 세 번 다 꿰었습니다.'); }
     else say('실이 다 닳았습니다.');
+  }
+  // 한 번 꿴 뒤: 꿴 실은 바늘귀에 남기고, 손을 처음 자리로 돌려 새 실 끝으로 다시 시작한다.
+  function nextPass() {
+    st.strands.push({ x: st.tip.x, y: st.tip.y + st.pull * 18 * s });
+    st.done++;
+    st.phase = 'play'; st.endT = 0; st.pull = 0; st.fray = 0; st.threading = false; st.side = 'L';
+    st.holding = false; st.holdT = 0;
+    st.hand = { x: W * .34, y: geo.eyeY + 60 * s }; st.target = { ...st.hand }; st.tip = { ...st.hand };
   }
   function report(kind) {
     if (st.reported) return; st.reported = true;
@@ -217,7 +229,7 @@
       if (st.near) st.guideSeen = true;
     } else {
       st.endT += dt;
-      if (st.phase === 'pulled') { st.pull = Math.min(1, st.endT / 1.3); st.tip.x += 140 * s * dt * (1 - st.pull); if (st.endT > 1.7) report('complete'); }
+      if (st.phase === 'pulled') { st.pull = Math.min(1, st.endT / 1.3); st.tip.x += 140 * s * dt * (1 - st.pull); if (st.endT > 1.7) { if (st.done + 1 < T.passes) nextPass(); else report('complete'); } }
       if (st.phase === 'failed' && st.endT > 1.3) report('fail');
     }
   }
@@ -246,7 +258,7 @@
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
     if (!dither) dither = { mid: pattern(8), light: pattern(4), dark: pattern(12) };
     ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
-    drawBits(); drawSpool(); drawNeedle(); drawThread(false); drawHand(); drawThread(true); drawGuide(); drawBreath(); drawSnip();
+    drawBits(); drawSpool(); drawNeedle(); drawStrands(); drawThread(false); drawHand(); drawThread(true); drawGuide(); drawBreath(); drawSnip();
   }
   function drawNeedle() {
     // 노안: 바늘이 흐릿하게 하나 더 겹쳐 보인다(점선). 숨을 참으면 초점이 맞아 겹침이 줄어든다. 판정은 실선 바늘만.
@@ -301,6 +313,19 @@
         ctx.beginPath(); ctx.moveTo(tip.x - 3 * s, tip.y); ctx.lineTo(tip.x - 3 * s + Math.cos(ang) * len, tip.y + Math.sin(ang) * len); ctx.stroke();
       }
     }
+  }
+  function drawStrands() {
+    // 앞서 꿴 실: 바늘귀 왼쪽에 짧은 꼬리, 오른쪽으로 빠져나가 아래로 늘어진다.
+    const ex = cxAt(geo.eyeY), ey = geo.eyeY;
+    ctx.lineWidth = 1.7 * s; ctx.strokeStyle = '#000';
+    st.strands.forEach((b, i) => {
+      const k = 1000 + i * 20, bx = b.x + i * 16 * s, by = b.y + i * 8 * s;
+      const hang = { x: bx + (10 + i * 6) * s, y: Math.min(H * .97, by + (170 + i * 45) * s) };
+      ctx.beginPath(); ctx.moveTo(...wob(ex - 14 * s, ey + (22 + i * 6) * s, k));
+      ctx.quadraticCurveTo(...wob(ex - 6 * s, ey + 2 * s, k + 1), ex, ey);
+      ctx.bezierCurveTo(...wob(lerp(ex, bx, .55), ey + i * 3 * s, k + 2), ...wob(bx + 6 * s, by, k + 3), ...wob(hang.x, hang.y, k + 4));
+      ctx.stroke();
+    });
   }
   function drawHand() {
     // The sprite's thumb/index contact (1148,218) is the actual thread pinch.
@@ -396,7 +421,7 @@
     if (!paused) step(dt);
     draw();
     canvas.dataset.phase = st.phase; canvas.dataset.fray = String(st.fray); canvas.dataset.notches = String(st.notches);
-    canvas.dataset.holding = String(st.holding); canvas.dataset.threading = String(st.threading);
+    canvas.dataset.holding = String(st.holding); canvas.dataset.threading = String(st.threading); canvas.dataset.done = String(st.done);
     requestAnimationFrame(frame);
   }
   let paused = false;

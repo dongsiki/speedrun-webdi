@@ -16,6 +16,11 @@
     dryRate: .07
   });
   // 2026-10-27: 노인이 끝까지 걸으면 아이·교통사고·중환자실 장면 대신 중환자실 엔딩 컷신(ending.js)이 이어짐.
+  // 2026-10-29: 2·3페(phases.js). head의 window.LastWalkPhase가 2나 3이면 켜지고, 없으면 1페 그대로.
+  const PH = typeof LastWalkPhases !== 'undefined' ? LastWalkPhases.create(Number(window.LastWalkPhase) || 1, {
+    T, foot: w => foot(w), tone: (...a) => tone(...a), status: text => { status.textContent = text; }
+  }) : null;
+  if (PH) document.body.dataset.lastWalkPhase = String(PH.phase);
 
   let width = 1, height = 1, scale = 1, ppm = 100;
   let raf = 0, last = 0, paused = false, ended = false, clock = 0;
@@ -67,11 +72,12 @@
   const hints = {
     elder: '<kbd>A</kbd> <kbd>D</kbd> 번갈아 걷기 &nbsp; <kbd>Space</kbd> 꾹 눌러 원을 점선 밖까지 · 떼면 내쉬기 &nbsp; <kbd>E</kbd> 눈 깜빡이기'
   };
+  if (PH) hints.phase = PH.hint;
   let hintKey = '';
   function showHint(key) { if (hintKey === key) return; hintKey = key; keysHint.innerHTML = hints[key]; keysHint.dataset.hidden = 'false'; }
   function updateHint() {
     const u = s.hintUsed;
-    if (s.phase === 'elder') { showHint('elder'); if (u.feet && u.breath && u.eyes && clock > 6) keysHint.dataset.hidden = 'true'; }
+    if (s.phase === 'elder') { showHint(PH ? 'phase' : 'elder'); if (PH) return; if (u.feet && u.breath && u.eyes && clock > 6) keysHint.dataset.hidden = 'true'; }
     else keysHint.dataset.hidden = 'true';
   }
 
@@ -102,6 +108,7 @@
     startAudio();
     if (e.repeat) return;
     held.add(k);
+    if (s.phase === 'elder' && PH && PH.key(k, s)) return;
     if (s.phase === 'elder') {
       if (k === 'KeyA' || k === 'ArrowLeft') foot('L');
       if (k === 'KeyD' || k === 'ArrowRight') foot('R');
@@ -127,7 +134,7 @@
     if (embedded) parent.postMessage({ channel, type: 'complete' }, '*');
     else setTimeout(restart, 1600);
   }
-  function restart() { LastWalkEnding.stop(); s = fresh(); ended = false; held.clear(); hintKey = ''; setPhase('elder'); clock = 0; }
+  function restart() { LastWalkEnding.stop(); PH?.reset(); s = fresh(); ended = false; held.clear(); hintKey = ''; setPhase('elder'); clock = 0; }
   // 노인이 끝까지 걸으면 중환자실 엔딩 컷신 → 끝나면 이 게임 완료.
   function startEnding() {
     setPhase('ending'); silence(); held.clear(); status.textContent = '';
@@ -144,7 +151,8 @@
       s.x = s.stepFrom + T.stepLength * (t * t * (3 - 2 * t));
     }
     // Breath: hold Space to inhale, release to exhale.
-    const inhaling = breathHeld(), before = s.lung, breathsBefore = s.breaths, deepBefore = s.lungPeak > .55;
+    if (PH) { PH.update(dt, s); if (ended) return; }
+    const inhaling = PH ? PH.inhaling(breathHeld(), dt, s) : breathHeld(), before = s.lung, breathsBefore = s.breaths, deepBefore = s.lungPeak > .55;
     s.lung = Math.max(0, Math.min(1, s.lung + (inhaling ? T.inhaleRate : -T.exhaleRate) * dt));
     if (inhaling) s.lungPeak = Math.max(s.lungPeak, s.lung);
     if (inhaling && s.lung >= 1) s.holdAtFull += dt; else if (!inhaling) s.holdAtFull = 0;
@@ -336,7 +344,7 @@ function drawElder(px,fy) {
     ctx.strokeStyle = r * s.lung > tr ? '#fff' : '#000'; ctx.lineWidth = deep ? 3 : 1.5; ctx.setLineDash(deep ? [] : [3, 3]);
     ctx.beginPath(); ctx.arc(cx, cy, tr, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
     ctx.fillStyle = '#000'; ctx.font = `600 ${Math.round(Math.max(12, .12 * ppm))}px "Malgun Gothic", sans-serif`;
-    ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText('숨', cx - r - 8, cy);
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText(PH ? PH.breathLabel() : '숨', cx - r - 8, cy);
     // Under the feet: how long the stumble still holds him. Flashes if a key is pressed meanwhile.
     if (s.stumble > 0) {
       const bw = .7 * ppm, bh = Math.max(7, .06 * ppm), bx = px - bw / 2, by = fy + .16 * ppm;
@@ -362,6 +370,7 @@ function drawElder(px,fy) {
       edgeVeil(Math.max(0, (s.dryness - .45) / .55), false);
       if (phase === 'elder') drawCues(px, fy);
       if (s.blink > 0) { ctx.fillStyle = '#000'; const h = height * .5 * Math.sin(s.blink / .14 * Math.PI); ctx.fillRect(0, 0, width, h); ctx.fillRect(0, height - h, width, h); }
+      if (PH) PH.draw(ctx, width, height, ppm, px, fy, s, clock);
     }
   }
 
@@ -387,6 +396,12 @@ function drawElder(px,fy) {
     if (e.source !== parent || e.data?.channel !== channel) return;
     if (e.data.type === 'pause') pause();
     if (e.data.type === 'focus') { resume(); canvas.focus({ preventScroll: true }); }
+  });
+  // 10/31 개발자용 컷신 버튼: {channel:'speedrun-dev-cutscene'} 메시지로 걷지 않고 중환자실 컷신만 본다. 끝나면 처음부터(완료로 치지 않음).
+  window.addEventListener('message', e => {
+    if (e.source !== parent || e.data?.channel !== 'speedrun-dev-cutscene') return;
+    restart(); paused = false; last = 0; setPhase('ending'); silence(); held.clear(); status.textContent = '';
+    LastWalkEnding.play({ onDone: restart });
   });
   $('stage-back').addEventListener('click', function () {
     this.disabled = true; ended = true; pause(); LastWalkEnding.stop();

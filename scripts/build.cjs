@@ -102,6 +102,12 @@ function build({ write = false } = {}) {
   }
   if (write) {
     // 개발자용 시안 중 소스 폴더에 그대로 있는 두 페이지를 개발자용 폴더로 복사(휴대폰 터치는 본편을 옆 플레이용 폴더에서 연다).
+    // 10/29: 개발자용 3페이즈 시안(dev-pages/phase3)을 본편과 같은 소스(src/phase/phase3)로 맞춘다.
+    const p3 = path.join(root, DEV_DIR, 'dev-pages/phase3');
+    const p3src = path.join(root, 'src/phase/phase3');
+    for (const [from, to] of [['dev-index.html', 'index.html'], ['phase3.js', 'phase3.js'], ['phase3.css', 'phase3.css'], ['story.js', 'story.js']]) copyIfChanged(path.join(p3src, from), path.join(p3, to));
+    for (const f of fs.readdirSync(path.join(root, 'assets/audio/phase3'))) if (f.endsWith('.wav')) copyIfChanged(path.join(root, 'assets/audio/phase3', f), path.join(p3, 'voice', f));
+    for (const f of fs.readdirSync(path.join(root, 'assets/images'))) if (/^phase3-.*.png$/.test(f)) copyIfChanged(path.join(root, 'assets/images', f), path.join(p3, 'img', f.replace(/^phase3-/, '')));
     for (const page of ['icu-ending', 'mobile-touch']) {
       copyTree(path.join(root, 'src/dev-pages', page), path.join(root, DEV_DIR, 'src/dev-pages', page), {
         'index.html': t => t.replace("which === 'play' ? '01_speedrun_play.html'", "which === 'play' ? '../플레이용/01_speedrun_play.html'")

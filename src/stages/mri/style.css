@@ -52,3 +52,14 @@ body[data-black="true"] #black{display:block}
 body[data-phase="intro"] #intro,body[data-phase="done"] #done{display:grid}
 #done .record{margin-top:16px;font-weight:800}
 @media(prefers-reduced-motion:reduce-off){#ask,#phone{animation:none}}
+
+/* 2026-10-29 페이즈(Claude Code): 스페이스바 기다림 안내 · 2페 얼굴 컷 · 3페 빈 화면 */
+#press{position:fixed;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,760px);padding:18px 24px 20px;border:4px solid var(--ink);background:var(--paper);text-align:center;font-weight:800;font-size:clamp(28px,5vw,58px);line-height:1.22;display:none}
+#press small{display:block;margin-top:10px;font-size:clamp(13px,1.6vw,18px);font-weight:700;letter-spacing:.2em}
+body[data-phase="ready"] #press{display:block}
+body[data-phase="ready"] #timer{display:block}
+#scare{z-index:8;pointer-events:none;display:none}
+body[data-scare="on"] #scare{display:block}
+body[data-mri-phase="2"][data-scare="on"] #hold{transform:translateX(calc(-50% + 7px)) translateY(-3px)}
+body[data-phase="gone"]{background:var(--ink)}
+body[data-phase="gone"] #gone{display:grid;background:var(--ink);color:#777}

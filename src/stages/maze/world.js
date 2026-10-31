@@ -6,7 +6,7 @@ const MazeWorld = (() => {
     { role:'neighbor', x:15.75, z:14.25, yaw:-2.90 },
     { role:'child', x:19.48, z:13.60, yaw:Math.PI }
   ]);
-  function create(E, display) {
+  function create(E, display, options = {}) {
     if (typeof THREE === 'undefined') return null;
     const T=THREE, D=E.dimensions, surface=document.createElement('canvas');
     let renderer;
@@ -165,12 +165,21 @@ const MazeWorld = (() => {
     const dummy=new T.Object3D();let trailCount=0;
     const loader=new T.TextureLoader();let loaded=0,failed=false;
     function load(uri){const t=loader.load(uri,()=>{loaded++;display.dataset.npcTextures=String(loaded);},undefined,()=>{failed=true;display.dataset.worldError='npc-texture';});t.colorSpace=T.SRGBColorSpace;t.magFilter=T.NearestFilter;t.minFilter=T.LinearFilter;t.generateMipmaps=false;return t;}
-    for(const entry of placements){
-      const head=load(MazeNPCAssets[entry.role]),body=entry.role==='neighbor'?head:load(MazeNPCAssets[entry.role+'Body']);
-      const data=MazeNPCMeshes[entry.role],neutral=createNPC(T,data,body,entry.role,head);
-      const scale=D.npcHeights[entry.role]/(neutral.bounds.max.y-neutral.bounds.min.y);
+    const npcTextures={};
+    function npcTexture(role){
+      if(!npcTextures[role]){const head=load(MazeNPCAssets[role]);npcTextures[role]={head,body:role==='neighbor'?head:load(MazeNPCAssets[role+'Body'])};}
+      return npcTextures[role];
+    }
+    function buildActor(role){
+      const {head,body}=npcTexture(role);
+      const data=MazeNPCMeshes[role],neutral=createNPC(T,data,body,role,head);
+      const scale=D.npcHeights[role]/(neutral.bounds.max.y-neutral.bounds.min.y);
       neutral.geometry.dispose();neutral.material.dispose();neutral.mesh.material[1].dispose();
-      const npc=createNPC(T,data,body,entry.role,head,MazeNPCPoses.create(T,data,entry.role));
+      return {npc:createNPC(T,data,body,role,head,MazeNPCPoses.create(T,data,role)),scale};
+    }
+    // 2026-10-29 개발자용 미로 2페: 맵을 바꾼 뒤에는 원래 자리의 사람들을 두지 않는다(options.npcs=false). 본편은 그대로.
+    for(const entry of options.npcs===false?[]:placements){
+      const {npc,scale}=buildActor(entry.role);
       // Keep the same stature when sitting. Never enlarge a seated pose to adult standing height.
       const x=entry.role==='child'?20-.007+npc.bounds.min.x*scale:entry.x;
       npc.object.position.set(x,.001-npc.bounds.min.y*scale,entry.z);npc.object.rotation.y=entry.yaw;npc.object.scale.setScalar(scale);scene.add(npc.object);
@@ -188,6 +197,8 @@ const MazeWorld = (() => {
           float t=(4.*bayer(p)+bayer(floor(p/2.))+.5)/16.;gl_FragColor=vec4(vec3(step(t,smoothstep(.13,.90,v))),1.);}`});
     postScene.add(new T.Mesh(new T.PlaneGeometry(2,2),post));
     let pw=0,ph=0,seconds=0,disposed=false;
+    // 개발자용 미로 2·3페 스크립트가 장면에 물건을 더할 때만 쓰는 손잡이. 본편은 쓰지 않는다.
+    const frameHooks=[],kit={T,scene,camera,box,plane,texture,white,black,buildActor};
     display.dataset.npcCount=String(actors.length);display.dataset.dressedFaces=String(dressedFaces);
     display.dataset.eyeHeight=String(D.eyeHeight);display.dataset.doorHeight=String(D.doorHeight);
     return {
@@ -209,6 +220,7 @@ const MazeWorld = (() => {
           const glance=!reduced&&d<3.8&&Math.abs(turn)<1.5?Math.max(-.30,Math.min(.30,turn))*.65:0;
           a.npc.pose(glance);a.npc.object.scale.y=a.scale*(1+(reduced?0:Math.sin(seconds*1.1+a.x)*.0025));
         }
+        for(const hook of frameHooks)hook(player,seconds,dt);
         while(trailCount<footprints.length&&trailCount<6000){
           const f=footprints[trailCount];dummy.position.set(f.x,.002,f.z);dummy.rotation.set(0,-Math.atan2(f.dz,f.dx)-Math.PI/2,0);dummy.updateMatrix();footMeshes.setMatrixAt(trailCount,dummy.matrix);trailCount++;
         }
@@ -217,6 +229,7 @@ const MazeWorld = (() => {
         display.dataset.worldReady=String(loaded===5&&!failed);display.dataset.zone=E.zoneAt(player.x,player.z);
         return surface;
       },
+      kit,addFrameHook(hook){frameHooks.push(hook);},
       dispose(){if(disposed)return;disposed=true;target.dispose();scene.traverse(o=>{o.geometry?.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material]){m?.map?.dispose();m?.dispose();}});post.dispose();renderer.dispose();}
     };
   }

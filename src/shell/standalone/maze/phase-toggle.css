@@ -4,5 +4,5 @@
 #dev-phase-bar button+button{border-left:1.5px solid #000}
 #dev-phase-bar button[aria-pressed="true"]{background:#000;color:#fff}
 #dev-phase-bar[data-broken]::after{content:"!";padding:4px 8px;font:700 14px/1.6 sans-serif;background:#000;color:#fff}
-/* 본편 2페이즈에서 미로가 바뀌면 미로 화면 전체가 반전된다(phase.css의 #maze 규칙과 같게) */
-body[data-dev-phase="2"] #stage{filter:invert(1)}
+/* 2페: 글리치로 막힌 EXIT를 제대로 본 뒤부터 미로 화면 전체가 반전된다(검은 배경, phase.css의 #maze 반전과 같은 방식) */
+body[data-dev-phase="2"][data-maze-dark] #stage{filter:invert(1) contrast(1.15)}

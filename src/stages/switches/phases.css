@@ -1,0 +1,12 @@
+/* 전구 퍼즐 2페·3페(개발자용 02, 2026-10-29, Claude Code). 1페 화면 규칙은 그대로 두고 덧붙인다. */
+/* 2페: 개수가 바뀌어도 한 줄 칸 수(--cols)에 맞춰 전구 크기를 줄인다. */
+#experience[data-dev-phase="2"] #switches{min-width:max(352px,calc(var(--cols,8) * 50px))}
+#experience[data-dev-phase="2"] .switch{width:min(calc(85% / var(--cols,8)),108px,21svh)}
+/* 3페: 한 줄 일곱 개, 전구 안 그림이 보일 만큼 크게. */
+#experience[data-dev-phase="3"] #switches{height:clamp(320px,56vw,640px);max-width:1440px;min-width:700px}
+#experience[data-dev-phase="3"] .switch{width:min(calc(97% / 7),220px,40svh);gap:4px}
+#experience[data-dev-phase="3"] .switch .rocker{width:46%}
+.big-bulb{display:block;width:100%;height:auto;overflow:visible;pointer-events:none}
+.big-bulb .story{display:none}
+.switch[data-lit="true"] .big-bulb .glass{fill:#fff}
+.switch[data-lit="true"] .big-bulb .story{display:inline}

@@ -1,5 +1,7 @@
 (() => {
   'use strict';
+  // 개발자용 02의 2페·3페는 phases.js가 맡는다(본편 01에는 phases.js가 없어 늘 1페).
+  if (globalThis.SwitchDevPhase > 1 && globalThis.SwitchPhases) { SwitchPhases.run(SwitchDevPhase); return; }
   const P = SwitchPuzzle, art = SwitchArt, $ = id => document.getElementById(id);
   let board = P.INITIAL, demoReported = false;
   const grid = $('switches'), cancelInputs = [];
