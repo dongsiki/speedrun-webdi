@@ -1,0 +1,11 @@
+/* 첫 플레이 연출(first-run.js). 클리어 화면은 본편 #run-clear와 같은 모양(글자만). */
+#first-run-clear{position:fixed;inset:0;z-index:2147480000;display:grid;place-items:start center;padding-top:38vh;background:var(--paper,#fff);color:var(--ink,#000)}
+#first-run-clear .rc-word{margin:0;font-size:var(--count-size);font-family:"BatangChe","Batang","GungsuhChe","Courier New",monospace;font-weight:700;letter-spacing:.3em;transform:translateX(-3vw)}
+body[data-first-run] > main{visibility:hidden}
+.first-run-intro{cursor:none}
+.first-run-skip{position:fixed;right:clamp(16px,4vw,40px);bottom:clamp(16px,5vh,40px);z-index:2;padding:8px 14px;border:1.5px solid #000;background:#fff;color:#000;font:700 15px/1 "Malgun Gothic",sans-serif;pointer-events:none}
+.first-run-skip.hover{background:#000;color:#fff}
+.first-run-skip.press{transform:translateY(1px) scale(.97)}
+.first-run-cursor{position:fixed;left:0;top:0;z-index:3;opacity:0;pointer-events:none;transition:opacity .2s}
+.first-run-cursor.show{opacity:1}
+.first-run-cursor.press svg{transform:scale(.88);transform-origin:2px 2px}

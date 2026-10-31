@@ -52,8 +52,9 @@
     const m = main();
     if (m) m.inert = prevInert;
     delete body.dataset.gameStart;
-    resolveDone(reason);
-    window.dispatchEvent(new CustomEvent('gamestart:end', { detail: { reason } }));
+    const end = () => { resolveDone(reason); window.dispatchEvent(new CustomEvent('gamestart:end', { detail: { reason } })); };
+    // 10/31 사용자: 첫 플레이는 스타트 클릭 → 클리어 1초 → 인트로 다시 → 커서가 건너뛰기 → AI 버튼(first-run.js).
+    if (reason === 'start' && window.FirstRunGag) window.FirstRunGag.play().then(end, end); else end();
   }
   const domReady = document.readyState === 'loading'
     ? new Promise(r => document.addEventListener('DOMContentLoaded', r, { once: true })) : Promise.resolve();

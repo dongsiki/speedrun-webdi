@@ -3,8 +3,15 @@
      본편(01)과 같은 게임을 그대로 쓰고(인트로만 건너뜀), 위쪽 버튼만 더한다.
      1페 = 처음 AI 버튼 스테이지 그대로 / 2페 = 같은 화면에 살짝의 글리치만 / 3페 = 이미 있는 3페이즈 시안의 첫 장면(AI 버튼을 막다 도와 달라 함)으로 이동. -->
 <script>
-try { sessionStorage.setItem('speedrun-intro-seen', '1'); } catch (_) {}
-window.SpeedrunIntroOnce = true;
+// 10/31 사용자: 첫 플레이 연출을 개발자용에도(「걍 개발자용에만 올려」). 주소 끝 #demo=reset&first-run 이면
+// 1페이즈 처음 상태로 인트로 → 스타트 → 클리어 1초 → 다시 인트로 → 커서가 건너뛰기 → AI 버튼을 매번 보여 준다.
+if (/first-run/.test(location.hash)) {
+  try { sessionStorage.removeItem('speedrun-intro-seen'); sessionStorage.removeItem('speedrun-first-run-seen'); } catch (_) {}
+  window.FirstRunForce = true;
+} else {
+  try { sessionStorage.setItem('speedrun-intro-seen', '1'); } catch (_) {}
+  window.SpeedrunIntroOnce = true;
+}
 </script>
 <style>/* @inline src/shell/dev/phase-bar.css */</style>
 <style>body[data-burst] #intro{translate:var(--gx,0) var(--gy,0)}#phase-todo{top:50px}</style>
