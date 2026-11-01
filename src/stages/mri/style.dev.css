@@ -63,3 +63,8 @@ body[data-scare="on"] #scare{display:block}
 body[data-mri-phase="2"][data-scare="on"] #hold{transform:translateX(calc(-50% + 7px)) translateY(-3px)}
 body[data-phase="gone"]{background:var(--ink)}
 body[data-phase="gone"] #gone{display:grid;background:var(--ink);color:#777}
+
+/* 11/01 다시 켜기: 처음부터 암전(안내·끝 화면도 검은 바탕) */
+.screen{background:#000;color:#fff}
+.screen button{background:#000;color:#fff;border-color:#fff}
+.screen button:hover,.screen button:focus-visible{background:#fff;color:#000}

@@ -646,16 +646,16 @@
   },
   "assets/audio/phase3/o1.wav": {
     "mime": "audio/wav",
-    "sha256": "77c2bf20424b470e44e7746dd9fd3583306a614277a1ea491d68935c6260e0f9",
-    "bytes": 125996,
+    "sha256": "dd46752fc6bb7ff1fa59ca0a402a513fef02f7e6ea653b49a0b8a86ce3189aa5",
+    "bytes": 122924,
     "usedBy": [
       "src/phase/phase3/assets.js"
     ]
   },
   "assets/audio/phase3/o2.wav": {
     "mime": "audio/wav",
-    "sha256": "ddb50b1687c2f3c22f0accb36b2406c71a3ffcc08f3140d0ad727d83fb2eb926",
-    "bytes": 175148,
+    "sha256": "84bcdef2bd4b32dccb18e80f64310cb01dc2ef8b2744ca7d211d8bcbe084cac4",
+    "bytes": 178220,
     "usedBy": [
       "src/phase/phase3/assets.js"
     ]
@@ -874,6 +874,182 @@
     "bytes": 208940,
     "usedBy": [
       "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-1.wav": {
+    "mime": "audio/wav",
+    "sha256": "366fe719505dc44daae90418bd6f925579efbe50786215b6d6414f6fcb202972",
+    "bytes": 147500,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-2.wav": {
+    "mime": "audio/wav",
+    "sha256": "dc8c02ed5846e2cf506b63227e12bbff02834382cb8c8393c47933633524721f",
+    "bytes": 138284,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-3.wav": {
+    "mime": "audio/wav",
+    "sha256": "e80e578a165dbbed383607940c9df52750c368a3749bc6769e5c1c1692ff9c41",
+    "bytes": 147500,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-4.wav": {
+    "mime": "audio/wav",
+    "sha256": "74af4d8741edcf9bbdd147ce367ddc693b96664c1437e7efc67118cddca67f3b",
+    "bytes": 113708,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-sw.wav": {
+    "mime": "audio/wav",
+    "sha256": "49dc9d3fbbcf19573d5a5a4ca0e89b51e4a3f5fbe3ddee47924ef9d35bf09af6",
+    "bytes": 178220,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-mz.wav": {
+    "mime": "audio/wav",
+    "sha256": "fde22a840aa78a05025b4101b71207285be3162134be83b507f032106fef32b2",
+    "bytes": 175148,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-rt.wav": {
+    "mime": "audio/wav",
+    "sha256": "28a0b0840c01a8968fcf808fe73dc45326fe7fe80d8b1d830cee86d8687c2755",
+    "bytes": 187436,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-lw.wav": {
+    "mime": "audio/wav",
+    "sha256": "b99225e8211640eab1ce3fc7dbd9392f336ce3458fe1626f5d0cc54bfc0af3c9",
+    "bytes": 175148,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-nd.wav": {
+    "mime": "audio/wav",
+    "sha256": "45bd0ea58405fa0cce672008dd5ffb66aa0ecd7d83661fe2e188bda66e127752",
+    "bytes": 181292,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/c-mr.wav": {
+    "mime": "audio/wav",
+    "sha256": "eafeca9b0f1a4eebc97fce0e647a8f179adaafd29f655d948f509967c0461b4d",
+    "bytes": 156716,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/b-1.wav": {
+    "mime": "audio/wav",
+    "sha256": "6c68347660c85051ac8f2ad46a9cada554c3dc05da2c178da0b83f888de3c481",
+    "bytes": 95276,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/b-2.wav": {
+    "mime": "audio/wav",
+    "sha256": "7177be0c724ca1176119ec65585c0b06b9787898e2830064619b36bdb10e4def",
+    "bytes": 82988,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/b-3.wav": {
+    "mime": "audio/wav",
+    "sha256": "659e46c053043f3391ec344326c2a11eae53bedce704b05a00176208136e326d",
+    "bytes": 92204,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/b-4.wav": {
+    "mime": "audio/wav",
+    "sha256": "d5bddd7a4e642c70a478a7eb9cc8d259964bb009318ebae33195ad4457e0e6fa",
+    "bytes": 125996,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/h-1.wav": {
+    "mime": "audio/wav",
+    "sha256": "3204399511806e8509e5b79b0c87d71601c13f43ecf5cf972847aa3f728ccfff",
+    "bytes": 141356,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/h-2.wav": {
+    "mime": "audio/wav",
+    "sha256": "60174bc77bc8f84e866ee6cf0139f68d6b105f3886813cf2d3179ee92e118bfb",
+    "bytes": 153644,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/voice/h-3.wav": {
+    "mime": "audio/wav",
+    "sha256": "deb9e763b3430014a7f602fe1535eb11fc6c87bb15b051838768e70fa3e74733",
+    "bytes": 129068,
+    "usedBy": [
+      "src/phase/tease.js"
+    ]
+  },
+  "assets/audio/mri-reboot/hold.wav": {
+    "mime": "audio/wav",
+    "sha256": "4c78f2d8e2aa64571e2b91b0b638447c13739af22889e59a0d86f4a6a660b4ba",
+    "bytes": 162860,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/retake.wav": {
+    "mime": "audio/wav",
+    "sha256": "33550df4df6c420f875d0765b6e9f0b1da1c74d5e5cd6d232f2292d9800259fc",
+    "bytes": 162860,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/nurse.wav": {
+    "mime": "audio/wav",
+    "sha256": "9dc49a4c5672e72f10356c1c4ca5d57e921d184a1276da346e7ccf05a77fb910",
+    "bytes": 150572,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/fakedone.wav": {
+    "mime": "audio/wav",
+    "sha256": "197e49ecb93cf4d6ee043b3bbf363361c2f6ac237956838b6aab50172fa4cbac",
+    "bytes": 132140,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/done.wav": {
+    "mime": "audio/wav",
+    "sha256": "6c5f30e6a48ffd7f7a837194d265709481dfc91e4119c3051fba2eda3f73bf05",
+    "bytes": 135212,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
     ]
   }
 }

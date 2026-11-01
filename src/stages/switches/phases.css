@@ -10,3 +10,10 @@
 .big-bulb .story{display:none}
 .switch[data-lit="true"] .big-bulb .glass{fill:#fff}
 .switch[data-lit="true"] .big-bulb .story{display:inline}
+
+/* 11/01 떡밥: 2페 암전 화면 구석의 교복 치마(phases.js cover.dataset.hint) */
+.switch-blackout[data-hint="left"],.switch-blackout[data-hint="right"]{background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%2090%22%3E%3Cpath%20d%3D%22M30%208h40l4%2010H26z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M26%2018h48l20%2062H6z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M38%2018%2030%2080M50%2018v62M62%2018l8%2062M26%2018%2018%2080M74%2018l8%2062%22%20stroke%3D%22%23000%22%20stroke-width%3D%222.4%22%2F%3E%3C%2Fsvg%3E");background-repeat:no-repeat;background-size:min(16vw,140px) auto}
+.switch-blackout[data-hint="left"]{background-position:9% 82%}
+.switch-blackout[data-hint="right"]{background-position:91% 78%}
+/* 11/01 전구 공장: 다 켜면 검수 도장 */
+.factory-stamp{position:fixed;right:clamp(18px,6vw,80px);bottom:clamp(18px,8vh,90px);z-index:30;padding:6px 14px;border:4px double #000;color:#000;background:#fff;font:900 clamp(20px,3vw,32px)/1 "Malgun Gothic",sans-serif;letter-spacing:.2em;transform:rotate(-9deg);pointer-events:none}

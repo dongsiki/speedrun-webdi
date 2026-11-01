@@ -188,6 +188,8 @@
       }
       $('status').textContent = done ? '' : `${off}개의 불이 남았습니다.`;
       if (done) { blackout.finish(); cancelAll(); }
+      // 11/01 새 서사: 전구 공장에서 일하던 기억. 다 켜면 검수 도장이 찍힌다(2·3페, 세부는 Claude가 정함).
+      if (done && phase >= 2 && !main.querySelector('.factory-stamp')) { const st = document.createElement('div'); st.className = 'factory-stamp'; st.setAttribute('aria-hidden', 'true'); st.textContent = '검수 완료'; main.append(st); }
       if (done && !reported) {
         reported = true;
         // 3페는 다 켜진 한 줄(이야기 전체)을 잠깐 보여 준 뒤 끝낸다.
@@ -214,8 +216,10 @@
         changes++; main.dataset.reshuffles = String(changes);
         memory.change(); layout();
       }
+      // 11/01 새 서사: 어릴 때 괴롭힘(여장)은 메인 전개가 아니라 떡밥. 암전 세 번에 한 번꼴로 검은 화면 구석에 교복 치마가 비친다(세부는 Claude가 정함).
       function flash() {
         if (document.hidden || done) return schedule();
+        cover.dataset.hint = Math.random() < .34 ? (Math.random() < .5 ? 'left' : 'right') : '';
         const double = Math.random() < .38, dur = 130 + Math.floor(Math.random() * 90), gap = 540 + Math.floor(Math.random() * 300);
         locked = true; cancelAll(); cover.dataset.on = 'true';
         later(reshuffle, Math.min(80, dur - 20)); // 화면이 다 가려진 동안에만 바꾼다
