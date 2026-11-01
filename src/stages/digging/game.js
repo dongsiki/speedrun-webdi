@@ -307,6 +307,9 @@
   }
   function wake(){if(!frameId){previousTime=0;frameId=requestAnimationFrame(draw);}}
   function resize(){
+    // 11/01 버그: 게임에 들어가면 이 화면(iframe)이 숨겨져 크기가 0이 되고, 그때 판 자리를 한 줄짜리 격자로 줄였다가
+    // 돌아올 때 다시 늘리면서 판 자리가 세로 기둥으로 번졌다. 화면이 거의 0일 때는 격자를 건드리지 않는다.
+    if(innerWidth<80||innerHeight<80){stopDrag();return;}
     stopDrag();const old=depth,oldCols=cols,oldRows=rows;
     W=Math.max(1,innerWidth);H=Math.max(1,innerHeight);ratio=Math.min(devicePixelRatio||1,2);cell=clamp(Math.floor(Math.min(W,H)/40),10,16);radius=cell*2.15;
     cols=Math.ceil(W/cell);rows=Math.ceil(H/cell);depth=new Float32Array(cols*rows);lastErosion=new Float64Array(cols*rows);lastErosion.fill(-1000);
