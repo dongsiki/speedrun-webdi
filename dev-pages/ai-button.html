@@ -1092,7 +1092,6 @@ body[data-first-run] > main{visibility:hidden}
 (() => {
   'use strict';
   if (window.FirstRunGag) return;
-  const VIDEO = 'assets/video/elder-transformation-10s.mp4?v=13eb1e890d6b';
   const wait = ms => new Promise(r => setTimeout(r, ms));
   const kinds = ['pointerdown', 'pointerup', 'pointermove', 'mousedown', 'mouseup', 'mousemove', 'click', 'dblclick', 'touchstart', 'touchmove', 'touchend', 'wheel', 'contextmenu', 'keydown', 'keyup'];
   const block = e => { if (e.cancelable) e.preventDefault(); e.stopImmediatePropagation(); };
@@ -1130,7 +1129,8 @@ body[data-first-run] > main{visibility:hidden}
       dialog.className = 'transformation-intro first-run-intro';
       dialog.setAttribute('aria-label', '변신 인트로');
       const video = document.createElement('video');
-      video.src = VIDEO; video.muted = true; video.defaultMuted = true; video.playsInline = true; video.preload = 'auto';
+      /* 11/01: 이 모양 그대로 써야 개발자용 dev-pages 사본에서 ../ 경로로 바뀐다(make.cjs). 전에는 02 「첫 플레이 연출」에서 영상이 안 나왔다. */
+      video.src = '../assets/video/elder-transformation-10s.mp4?v=13eb1e890d6b'; video.muted = true; video.defaultMuted = true; video.playsInline = true; video.preload = 'auto';
       video.setAttribute('playsinline', ''); video.setAttribute('muted', '');
       const skip = document.createElement('button');
       skip.type = 'button'; skip.className = 'first-run-skip'; skip.textContent = '인트로 건너뛰기'; skip.tabIndex = -1;
