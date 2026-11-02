@@ -1051,5 +1051,13 @@
     "usedBy": [
       "src/stages/mri/reboot-voices.js"
     ]
+  },
+  "assets/images/needle-sailor/needle-sailor.png": {
+    "mime": "image/png",
+    "sha256": "aa270013f4a8669106c121dd8ab2dec0e8fea7d949788430dfe8ad6602b52540",
+    "bytes": 2670014,
+    "usedBy": [
+      "src/stages/needle/dev.template.html"
+    ]
   }
 }

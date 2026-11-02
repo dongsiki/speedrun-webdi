@@ -70,8 +70,22 @@
     if (Math.random() < .22) FX.moan(.08 + n * .015);
     setTimeout(() => { delete body.dataset.burst; }, 90 + Math.random() * (180 + n * 40));
   }
+  // 11/02 사용자: 「8은 2번 하는 걸로 하는데, 첫 한 번 클리어할때 1.5페이즈로 넘어가는 걸로.」
+  // 1.5페이즈(10/28 사용자): 「걍 화면의 글리치나 데이터모쉬이펙트를 추가하는 정도」 「맵의 직접적인 변경이 있짆 않은거지」
+  // → 맵·소리는 1페이즈 그대로. 게임 화면이 가끔 찢기거나 반전되고, 가끔 데이터모쉬 블록이 번진다(화면만).
+  function burst15() {
+    if (P.state.phase !== 1.5 || body.dataset.stage === 'intro' || !idle()) return;
+    body.style.setProperty('--gx', `${(Math.random() - .5) * 24}px`);
+    body.style.setProperty('--gy', `${(Math.random() - .5) * 8}px`);
+    body.style.setProperty('--gb', `${Math.floor(Math.random() * 80)}%`);
+    body.style.setProperty('--gh', `${3 + Math.random() * 12}%`);
+    body.dataset.burst = Math.random() < .3 ? 'invert' : 'tear';
+    setTimeout(() => { delete body.dataset.burst; }, 80 + Math.random() * 140);
+    if (Math.random() < .4) cut({ quiet: true, ms: 260 });
+  }
   function scheduleBursts() {
     clearTimeout(burstTimer);
+    if (P.state.phase === 1.5) { burstTimer = setTimeout(() => { burst15(); scheduleBursts(); }, 5000 + Math.random() * 6000); return; }
     if (P.state.phase < 2 || calm()) return;
     const n = P.state.corrupted.length;
     burstTimer = setTimeout(() => { burst(1 + n * .15); scheduleBursts(); }, 2500 + Math.random() * Math.max(1500, 8000 - n * 900));
@@ -148,8 +162,8 @@
   // --- 1페이즈 끝: 첫 결과 화면의 공포 컷 두 번 ---
   // 10/27 사용자: 「1페이즈 끝 결과화면에서 점프스퀘어를 하지말고 글리치만 해」 「글리치 혹은 데이터모쉬 하여튼 등등의 오류이펙트를 해」
   // → 노인 얼굴 없이, 결과 화면 자체가 0.5초 동안 깨진다(띠 찢김·색 반전·데이터모쉬 블록·번짐). 점스는 3페이즈 직전 것만.
-  function cut() {
-    const finale = $('run-clear');
+  function cut(opt = {}) {
+    const finale = opt.quiet ? null : $('run-clear');
     const layer = document.createElement('div'); layer.className = 'phase-cut'; layer.setAttribute('aria-hidden', 'true');
     const canvas = document.createElement('canvas'); layer.append(canvas); document.body.append(layer);
     const g = canvas.getContext('2d');
@@ -185,18 +199,18 @@
       setTimeout(tick, 33 + Math.random() * 30);
     };
     tick();
-    FX.crackle(.5, .45, 'tear'); FX.crackle(.45, .25, 'hiss');
+    if (!opt.quiet) { FX.crackle(.5, .45, 'tear'); FX.crackle(.45, .25, 'hiss'); }
     setTimeout(() => {
       layer.remove();
       if (finale) { finale.style.translate = ''; finale.style.filter = ''; finale.style.clipPath = ''; }
-    }, 500);
+    }, opt.ms || 500);
   }
   function watchFinale() {
     const finale = $('run-clear');
     if (!finale || finale.dataset.phaseSeen) return;
     finale.dataset.phaseSeen = '1';
-    if (P.state.phase === 1) {
-      P.set({ phase: 2, corrupted: [], run2: [], swapUsed: false });
+    if (P.state.phase === 1 || P.state.phase === 1.5) { // 11/02: 첫 클리어 → 1.5페이즈, 두 번째 클리어 → 2페이즈
+      P.set(P.state.phase === 1 ? { phase: 1.5 } : { phase: 2, corrupted: [], run2: [], swapUsed: false });
       setTimeout(cut, 3500); setTimeout(cut, 7000);
     } else if (body.dataset.phaseEnding) { // 2페이즈 끝: 평범한 클리어 화면으로 안심시킨다(누를 수는 없게)
       finale.querySelectorAll('button').forEach(b => { b.disabled = true; b.tabIndex = -1; });

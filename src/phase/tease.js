@@ -105,11 +105,12 @@
     const gain = ctx.createGain(); gain.gain.value = .3;
     src.connect(gain); gain.connect(ctx.destination);
     const t = ctx.currentTime; src.start(t);
-    if (Math.random() < .4) { // 마일드 글리치: 아주 짧게 한 번 끊긴다
+    if (glitchPhase() >= 1.5 && Math.random() < .4) { // 마일드 글리치(11/02: 1.5페부터): 아주 짧게 한 번 끊긴다
       const at = t + .2 + Math.random() * Math.max(.1, buf.duration - .5);
       gain.gain.setValueAtTime(.3, at); gain.gain.setValueAtTime(0, at + .001); gain.gain.setValueAtTime(.3, at + .05 + Math.random() * .04);
     }
   }
+  function glitchPhase() { const b = document.querySelector('#dev-phase-bar:not([hidden]) button[aria-pressed="true"][data-p]'); if (b) return Number(b.dataset.p); if (document.body && document.body.dataset.devPhase) return Number(document.body.dataset.devPhase); const P = window.SpeedrunPhase; return P && P.state ? P.state.phase : 1; }
   let timer = 0;
   function show(id) {
     mount(); box.textContent = LINES[id]; box.style.opacity = '1';

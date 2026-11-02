@@ -253,9 +253,17 @@
     m.forEach((v, i) => { if (v < level) g.fillRect(i % 4, Math.floor(i / 4), 1, 1); });
     const p = ctx.createPattern(c, 'repeat'); p.setTransform(new DOMMatrix([1 / ratio, 0, 0, 1 / ratio, 0, 0])); return p;
   }
+  // 11/02 개발자용 02만: 손으로 실 꿰는 화면 밑에 세일러문 그림(Codex). 사용자 「아 ㅇㅋ 4는 코덱스한테 이미지 맡기고 그 이미지를 집어넣어」.
+  // 그림은 dev.template.html이 window.NeedleUnderlay로 넘긴다(본편 01엔 없음). 화면을 꽉 채운다(실 꿰기 화면은 흑백 잉크 필터를 거쳐 옅게 그리면 사라져서 그대로 그림, 세부는 Claude가 정함).
+  function drawUnderlay() {
+    const img = window.NeedleUnderlay; if (!img || !img.complete || !img.naturalWidth) return;
+    const k = Math.max(W / img.naturalWidth, H / img.naturalHeight), w = img.naturalWidth * k, h = img.naturalHeight * k;
+    ctx.save(); ctx.globalAlpha = 1; ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h); ctx.restore();
+  }
   function draw() {
     ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
     ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
+    drawUnderlay();
     if (!dither) dither = { mid: pattern(8), light: pattern(4), dark: pattern(12) };
     ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
     drawBits(); drawSpool(); drawNeedle(); drawStrands(); drawThread(false); drawHand(); drawThread(true); drawGuide(); drawBreath(); drawSnip();

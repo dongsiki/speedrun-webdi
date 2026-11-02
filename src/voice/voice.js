@@ -46,6 +46,7 @@
     'f-3': '천천히 하세요. 어차피 시간은 많으니까요.',
     'f-4': '그냥 저 주세요.'
   };
+  function glitchPhase() { const b = document.querySelector('#dev-phase-bar:not([hidden]) button[aria-pressed="true"][data-p]'); if (b) return Number(b.dataset.p); if (document.body && document.body.dataset.devPhase) return Number(document.body.dataset.devPhase); const P = window.SpeedrunPhase; return P && P.state ? P.state.phase : 1; }
   const FAIL = Object.keys(LINES).filter(id => id[0] === 'f');
   const VOLUME = { t: .3, f: .3, n: .26, w: .32 };
   const channel = 'speedrun-midterm-v1';
@@ -85,7 +86,8 @@
     } else src.connect(gain);
     gain.connect(ctx.destination);
     src.start(); current = src;
-    if (Math.random() < .35) { // 10/29 「전체 2」 내레이션에도 마일드 글리치: 아주 짧게 한 번 끊긴다
+    if (glitchPhase() >= 1.5 && Math.random() < .35) { /* 11/02 사용자: 「11은 1.5페이즈에서 약한 글리치를 약간 더 쎄게 해서 1.5페이즈부터 하게 해.」 → 1페에는 없음, 1.5페부터. */
+      // 10/29 「전체 2」 내레이션에도 마일드 글리치: 아주 짧게 한 번 끊긴다
       const at = ctx.currentTime + .2 + Math.random() * Math.max(.1, buf.duration - .5), v = gain.gain.value;
       gain.gain.setValueAtTime(v, at); gain.gain.setValueAtTime(0, at + .001); gain.gain.setValueAtTime(v, at + .05 + Math.random() * .04);
     }
