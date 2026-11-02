@@ -8,6 +8,7 @@
 if (/first-run/.test(location.hash)) {
   try { sessionStorage.removeItem('speedrun-intro-seen'); sessionStorage.removeItem('speedrun-first-run-seen'); } catch (_) {}
   window.FirstRunForce = true;
+  if (/one-clear/.test(location.hash)) window.FirstRunOneClear = true; // 11/02 시안: 클리어 화면 하나로
 } else {
   try { sessionStorage.setItem('speedrun-intro-seen', '1'); } catch (_) {}
   window.SpeedrunIntroOnce = true;

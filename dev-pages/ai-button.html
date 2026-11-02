@@ -286,6 +286,7 @@ body:has(#run-clear) #phase-todo{display:none}
 if (/first-run/.test(location.hash)) {
   try { sessionStorage.removeItem('speedrun-intro-seen'); sessionStorage.removeItem('speedrun-first-run-seen'); } catch (_) {}
   window.FirstRunForce = true;
+  if (/one-clear/.test(location.hash)) window.FirstRunOneClear = true; // 11/02 시안: 클리어 화면 하나로
 } else {
   try { sessionStorage.setItem('speedrun-intro-seen', '1'); } catch (_) {}
   window.SpeedrunIntroOnce = true;
@@ -1084,6 +1085,9 @@ body[data-first-run] > main{visibility:hidden}
 .first-run-cursor{position:fixed;left:0;top:0;z-index:3;opacity:0;pointer-events:none;transition:opacity .2s}
 .first-run-cursor.show{opacity:1}
 .first-run-cursor.press svg{transform:scale(.88);transform-origin:2px 2px}
+/* 11/02 시안 「클리어 화면 하나로」: 7개 다 깼을 때 클리어 화면(#run-clear)과 같은 자리·모양 */
+#first-run-clear[data-one] .rc-again{position:fixed;right:clamp(24px,7vw,96px);bottom:clamp(24px,8vh,90px);padding:6px 14px;font:italic 700 clamp(3.5rem,11vw,7rem)/1 "Comic Sans MS","Segoe Print",Arial,sans-serif;transform:rotate(-8deg)}
+#first-run-clear[data-one] .rc-log{position:fixed;left:clamp(18px,4vw,48px);bottom:clamp(24px,6vh,60px);padding:10px 4px;border-bottom:1px dashed #000;font:17px "BatangChe","Batang","GungsuhChe","Courier New",monospace}
 </style><script>/* 첫 플레이 연출(2026-10-31, Claude Code). 본편 01에서 1페이즈이고 스타트 화면을 눌렀을 때만.
    사용자 원문(10/31): 「가장 처움에는 인트로 이후 수타트 화면을 클릭할때 바로 클리어 화면 나오게 하고. 클리어 이후에 이제 ai버튼이 나타나는 그런 느낌」
    「스타트 이후 클리어 회면 1초 띄우다가 . 더시 또 지혼자 인트로 회면 나오고 마유스거 지 알아서 인트로 건너뛰기 클릭하고. 그 이후에 ai버튼이 나오는 식으로」
@@ -1120,6 +1124,9 @@ body[data-first-run] > main{visibility:hidden}
       const clear = document.createElement('section');
       clear.id = 'first-run-clear'; clear.setAttribute('aria-label', '클리어');
       clear.innerHTML = '<p class="rc-word">클리어</p>';
+      // 11/02 시안(개발자용 02 「클리어 화면 하나로」만): 사용자 「클리어 화면은 하나로 통합하면 어떤지, 2깃허브에서 시안?」
+      // → 이 1초 클리어도 7개를 다 깼을 때의 클리어 화면과 똑같이(클리어·RE?·반항 기록). 누를 수는 없다.
+      if (window.FirstRunOneClear) { clear.dataset.one = '1'; clear.innerHTML = '<p class="rc-word">클리어</p><span class="rc-log">반항 기록</span><span class="rc-again">RE?</span>'; }
       body.append(clear);
       await wait(1000);
 

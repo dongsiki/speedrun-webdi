@@ -34,6 +34,9 @@
       const clear = document.createElement('section');
       clear.id = 'first-run-clear'; clear.setAttribute('aria-label', '클리어');
       clear.innerHTML = '<p class="rc-word">클리어</p>';
+      // 11/02 시안(개발자용 02 「클리어 화면 하나로」만): 사용자 「클리어 화면은 하나로 통합하면 어떤지, 2깃허브에서 시안?」
+      // → 이 1초 클리어도 7개를 다 깼을 때의 클리어 화면과 똑같이(클리어·RE?·반항 기록). 누를 수는 없다.
+      if (window.FirstRunOneClear) { clear.dataset.one = '1'; clear.innerHTML = '<p class="rc-word">클리어</p><span class="rc-log">반항 기록</span><span class="rc-again">RE?</span>'; }
       body.append(clear);
       await wait(1000);
 
