@@ -57,3 +57,17 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--paper
 .demo-back{position:fixed;z-index:4;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));right:auto;width:44px;height:44px;display:grid;place-items:center;margin:0;padding:10px;border:0;border-radius:0;color:#000;background:#fff;cursor:pointer;touch-action:manipulation}
 .demo-back svg{width:24px;height:24px;pointer-events:none}
 .demo-back:focus-visible{outline:2px solid #000;outline-offset:2px}
+
+/* 11/10 3D·한 화면(사용자 「한 화면에 cctv 4개 싹다 하지말고, 넘기는 걸로 하고」, 「화면 … 레이아웃? 그거를 프레디 처럼 걍 전체로 해줘」) */
+#experience{padding:0;background:#000}
+.console{position:fixed;inset:0;width:auto;display:block}
+.monitors{position:absolute;inset:0;display:block}
+.cam{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;border:0;border-radius:0}
+.cam[data-current="false"]{display:none}
+.cam:focus-visible{outline:none}
+.cam canvas.view3d{position:absolute;inset:0;width:100%;height:100%;display:block;image-rendering:pixelated}
+.cam .tag{left:max(70px,4%);top:22px;font-size:clamp(12px,1.6vw,18px);mix-blend-mode:difference}
+.cam .rec{right:28px;top:24px}
+.desk{position:absolute;left:16px;right:16px;bottom:16px;z-index:5;pointer-events:none}
+#radio{color:#fff;text-shadow:0 0 4px #000,0 0 2px #000}
+#experience[data-dawn="true"] .cam canvas.view3d{filter:invert(1);transition:filter 2.4s}

@@ -27,17 +27,10 @@
       room: '<path d="M20 36H136M20 86H136M20 136H136M20 36V188M136 36V188"/><rect x="30" y="58" width="30" height="28"/><rect x="70" y="64" width="40" height="22"/><rect x="34" y="108" width="44" height="28"/><rect x="200" y="140" width="56" height="44"/><rect x="214" y="104" width="40" height="36"/><rect x="262" y="150" width="40" height="34"/><path d="M0 188H320"/>' }
   ];
 
-  // --- 움직이는 것들(흰 실루엣, 발끝이 0,0) ---
-  const ACTORS = {
-    cat: { w: 50, html: '<ellipse cx="0" cy="-12" rx="20" ry="10"/><circle cx="22" cy="-24" r="9"/><path d="M16 -30l3-10 5 8zM24 -31l6-9 2 10z"/><path class="line" d="M-20 -14c-14-4-16-18-8-24"/><path class="line" d="M-12 -4v4M-4 -4v4M8 -4v4M14 -4v4"/><circle class="cut" cx="25" cy="-25" r="1.6"/>' },
-    bag: { w: 40, float: true, html: '<path d="M-16 -50c0-8 4-12 8-12 0 6 4 8 8 8s8-2 8-8c4 0 8 4 8 12l4 30c0 8-12 12-24 12s-24-4-24-12z"/><path class="cut" d="M-6 -40c3 2 9 2 12 0"/>' },
-    mannequin: { w: 40, dance: true, html: '<circle cx="0" cy="-92" r="10"/><path d="M-11 -80h22l4 40h-30z"/><path class="line arm-a" d="M-11 -76l-16 18M11 -76l16 -18"/><path class="line arm-b" d="M-11 -76l-16 -18M11 -76l16 18"/><path class="line" d="M-6 -40l-4 40M6 -40l4 40"/><path class="line" d="M-20 0h40"/>' },
-    robot: { w: 44, html: '<ellipse cx="0" cy="-10" rx="22" ry="10"/><rect x="-10" y="-24" width="20" height="8" rx="3"/><circle class="cut" cx="-6" cy="-12" r="2.2"/><circle class="cut" cx="6" cy="-12" r="2.2"/>' },
-    shadow: { w: 44, html: '<circle cx="0" cy="-112" r="13"/><path d="M-16 -96c-6 10-8 40-6 62l-4 34h12l6-30 6 30h12l-4-34c2-22 0-52-6-62z"/>' },
-    elder: { w: 50, html: '<circle cx="8" cy="-86" r="11"/><path d="M-6 -74c-8 6-12 18-12 30l2 44h10l4-30 6 30h10l-4-40c4-10 4-22-2-30z"/><path class="line" d="M18 -56l10 6v50"/><path class="cut" d="M2 -84h10"/>' },
-    elderSit: { w: 60, html: '<path class="line" d="M-24 0V-34H12V0M-24 -34V-80"/><circle cx="-2" cy="-86" r="11"/><path d="M-14 -74c-8 10-10 26-8 38h36v36h-11v-26h-25c-6-14-4-34 8-48z"/><path class="cut" d="M2 -88h6"/>' }
-  };
-  const SKIRT = '<svg class="hint" viewBox="0 0 100 90" aria-hidden="true"><path d="M30 8h40l4 10H26z" fill="#fff"/><path d="M26 18h48l20 62H6z" fill="#fff"/><path d="M38 18 30 80M50 18v62M62 18l8 62M26 18 18 80M74 18l8 62" stroke="#000" stroke-width="2.4"/></svg>';
+  // 11/10 사용자 「3d로 해」「싹 다 3d로 해」「움직이는 거 말고, 모델이 걍 그대로 멈춰있는 걸로 해」: 화면 속 것들은 3D 모델(rooms3d.js), 멈춰 있음.
+  // 「한 화면에 cctv 4개 싹다 하지말고, 넘기는 걸로 하고」「방향키나 wasd의 ad에 할당」「둘 다 할당되도록해」: 화면 하나씩, ← → / A·D로 넘긴다.
+  const STAIRS = /* @json assets/models/cctv/stairs.json */ null;
+  let current = 0;
 
   // --- 화면 만들기 ---
   const grid = $('monitors');
@@ -45,10 +38,10 @@
     const button = document.createElement('button');
     button.type = 'button'; button.className = 'cam'; button.dataset.cam = info.id;
     button.setAttribute('aria-label', `${info.tag} 화면 확인`);
-    button.innerHTML = `<svg class="feed" viewBox="0 0 320 200" aria-hidden="true"><path class="ray" d="M320 0H250L80 200H190Z"/><g class="room">${info.room}</g><g class="actors"></g></svg>`
-      + `<span class="tag">${info.tag}</span><span class="rec"></span><span class="static"><canvas width="80" height="50"></canvas></span>${SKIRT}<span class="block">차단됨</span><span class="stamp">확인</span>`;
+    button.innerHTML = `<canvas class="view3d" aria-hidden="true"></canvas>`
+      + `<span class="tag">${info.tag}</span><span class="rec"></span><span class="static"><canvas width="80" height="50"></canvas></span><span class="block">차단됨</span><span class="stamp">확인</span>`;
     grid.append(button);
-    const cam = { index, info, button, layer: button.querySelector('.actors'), canvas: button.querySelector('canvas'), event: null, markTimer: 0 };
+    const cam = { index, info, button, canvas: button.querySelector('.static canvas'), canvas3d: button.querySelector('canvas.view3d'), scene: Cctv3D.build(info.id, STAIRS), event: null, markTimer: 0 };
     button.addEventListener('click', () => look(cam));
     return cam;
   });
@@ -78,31 +71,21 @@
     clearTimeout(cam.markTimer); cam.markTimer = setTimeout(() => { delete cam.button.dataset.mark; }, ms);
   }
 
-  // --- 화면 속 움직임 ---
+  // --- 화면 속 것(3D 모델, 멈춰 있음) ---
   function place(cam, kind, opts = {}) {
-    const actor = ACTORS[kind];
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    g.setAttribute('class', `actor ${kind}`); g.innerHTML = actor.html;
-    cam.layer.replaceChildren(g);
-    const dir = opts.dir ?? (Math.random() < .5 ? 1 : -1);
-    const from = opts.x ?? (dir > 0 ? -30 : 350), to = opts.to ?? (dir > 0 ? 350 : -30);
-    cam.event = { kind, g, dir, from, to, born: performance.now(), life: opts.life ?? 4500, scale: opts.scale ?? 1, still: Boolean(opts.still), y: opts.y ?? cam.info.floor };
-    draw(cam, performance.now());
+    cam.event = { kind, born: performance.now(), life: opts.life ?? 4500, near: opts.near ?? 0 };
+    Cctv3D.stand(cam.scene, kind, cam.event.near); paint(cam);
   }
-  function clear(cam) { cam.event = null; cam.layer.replaceChildren(); }
-  function draw(cam, now) {
-    const e = cam.event; if (!e) return;
-    const t = Math.min(1, (now - e.born) / e.life);
-    const x = e.still ? e.from : e.from + (e.to - e.from) * t;
-    const bob = ACTORS[e.kind].float ? Math.sin(now / 260) * 10 - 30 : 0;
-    const flip = e.dir < 0 ? -1 : 1;
-    e.g.setAttribute('transform', `translate(${x.toFixed(1)} ${(e.y + bob).toFixed(1)}) scale(${(flip * e.scale).toFixed(3)} ${e.scale.toFixed(3)})`);
-    if (ACTORS[e.kind].dance) {
-      const a = Math.floor(now / 300) % 2 === 0;
-      e.g.querySelector('.arm-a').style.display = a ? '' : 'none';
-      e.g.querySelector('.arm-b').style.display = a ? 'none' : '';
-    }
+  function clear(cam) { cam.event = null; Cctv3D.stand(cam.scene, null); paint(cam); }
+  function draw() {}
+  function paint(cam) { if (cam.index === current) Cctv3D.render(cam.scene, cam.canvas3d); }
+  function showCam(i) {
+    current = (i + cams.length) % cams.length;
+    cams.forEach(c => { c.button.dataset.current = String(c.index === current); });
+    paint(cams[current]); cams[current].button.focus({ preventScroll: true });
   }
+  addEventListener('keydown', e => { const k = e.key.toLowerCase(); if (k === 'arrowleft' || k === 'a') { e.preventDefault(); showCam(current - 1); } if (k === 'arrowright' || k === 'd') { e.preventDefault(); showCam(current + 1); } });
+  addEventListener('resize', () => paint(cams[current]));
   function noise(cam) {
     const c = cam.canvas, ctx = c.getContext('2d'), img = ctx.createImageData(c.width, c.height);
     for (let i = 0; i < img.data.length; i += 4) { const v = Math.random() < .5 ? 0 : 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
@@ -145,12 +128,12 @@
     if (!running || done) return;
     const cam = freeCam();
     if (cam) {
-      if (phase === 1) place(cam, pick(['cat', 'bag', 'mannequin', 'robot']), { life: rand(4200, 5200) });
+      if (phase === 1) place(cam, pick(['cat', 'bag', 'mannequin', 'robot']), { life: rand(6000, 7500) });
       else {
         sightings++;
         // 확인할수록 가까워진다: 처음엔 작게 멀리, 나중엔 화면 가운데 크게 멈춰 선다.
         const near = Math.min(1, caught / 6);
-        place(cam, 'shadow', { life: rand(3000, 3800), still: near > .5, x: near > .5 ? rand(120, 200) : undefined, scale: .55 + near * .75, y: cam.info.floor + near * 20 });
+        place(cam, 'shadow', { life: rand(4500, 5500), near });
         cam.button.dataset.static = 'on'; noise(cam); setTimeout(() => { delete cam.button.dataset.static; }, 160);
         beep(140, .18);
       }
@@ -162,9 +145,10 @@
     const cam = pick(cams);
     cam.button.dataset.static = 'on'; noise(cam);
     // 11/01 떡밥(전구 2페에 있던 것을 옮김): 지직거리는 화면 구석에 교복 치마가 잠깐 비친다.
-    if (Math.random() < .34) cam.button.dataset.hint = Math.random() < .5 ? 'left' : 'right';
+    const hint = Math.random() < .34; // 지직거림이 걷히는 순간 교복 치마(3D)가 0.4초 서 있다
     const id = setInterval(() => noise(cam), 60);
-    setTimeout(() => { clearInterval(id); delete cam.button.dataset.static; delete cam.button.dataset.hint; }, rand(250, 1100));
+    setTimeout(() => { clearInterval(id); delete cam.button.dataset.static;
+      if (hint) { Cctv3D.addSkirt(cam.scene, true); paint(cam); setTimeout(() => { Cctv3D.addSkirt(cam.scene, false); paint(cam); }, 400); } }, rand(250, 1100));
     if (Math.random() < .25) minutes = Math.max(0, minutes - 15); // 시계가 뒤로 튄다
     extraTimer = setTimeout(glitchStatic, rand(1800, 4200));
   }
@@ -200,7 +184,7 @@
     if (scene >= P3.scenes.length) return dawn();
     const s = P3.scenes[scene];
     cams.forEach(c => { c.button.dataset.dim = String(c.index !== s.cam && c.button.dataset.ray !== 'on'); });
-    place(cams[s.cam], s.kind, { still: true, x: s.x, y: s.y, scale: s.scale ?? 1, dir: 1, life: 1e9 });
+    place(cams[s.cam], s.kind, { life: 1e9 });
   }
   function lookPhase3(cam) {
     const s = P3.scenes[scene];
@@ -244,7 +228,7 @@
       if (phase === 2) {
         // 2페 끝: 네 화면 한꺼번에 그림자가 정면으로 선다(0.4초) → 아침.
         main.dataset.scare = 'on';
-        cams.forEach(c => place(c, 'shadow', { still: true, x: 160, scale: 1.45, y: 205, life: 1e9 }));
+        cams.forEach(c => place(c, 'shadow', { near: 1.5, life: 1e9 }));
         beep(90, .4);
         setTimeout(() => { cams.forEach(clear); delete main.dataset.scare; }, 420);
         return finish(1600, '06:00');
@@ -266,10 +250,11 @@
   window.addEventListener('message', event => {
     if (event.source !== parent || event.data?.channel !== channel) return;
     if (event.data.type === 'pause') pause();
-    if (event.data.type === 'focus') cams[0].button.focus({ preventScroll: true });
+    if (event.data.type === 'focus') cams[current].button.focus({ preventScroll: true });
   });
   document.addEventListener('visibilitychange', () => { last = 0; });
   showClock();
+  showCam(0);
   start();
   globalThis.CctvGame = { get phase() { return phase; }, get minutes() { return minutes; }, cams, finish: () => finish(0, '') };
 })();
