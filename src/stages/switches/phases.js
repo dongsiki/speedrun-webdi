@@ -70,7 +70,7 @@
   }
   const rules = { rowPuzzle, deal, remaining, press, solved, splitCount, nextCount };
   // 2페: 1페와 같은 '전구 속 사람' 그림·목소리. 3페: 전구 안 이야기 그림 7장(왼쪽부터 차례로).
-  const MemoryAssets = /* @json assets/data/switches-game-switch-memory-assets-05652ef819.json */ null;
+  const MemoryAssets = /* @json assets/data/switches-memory-assets.json */ null;
   const Phase3Story = /* @json assets/data/switches-phase3-story.json */ null;
 
   // --- 화면 ---

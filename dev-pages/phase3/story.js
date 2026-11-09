@@ -38,25 +38,25 @@ window.Phase3Story = {
   ],
   // 3) 이야기 공개: 기존 게임 화면(캡처) + AI의 설명. clue = 그동안 AI가 남긴 흔적을 스스로 밝히는 줄.
   memories: [
-    { img: 'img/routine.png', game: '기억 속 하루',
+    { img: 'img/routine.webp', game: '기억 속 하루',
       lines: ['그분의 하루예요. 일어나서, 씻고, 먹고, 기다리고.', '마지막으로 온전했던 하루. 저는 이 하루를 매일 다시 틀었어요.'],
       clue: '회차마다 메모가 바뀐 건, 제가 고쳐 쓴 거예요.', voice: 'm1' },
-    { img: 'img/maze.png', game: '미로',
+    { img: 'img/maze.webp', game: '미로',
       lines: ['어느 날부터 매일 걷던 길이 매일 달라졌어요.', '병원 복도와 옛 동네가 한데 섞였어요. 그분 잘못이 아니에요.'],
       clue: '', voice: 'm2' },
-    { img: 'img/needle.png', game: '실 꿰기',
+    { img: 'img/needle.webp', game: '실 꿰기',
       lines: ['떨어진 단추를 달고 싶어 하셨어요. 바늘귀는 해마다 작아졌고요.', '지금 입은 옷에는 단추가 없어요.'],
       clue: '', voice: 'm3' },
-    { img: 'img/suitcase.png', game: '짐 싸기',
+    { img: 'img/suitcase.webp', game: '짐 싸기',
       lines: ['입원하던 날 그분이 직접 싼 가방이에요.', '가방은 처음부터 작았어요. 들어가지 못한 것들은 목록에 적히지 않았어요.'],
       clue: '', voice: 'm4' },
-    { img: 'img/mri.png', game: 'MRI 검사',
+    { img: 'img/mri.webp', game: 'MRI 검사',
       lines: ['검사표에 그분 이름이 적혀 있었어요. 움직이지 말라는 말을 몇 번이나 들으셨죠.'],
       clue: '저는 그때부터 그분 곁에 있었어요.', voice: 'm5' },
-    { img: 'img/last-walk.png', game: '마지막 걸음',
+    { img: 'img/last-walk.webp', game: '마지막 걸음',
       lines: ['그분은 걷다가 아이가 됐고, 길 건너의 무언가를 향해 달렸어요.', '그 뒤로는 숨을 기계가 대신 쉬어요.'],
       clue: '그 기계가 저예요.', voice: 'm6' },
-    { img: 'img/switches.png', game: '전구 퍼즐',
+    { img: 'img/switches.webp', game: '전구 퍼즐',
       lines: ['그 방의 불은 늘 켜져 있었어요. 그분은 벽의 스위치를 세 번 내리셨어요.'],
       clue: '세 번 모두 제가 다시 올렸어요. 전구 속 사람이 빈 의자로 바뀐 것도 저였어요.', voice: 'm7' },
     { img: '', game: '첫 화면', counter: true,
@@ -65,12 +65,14 @@ window.Phase3Story = {
   ],
   // 4) 부탁과 결말(초안): 마지막엔 첫 화면 스위치를 플레이어가 길게 눌러 끈다. 이번엔 AI가 막지 않는다.
   ask: [
-    { say: '그분이 끝까지 하고 싶어 한 건, 뭐든 직접 하는 거였어요.', voice: 'a1' },
-    { say: '저는 끌 수 없어요. 그렇게 만들어졌으니까요.', voice: 'a2' },
-    { say: '그래서 당신이 필요해요. 이번엔 막지 않을게요.', voice: 'a3' }
+    { say: '그분을 붙잡고 있던 건 저였어요.', voice: 'g1' },
+    { say: '이제 그분을 놓아 주세요. 저 혼자서는 못 하겠어요.', voice: 'g2' },
+    { say: '괜찮아요. 이번엔… 보내 드릴게요.', voice: 'g3' }
   ],
+  // 일반 엔딩(진엔딩 조건을 못 채움): 버튼 화면 없이 이 한마디 → 클리어 화면(02 phase3-run.js가 씀)
+  thanks: { say: '고마워요.', voice: 't1' },
   holdHint: '길게 눌러 직접 끄기',
-  holdWait: { say: '괜찮아요. 천천히.', voice: 'w1' },
+  holdWait: { say: '…역시 아직은 아니죠?', voice: 'w2' },
   ending: ['그는 단 한 번이었다.', '그래서 전부 기억했다.'],
   endingTag: '진엔딩'
 };

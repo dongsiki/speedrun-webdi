@@ -7,4 +7,4 @@
 // The child runs into the road; headlights, brakes, darkness.
 // ICU: only breathing remains; following the ventilator for 8 breaths clears the stage.
 /* Offline renders from the existing memory-stage elderly model. Geometry: Lucas Pope / 3909; repainted study atlas. See work/routine3d/assets/obra-model-source.md. */
-const LIMB_MODEL_ART=/* @json assets/data/last-walk-elder-art-limb-model-art-aba3fdc2f5.json */ null;
+const LIMB_MODEL_ART=/* @json assets/data/last-walk-elder-pixel-art.json */ null;

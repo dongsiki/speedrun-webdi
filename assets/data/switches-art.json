@@ -1,0 +1,6 @@
+{
+  "switch-idle": "@@data:assets/images/switches-switch-idle.svg@@",
+  "switch-pressed": "@@data:assets/images/switches-switch-pressed.svg@@",
+  "bulb-off": "@@data:assets/images/switches-bulb-off.svg@@",
+  "bulb-on": "@@data:assets/images/switches-bulb-on.svg@@"
+}

@@ -4,8 +4,8 @@ button{font:inherit;color:inherit}
 #stub{display:none}
 .scene{position:fixed;inset:0;display:none;background:#fff center/100% 100% no-repeat}
 body[data-stage=intro] #scene-intro,body[data-stage=digging] #scene-digging{display:block}
-#scene-intro{background-image:url(@@data:assets/images/style-8e2a42d3de93.png@@)}
-#scene-digging{background-image:url(@@data:assets/images/style-cb1b60dc1cdc.png@@)}
+#scene-intro{background-image:url(@@data:assets/images/clear-screen-intro-bg.webp@@)}
+#scene-digging{background-image:url(@@data:assets/images/clear-screen-digging-bg.webp@@)}
 #fake-switch{position:absolute;left:41.43%;top:51.09%;width:17.14%;height:10.11%;border:0;background:transparent;cursor:pointer}
 #preview-bar{position:fixed;z-index:30;top:14px;left:50%;transform:translateX(-50%);display:flex;flex-wrap:wrap;justify-content:center;gap:6px;align-items:center;max-width:calc(100vw - 90px);padding:6px 8px;border:1px dashed #000;background:#fff;font-size:12px}
 #preview-bar span{margin-right:4px;letter-spacing:.1em}

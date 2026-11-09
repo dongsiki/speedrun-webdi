@@ -1,4 +1,4 @@
-/* 3페이즈(2026-10-26 시안 → 10/27 본편 01 연결, Claude Code). 본편 인트로(src/shell/play/style.css·additional-2.css) 모양을 따라 쓴다.
+/* 3페이즈(2026-10-26 시안 → 10/27 본편 01 연결, Claude Code). 본편 인트로(src/shell/play/style.css·ai-gate.css) 모양을 따라 쓴다.
    흑백 1-bit, 새 그림 없음. 모두 #p3 안에서만 쓰여 본편 화면에 섞이지 않는다. */
 #p3{--p3-type:Arial,"Malgun Gothic",sans-serif;--p3-typed:Batang,"바탕","BatangChe","Malgun Gothic",serif;--p3-count:clamp(2.25rem,7vw,3.5rem);
   position:fixed;inset:0;z-index:2147483200;background:#fff;color:#000;font-family:var(--p3-type);overflow:hidden;-webkit-tap-highlight-color:transparent}

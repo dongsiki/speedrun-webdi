@@ -10,8 +10,10 @@
   if (!P || !FX) return;
   const $ = id => document.getElementById(id), body = document.body, channel = 'speedrun-midterm-v1';
   const games = P.games;
+  // 11/07 사용자: 2페이즈에는 짐 싸기가 없다(가방을 안 묻고, 나머지 여섯 곳을 다 깨면 2페이즈 클리어). early.js의 games2.
+  const games2 = P.games2 || games;
   // 클리어할 때마다 이 순서로 아직 안 깬 게임 하나가 바뀐다.
-  const ORDER = ['maze', 'routine', 'switches', 'limb', 'suitcase', 'needle', 'mri'];
+  const ORDER = ['maze', 'routine', 'switches', 'limb', 'suitcase', 'needle', 'mri'].filter(g => games2.includes(g));
   const storyLine = id => { const a = (window.RebellionLog?.achievements || []).find(x => x.id === id); return a?.story?.[1] || ''; };
   const idle = () => !['white', 'failure'].includes(body.dataset.transition);
   const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -20,9 +22,13 @@
   // --- 맵 바꾸기: 미로는 원래 지나던 통로(11,10)를 벽으로 막고 (10,11)을 연다 → 시작 쪽으로 크게 돌아가야 한다 ---
   // 10/26 사용자: 점프스케어가 나오는 클리어 한 게임 전부터는 글리치 없이.
   // 「'아 정상화'됐나보다 생각하게 될 때즘에 빡 조지는 거지」 → 마지막 한 판은 맵·소리·화면 모두 1페이즈처럼 정상.
-  const calm = () => P.state.phase === 2 && P.state.run2.length >= games.length - 1;
+  const calm = () => P.state.phase === 2 && P.state.run2.length >= games2.length - 1;
   const has = typeof DemoDocuments !== 'undefined';
   const originals = {}; if (has) for (const g of games) originals[g] = DemoDocuments[g];
+  // 2페이즈 땅파기: 가방(짐 싸기)을 묻지 않는다. 11/09 사용자: 실타래(실 꿰기)도 묻지 않는다.
+  const digTypes = "const types=['bulb','key','toothbrush','cane','spool','suitcase','chart'];";
+  const digging = has ? DemoDocuments.digging : '';
+  const digging2 = digging && digging.replace(digTypes, () => "const types=['bulb','key','toothbrush','cane','chart'];");
   // 10/26 사용자 「그래」: 맵이 바뀐 게임은 그 게임 원래 소리도 깨진다(바뀐 게임이 늘수록 깨지는 소리도 늘어남).
   const soundGlitch = html => html.replace(/<head>/i, () => '<head><script>(' + phaseStageAudioGlitch.toString() + ')();<' + '/script>');
   function applyMaps() {
@@ -31,6 +37,7 @@
     body.dataset.corrupt = s.phase >= 2 ? s.corrupted.join(' ') : '';
     body.dataset.corruptn = String(s.phase >= 2 ? s.corrupted.length : 0);
     if (!has) return;
+    if (digging) DemoDocuments.digging = s.phase === 2 ? digging2 : digging;
     for (const g of games) {
       let html = originals[g];
       if (on && s.corrupted.includes(g)) {
@@ -111,7 +118,7 @@
     const s = P.state;
     if (s.phase === 2 && source === 'digging' && data.type === 'enter' && !s.swapUsed && s.run2.length >= 2 && !calm() && DemoFlow.destinations[data.object]) {
       const own = DemoFlow.destinations[data.object];
-      const others = games.filter(g => g !== own && !s.run2.includes(g));
+      const others = games2.filter(g => g !== own && !s.run2.includes(g));
       if (others.length) {
         const to = others.find(g => s.corrupted.includes(g)) || others[0];
         DemoFlow.destinations[data.object] = to;
@@ -121,12 +128,12 @@
         burst(2.4); FX.sting(.35);
       }
     }
-    if (s.phase === 2 && games.includes(source) && data.type === 'complete' && !s.run2.includes(source)) {
+    if (s.phase === 2 && games2.includes(source) && data.type === 'complete' && !s.run2.includes(source)) {
       const run2 = [...s.run2, source];
       const target = ORDER.find(g => !s.corrupted.includes(g) && !run2.includes(g)) || ORDER.find(g => !s.corrupted.includes(g));
       P.set({ run2, corrupted: target ? [...s.corrupted, target] : s.corrupted });
       applyMaps(); scheduleBursts(); sound();
-      if (run2.length >= games.length) endPhase2();
+      if (run2.length >= games2.length) endPhase2();
     }
   }, true);
 

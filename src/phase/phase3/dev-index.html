@@ -25,16 +25,17 @@ body:has(.p3-talk:not([hidden])) .p3-new{background:#000;color:#fff;border-color
 </head>
 <body>
 <header id="p3-dev" aria-label="개발용 표시">
-  <p class="p3-new"><b>새로 만든 부분</b>3페이즈 · 진행 거부 → AI 도움 요청 → 이야기 공개 → 진엔딩 <i>(본편 01 점프스케어 뒤에도 같은 장면)</i></p>
+  <p class="p3-new"><b>새로 만든 부분</b>3페이즈 · 진행 거부 → 「도와주세요」 → 땅파기(3페이즈판 게임) → 진엔딩 / 일반 엔딩</p>
   <nav aria-label="장면 바로가기">
     <button type="button" data-jump="refuse">1 첫 화면</button>
-    <button type="button" data-jump="help">2 도움 요청</button>
-    <button type="button" data-jump="story">3 이야기</button>
-    <button type="button" data-jump="ask">4 결말</button>
+    <button type="button" data-jump="help">2 도와주세요</button>
+    <a href="../../02_speedrun_dev.html#p3dig">3 땅파기</a>
+    <button type="button" data-jump="ask">4 진엔딩</button>
     <a href="../../02_speedrun_dev.html">개발자용 목록</a>
   </nav>
 </header>
 <script>window.Phase3Dev = true;</script>
+<script src="ai-cling.js"></script><script>AiCling.session(true); /* 11/07 구석 「세션 #4,812」(src/shell/dev/ai-cling.js). 심전도 박동은 phase3.js가 낸다. */</script>
 <script src="story.js"></script>
 <script src="phase3.js"></script>
 </body>

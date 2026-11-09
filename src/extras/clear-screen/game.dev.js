@@ -1,4 +1,4 @@
-(()=>{const stores=/* @json assets/data/clear-screen-game-stores-04d0515e6d.json */ null;const KEY='speedrun-rebellion-dev-preview',SKEY='speedrun-rebellion-dev-preview-state';
+(()=>{const stores=/* @json assets/data/clear-screen-preview-saves.json */ null;const KEY='speedrun-rebellion-dev-preview',SKEY='speedrun-rebellion-dev-preview-state';
 let state='all';try{state=sessionStorage.getItem(SKEY)||'all';localStorage.setItem(KEY,JSON.stringify(stores[state]));}catch(_){}
 for(const b of document.querySelectorAll('#preview-bar button')){b.setAttribute('aria-pressed',String(b.dataset.state===state));b.addEventListener('click',()=>{try{sessionStorage.setItem(SKEY,b.dataset.state);}catch(_){}location.reload();});}
 const hint=t=>{document.getElementById('preview-hint').textContent=t;};

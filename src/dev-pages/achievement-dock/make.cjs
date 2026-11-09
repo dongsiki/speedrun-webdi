@@ -18,7 +18,7 @@ const before = text;
 text = text.replace(/\.src = 'assets\/video\//g, ".src = '../assets/video/");
 if (text === before) throw new Error('Intro video path not found');
 if (/@@data:|\/\* @(?:inline|json|jsonraw|standalone|documents) /.test(text)) throw new Error('Unexpanded source directive');
-const outDir = path.join(root, '../게임/개발자용/dev-pages'); // 10/27 게임 폴더로 이동
+const outDir = path.join(root, '../game/dev/dev-pages'); // 10/27 game 폴더로 이동
 fs.mkdirSync(outDir, { recursive: true });
 const file = path.join(outDir, 'achievement-dock.html');
 if (!fs.existsSync(file) || fs.readFileSync(file, 'utf8') !== text) fs.writeFileSync(file, text);

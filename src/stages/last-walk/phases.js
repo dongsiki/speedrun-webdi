@@ -27,10 +27,25 @@ const LastWalkPhases = (() => {
     last: '이번엔 붙잡지 않을게요.'
   };
 
+  //#dev 11/07: 2페 끝 쪽에서 화면 전체가 살짝 느려지게, 게임 루프가 받는 시각을 늦춘다(slowK 1 = 보통, 0.72 = 가장 느림).
+  let slowK = 1;
+  {
+    const raf = window.requestAnimationFrame.bind(window);
+    let realLast = 0, virtual = 0;
+    window.requestAnimationFrame = fn => raf(now => {
+      if (!realLast) { realLast = now; virtual = now; }
+      virtual += (now - realLast) * slowK; realLast = now;
+      fn(virtual);
+    });
+  }
+  //#end
   function create(phase, api) {
     if (phase !== 2 && phase !== 3) return null;
     let p;
     function reset() {
+      //#dev
+      slowK = 1;
+      //#end
       p = { t: 0, said: {}, line: null, idle: 0, pull: null, pulls: 0, mineCd: 0, eyesCd: 6, eyesClose: 0,
             auto: false, m: { inh: true, wait: 0 }, walkCd: 1.2, cough: 0, trace: [], sample: 0, coughs: 0 };
     }
@@ -52,6 +67,11 @@ const LastWalkPhases = (() => {
       if (!p.auto && (s.stumbles > 0 || s.shallow > 0 || x >= 1.5) && p.t > 4) { p.auto = true; say('takeBreath', LINES2.takeBreath, 3.6); }
       if (x >= 3) say('where', LINES2.where);
       if (x >= 5) say('eyes', LINES2.eyes, 3.6);
+      //#dev 개발자용(02)에만 · 11/07 사용자 OK: 문(끝) 쪽으로 갈수록 AI가 붙잡는 말 + 화면이 살짝 느려짐
+      if (x >= 5.8) say('cold', '거기 춥대요.', 3);
+      if (x >= 6.9) say('danger', '밖은 위험해요.', 3);
+      slowK = x < 5.8 || x >= 7.9 ? 1 : Math.max(.72, 1 - (x - 5.8) * .14); // 다 걸으면(컷신) 원래 빠르기
+      //#end
       if (x >= 6.5) say('need', LINES2.need, 3.4);
       if (x >= 7.5) say('last', LINES2.last, 3);
       // 멈추면 뒤로 한 걸음 끌려간다(3m부터). 비틀거리는 동안·직후 0.4초와 눈 감긴 동안은 끌지 않는다(Codex 토론).

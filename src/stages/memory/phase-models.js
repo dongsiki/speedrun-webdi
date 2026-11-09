@@ -1,6 +1,6 @@
 // 기억 스테이지 3D 엄마·아이(Codex 제작 모델, 2026-10-31 Claude Code가 연결).
 // 엄마 = 아이 맵에 서 있는 엄마·양치해 주는 팔·차려 주는 팔. 아이 = 1페 3회차 거울에 비치는 나.
-// 모델: assets/models/memory-phase/*.json, 텍스처: assets/images/memory-phase/*-model-atlas.png(phase-images.js에 묶임).
+// 모델: assets/models/memory-phase/*.json, 텍스처: assets/images/memory-phase/*-model-atlas.webp(phase-images.js에 묶임).
 (function (root) {
   const DATA = {
     mom: /* @jsonraw assets/models/memory-phase/mom-model.json */ null,

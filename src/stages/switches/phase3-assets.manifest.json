@@ -1,56 +1,56 @@
 {
-  "assets/images/switches-phase3-01.png": {
-    "mime": "image/png",
-    "sha256": "0e407dd430c6411863220cc0e54b5c275da5db230686b0d621c970d70e11c237",
-    "bytes": 10364,
+  "assets/images/switches-phase3-01.webp": {
+    "mime": "image/webp",
+    "sha256": "3dc83f6f82b388bf8250e919b5e52a4cbaf0a9bbe58a0e540238477da7534afe",
+    "bytes": 982,
     "usedBy": [
       "assets/data/switches-phase3-story.json"
     ]
   },
-  "assets/images/switches-phase3-02.png": {
-    "mime": "image/png",
-    "sha256": "a1cf530531012219525d8312ceee2b1d8d7c9db1bdbe149c9216d46af86ea98f",
-    "bytes": 11788,
+  "assets/images/switches-phase3-02.webp": {
+    "mime": "image/webp",
+    "sha256": "ca638ba4f39ee70c3009f6cd5f37c2d8ac13e3a642c2adf5ad0a5c0fd9a4687c",
+    "bytes": 1236,
     "usedBy": [
       "assets/data/switches-phase3-story.json"
     ]
   },
-  "assets/images/switches-phase3-03.png": {
-    "mime": "image/png",
-    "sha256": "5b79ff8cc62060883c0def972f3fd5efc794ad05855fbe3bf693f76523620451",
-    "bytes": 12829,
+  "assets/images/switches-phase3-03.webp": {
+    "mime": "image/webp",
+    "sha256": "767ceb61418fbac2a5045cc93b33fc581f3d50295699108eee471e3c73434ed7",
+    "bytes": 1414,
     "usedBy": [
       "assets/data/switches-phase3-story.json"
     ]
   },
-  "assets/images/switches-phase3-04.png": {
-    "mime": "image/png",
-    "sha256": "aeb9b18854dbf86f0af52d641e92623d46a9408108a1d64871e5171620a0f351",
-    "bytes": 10511,
+  "assets/images/switches-phase3-04.webp": {
+    "mime": "image/webp",
+    "sha256": "ef23b9a337d6186dc2def266d2eb63a84dcd0bdbde2451d4e86985130d2aa0a8",
+    "bytes": 940,
     "usedBy": [
       "assets/data/switches-phase3-story.json"
     ]
   },
-  "assets/images/switches-phase3-05.png": {
-    "mime": "image/png",
-    "sha256": "887db6a97279021ec7599d126c9b5f8f534ff0510a610df30bc2880bafe506af",
-    "bytes": 14599,
+  "assets/images/switches-phase3-05.webp": {
+    "mime": "image/webp",
+    "sha256": "fdeb7d3ef92a51ee63e606260f9d01589236b7e7b2a72288566a0f5336e2b057",
+    "bytes": 1878,
     "usedBy": [
       "assets/data/switches-phase3-story.json"
     ]
   },
-  "assets/images/switches-phase3-06.png": {
-    "mime": "image/png",
-    "sha256": "a3aefc0364fc00dea52c848cab7c75d5b4402bf57db591821fa8124defceb033",
-    "bytes": 11434,
+  "assets/images/switches-phase3-06.webp": {
+    "mime": "image/webp",
+    "sha256": "dd38bab9f5cf166af2b92fff554af4ebfc58e2356afca4e3bfe0379b80e4bf91",
+    "bytes": 1216,
     "usedBy": [
       "assets/data/switches-phase3-story.json"
     ]
   },
-  "assets/images/switches-phase3-07.png": {
-    "mime": "image/png",
-    "sha256": "4ef6de677ef887f454dc65cf9a84459af99bebcf3b79a5623bda171ac36c8697",
-    "bytes": 10097,
+  "assets/images/switches-phase3-07.webp": {
+    "mime": "image/webp",
+    "sha256": "85acd79a5403a83f954e4aeb24c002b057fb3b64561eaf508700a5590291d7eb",
+    "bytes": 840,
     "usedBy": [
       "assets/data/switches-phase3-story.json"
     ]

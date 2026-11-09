@@ -35,7 +35,9 @@
     const frame = document.getElementById('portable-stage');
     try { frame.contentWindow.postMessage(READY[id](p), '*'); } catch (_) {}
   });
-  function sync() { bar.hidden = !GAMES.includes(document.body.dataset.playing || ''); press(1); }
+  // 11/07 사용자: 「2페에는 걍 겜을 제외시키자. 오브제도 제외해서 이거 없이 2페이즈는 하는 걸로」 → 짐 싸기에는 2페 버튼이 없다.
+  function sync() { const id = document.body.dataset.playing || ''; bar.hidden = !GAMES.includes(id); bar.querySelector('button[data-p="2"]').hidden = id === '10-suitcase.html' || id === '09-needle.html';
+    bar.querySelector('button[data-p="3"]').hidden = id === '09-needle.html'; press(1); } // 11/09 사용자: 실 꿰기는 1페에만
   // 11 엔딩 크레딧: 크레딧이 끝나면(done) 개발자용 목록으로 돌아온다.
   addEventListener('message', e => { const d = e.data; if (d && d.channel === 'speedrun-ending-credits-v1' && d.type === 'done' && document.body.dataset.playing === '11-ending-credits.html') location.reload(); });
   new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['data-playing'] });

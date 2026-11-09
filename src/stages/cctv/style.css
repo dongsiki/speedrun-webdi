@@ -1,0 +1,59 @@
+/* 빈건물 CCTV(2026-11-05, Claude Code). 전구 퍼즐(라이트아웃) 자리에 들어가는 게임. 흰 종이 + 검은 모니터. */
+:root{color-scheme:light;--paper:#fff;--ink:#000}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+#experience{position:fixed;inset:0;display:grid;place-items:center;overflow:hidden;padding:max(64px,env(safe-area-inset-top)) 16px 16px}
+.console{width:min(100%,1080px,calc((100svh - 150px) * 1.6 + 40px));display:grid;gap:12px}
+.desk{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px}
+#clock{font:900 clamp(26px,4.4vw,46px)/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;padding:6px 14px;border:3px solid #000;background:#fff;min-width:5.4em;text-align:center}
+#radio{flex:1;margin:0;min-height:1.4em;font:700 clamp(15px,1.8vw,20px)/1.35 "Malgun Gothic",sans-serif;text-align:right;opacity:0;transition:opacity .2s}
+#radio.show{opacity:1}
+#radio::before{content:"AI ▸ ";font-weight:900}
+.monitors{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cam{position:relative;aspect-ratio:16/10;padding:0;border:5px solid #000;border-radius:6px;background:#000;cursor:pointer;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-tap-highlight-color:transparent}
+.cam:focus-visible{outline:3px solid #000;outline-offset:3px}
+.cam svg.feed{position:absolute;inset:0;width:100%;height:100%;display:block}
+.feed .room{fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.feed .actor{fill:#fff;stroke:#fff;stroke-width:1.4;stroke-linejoin:round}
+.feed .actor .line{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round}
+.feed .actor .cut{fill:#000;stroke:none}
+.cam .tag{position:absolute;left:8px;top:6px;color:#fff;font:700 clamp(10px,1.2vw,14px)/1 ui-monospace,Consolas,monospace;letter-spacing:.08em;pointer-events:none}
+.cam .rec{position:absolute;right:10px;top:8px;width:9px;height:9px;border-radius:50%;background:#fff;animation:rec 1.2s steps(1) infinite;pointer-events:none}
+@keyframes rec{50%{opacity:0}}
+.cam::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1px,transparent 1px 4px)}
+.cam .stamp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-8deg);padding:4px 14px;border:4px double #fff;color:#fff;background:#000;font:900 clamp(18px,2.6vw,30px)/1 "Malgun Gothic",sans-serif;letter-spacing:.2em;opacity:0;pointer-events:none}
+.cam[data-mark="ok"] .stamp{opacity:1}
+.cam[data-mark="miss"] .stamp{opacity:1;border-style:dashed}
+.cam .static{position:absolute;inset:0;opacity:0;pointer-events:none;background:#000}
+.cam .static canvas{width:100%;height:100%;display:block;image-rendering:pixelated}
+.cam[data-static="on"] .static{opacity:1}
+.cam .hint{position:absolute;width:22%;bottom:8%;opacity:0;pointer-events:none}
+.cam[data-hint="left"] .hint{left:6%;opacity:1}
+.cam[data-hint="right"] .hint{right:6%;opacity:1}
+.cam .block{position:absolute;inset:0;display:grid;place-items:center;background:#fff;color:#000;font:900 clamp(16px,2.4vw,28px)/1 "Malgun Gothic",sans-serif;letter-spacing:.3em;opacity:0;pointer-events:none}
+.cam[data-block="on"] .block{opacity:1}
+.cam[data-block="on"]{cursor:not-allowed}
+/* 3페: 할배가 있는 화면만 밝게, 확인한 화면엔 아침 빛 한 줄 */
+#experience[data-dev-phase="3"] .cam[data-dim="true"] svg.feed{opacity:.25}
+.feed .ray{fill:#fff;opacity:0;transition:opacity 1.6s}
+.cam[data-ray="on"] .feed .ray{opacity:.9}
+#experience[data-dawn="true"] .cam{background:#fff;transition:background 2.4s}
+#experience[data-dawn="true"] .feed .room{stroke:#000;transition:stroke 2.4s}
+#experience[data-dawn="true"] .feed .actor{fill:#000;stroke:#000;transition:fill 2.4s}
+#experience[data-dawn="true"] .feed .actor .cut{fill:#fff}
+#experience[data-dawn="true"] .feed .actor .line{stroke:#000}
+#experience[data-dawn="true"] .feed .ray{fill:#000;opacity:0}
+#experience[data-dawn="true"] .cam .tag{color:#000}
+#experience[data-dawn="true"] .cam .rec{background:#000}
+/* 2페 마지막: 네 화면에 한꺼번에 */
+#experience[data-scare="on"] .cam svg.feed{transform:scale(1.04)}
+/* 끝 화면 */
+#shift-end{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:#fff;color:#000;font:900 clamp(30px,6vw,64px)/1.2 ui-monospace,Consolas,monospace;letter-spacing:.08em;text-align:center;opacity:0;pointer-events:none;transition:opacity .5s}
+#shift-end.show{opacity:1}
+#shift-end small{display:block;margin-top:.4em;font:700 clamp(15px,2vw,22px)/1.3 "Malgun Gothic",sans-serif;letter-spacing:.1em}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+@media(max-width:620px){.desk{flex-direction:column;align-items:stretch}#radio{text-align:left}}
+
+.demo-back{position:fixed;z-index:4;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));right:auto;width:44px;height:44px;display:grid;place-items:center;margin:0;padding:10px;border:0;border-radius:0;color:#000;background:#fff;cursor:pointer;touch-action:manipulation}
+.demo-back svg{width:24px;height:24px;pointer-events:none}
+.demo-back:focus-visible{outline:2px solid #000;outline-offset:2px}

@@ -1,15 +1,17 @@
 /**
  * 기억 스테이지 "윤곽선 깜빡임 횟수 제한" 개발자용 시안 만들기.
- * 원본 src/stages/memory/game.dev.js 는 건드리지 않고, 복사본(game.blink.js)에 변경을 덧입힌 뒤
+ * 원본 src/stages/memory/game.js(개발자용 줄 포함)는 건드리지 않고, 복사본(game.blink.js)에 변경을 덧입힌 뒤
  * 확인용 HTML(site/dev-pages/memory-blink-limit.html)을 만든다.
  * 실행: node src/dev-pages/memory-blink-limit/make.cjs
  */
 const fs = require('node:fs');
 const path = require('node:path');
 const here = __dirname;
-const { createBuilder, root } = require('../../../scripts/build.cjs');
+const { createBuilder, pickVariant, root } = require('../../../scripts/build.cjs');
 
-let code = fs.readFileSync(path.join(root, 'src/stages/memory/game.dev.js'), 'utf8');
+// 2026-11-03: game.js는 장별 조각(src/stages/memory/game/)을 부르므로 조각을 붙인 뒤 개발자용 줄만 고른다(옛 game.dev.js와 같은 내용).
+const withParts = text => text.replace(/^\/\* @inline (src\/stages\/memory\/game\/[^ ]+) \*\/$/gm, (_, part) => fs.readFileSync(path.join(root, part), 'utf8'));
+let code = pickVariant(withParts(fs.readFileSync(path.join(root, 'src/stages/memory/game.js'), 'utf8')), 'dev');
 function swap(from, to, count = 1) {
   const parts = code.split(from);
   if (parts.length - 1 !== count) throw new Error(`expected ${count} match(es), found ${parts.length - 1}: ${from.slice(0, 60)}`);
@@ -118,7 +120,7 @@ fs.writeFileSync(path.join(here, 'game.blink.js'), code);
 const builder = createBuilder();
 const html = builder.render('src/dev-pages/memory-blink-limit/dev.template.html');
 if (/@@data:|\/\* @(?:inline|json|jsonraw|standalone|documents) /.test(html)) throw new Error('Unexpanded directive');
-const outDir = path.join(root, '../게임/개발자용/dev-pages'); // 10/27 게임 폴더로 이동
+const outDir = path.join(root, '../game/dev/dev-pages'); // 10/27 game 폴더로 이동
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(path.join(outDir, 'memory-blink-limit.html'), html);
 console.log('game.blink.js + dev-pages/memory-blink-limit.html', Buffer.byteLength(html).toLocaleString('en-US'), 'bytes');

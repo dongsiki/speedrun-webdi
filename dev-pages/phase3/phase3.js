@@ -11,7 +11,7 @@
   if (!S) return;
   const assets = window.Phase3Assets || {};
   const imgUrl = p => assets[p] || p;
-  const voiceUrl = id => assets['voice/' + id + '.wav'] || ('voice/' + id + '.wav');
+  const voiceUrl = id => assets['voice/' + id + '.mp3'] || ('voice/' + id + '.mp3');
   const body = document.body;
 
   // ---------- 화면 ----------
@@ -120,7 +120,7 @@
     voiceEl.defaultPlaybackRate = voiceEl.playbackRate = rate;
     return new Promise(done => { voiceEl.onended = voiceEl.onerror = done; voiceEl.play().catch(done); });
   }
-  const hush = () => { voiceEl.pause(); beatOff(); };
+  const hush = () => { voiceEl.pause(); };
 
   // ---------- 화면 효과 ----------
   function burst(strength = 1, ms = 120) {
@@ -177,6 +177,7 @@
   const scenes = { refuse, help, story, ask, final };
   async function go(name) {
     const my = ++run; root.hidden = false; body.classList.add('p3-on'); reset(); mark(name === 'final' ? 'ask' : name);
+    beatOn(950);
     try { await scenes[name](my); } catch (e) { if (!(e instanceof Stop)) throw e; }
   }
 
@@ -393,11 +394,12 @@
     }
     box.classList.remove('ready'); el.textContent = '';
   }
+  //   땅파기는 02 본 파일이 연다(src/shell/dev/phase3-run.js). 다 깨면 진엔딩이면 #scene=ask 로 돌아온다.
   async function help(my) {
     mark('help');
-    await talk(S.help, my);
-    await wait(500, my);
-    return story(my);
+    await talk(S.help.slice(0, 1), my);
+    await fadeTo(true, false, 600, my);
+    location.href = '../../02_speedrun_dev.html#p3dig';
   }
 
   // 3) 이야기 공개

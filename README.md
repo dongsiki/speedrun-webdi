@@ -53,14 +53,16 @@ index.html                기존 접속 경로
 | 미로 이동·벽 충돌 | `src/stages/maze/engine.js` |
 | 미로 시점·키 입력·그리기 | `src/stages/maze/game.js` |
 | 미로 공간·NPC·자세 | `src/stages/maze/world.js`, `npc-model.js`, `npc-poses.js`, `alley.js` |
-| 기억 스테이지·거울·방 이동 | `src/stages/memory/game.js`, `elder-model.js` |
-| 마지막 걸음·숨쉬기·아이·중환자실 | `src/stages/last-walk/game.js` |
-| 실 꿰기 | `src/stages/needle/game.js` |
+| 치매 스테이지·거울·방 이동 | `src/stages/memory/game.js`(장 목록) → `src/stages/memory/game/01~08`, `elder-model.js` |
+| 마지막 걸음·숨쉬기·아이·중환자실 | `src/stages/last-walk/game.js`(장 목록) → `src/stages/last-walk/game/01~08` |
+| 실 꿰기 | `src/stages/needle/game.js`(장 목록) → `src/stages/needle/game/01~08` |
 | 짐 싸기 규칙·그림·조작 | `src/stages/suitcase/rules.js`, `scene.js`, `game.js` |
 | MRI 기다림 | `src/stages/mri/game.js` |
 | 개발자 모음 메뉴 | `src/shell/dev/` |
 
-실제용과 다른 개발자용 코드는 `.dev.js`·`.dev.css`로 구분합니다. 미로의 실제용 동선과 개발자용 직선 시연 동선도 유지합니다. 자세한 내장 방식은 [소스 안내](src/README.md)를 참고하세요.
+플레이용(01)과 개발자용(02)이 몇 줄만 다른 파일은 복사본을 따로 두지 않고 한 파일에 두며, 다른 줄만 `//#play`·`//#dev`·`//#end`(CSS는 `/* #play */` 등)로 표시합니다. 개발자용 화면에서 부를 때는 `/* @inline 경로 #dev */`처럼 끝에 `#dev`를 붙입니다. 완전히 개발자용에만 있는 파일은 `.dev.js`로 둡니다. 자세한 내장 방식은 [소스 안내](src/README.md)를 참고하세요.
+
+긴 게임 파일(치매 스테이지·실 꿰기·마지막 걸음)은 장별 파일로 나눴습니다. `game.js`는 장 목록만 있고, 빌드가 `game/` 폴더의 장을 순서대로 이어 붙여 원래와 같은 코드를 만듭니다.
 
 ## 빌드·검사
 
@@ -79,6 +81,6 @@ npm test
 
 ## 합본 크기
 
-게임의 모델·그림·음성은 USB에서 실행되도록 계속 내장합니다. 시작 영상만 `assets/video/elder-transformation-10s.mp4`로 분리하여 약 41MB·54MB의 두 HTML에 영상을 중복해서 넣지 않습니다. 오프라인에서는 이 상대 폴더를 함께 복사합니다. 영상이 없거나 재생할 수 없으면 기존 시작 화면으로 돌아옵니다. 자동 재생이 막히면 영상을 클릭하거나 Enter/Space로 시작하고, Escape로 건너뛸 수 있습니다.
+게임의 모델·그림·음성은 USB에서 실행되도록 계속 내장합니다. 2026-11-03부터 그림은 WebP(흑백 점 그림은 무손실), 소리는 MP3로 넣어 두 HTML이 약 25MB·30MB입니다(전에는 PNG·WAV로 약 79MB·90MB). 시작 영상만 `assets/video/elder-transformation-10s.mp4`로 분리하여 두 HTML에 영상을 중복해서 넣지 않습니다. 오프라인에서는 이 상대 폴더를 함께 복사합니다. 영상이 없거나 재생할 수 없으면 기존 시작 화면으로 돌아옵니다. 자동 재생이 막히면 영상을 클릭하거나 Enter/Space로 시작하고, Escape로 건너뛸 수 있습니다.
 
 시작 영상 뒤 실제 게임은 기존 AI 화면으로, 개발자용은 바로가기 목록으로 이어집니다. 실제용 AI 끄기 방해는 개발자용에 들어가지 않습니다. 후속 글리치나 3페이즈 스토리는 이번 인트로 연결 범위에 포함하지 않습니다.

@@ -39,9 +39,11 @@ button[hidden],[hidden]{display:none!important}
 @media(max-height:480px){.tools{top:10px}}
 @media(prefers-reduced-motion:reduce-off){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}button:active{transform:none}#action:active{transform:translate(-50%,-50%)}}
 @media(forced-colors:active){button{border:1px solid ButtonText}button:focus-visible,canvas:focus-visible{outline-color:Highlight}}
+/* #play 플레이용(01)에만 */
 .demo-back{position:fixed;z-index:4;top:max(14px,env(safe-area-inset-top));left:max(14px,env(safe-area-inset-left));right:auto;width:44px;height:44px;display:grid;place-items:center;margin:0;padding:10px;border:0;border-radius:0;color:#000;background:#fff;cursor:pointer;touch-action:manipulation}
 .demo-back svg{width:24px;height:24px;pointer-events:none}
 .demo-back:hover,.demo-back:active{background:#fff}
 .demo-back:active svg{transform:translateX(-1px)}
 .demo-back:focus-visible{outline:2px solid #000;outline-offset:2px}
 
+/* #end */

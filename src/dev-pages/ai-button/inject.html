@@ -16,6 +16,9 @@ if (/first-run/.test(location.hash)) {
 </script>
 <style>/* @inline src/shell/dev/phase-bar.css */</style>
 <style>body[data-burst] #intro{translate:var(--gx,0) var(--gy,0)}#phase-todo{top:50px}</style>
+<!-- 11/07 AI 집착 단서: 심전도 삑 소리·구석 「세션 #4,812」 늘, 2페 글리치 사이 한 프레임 혼잣말·「연명치료 거부」 서류 -->
+<script>/* @inline src/shell/dev/ai-cling.js */</script>
+<script>AiCling.session(true); AiCling.ecg(true);</script>
 <script>
 window.addEventListener('DOMContentLoaded', () => {
   const body = document.body;
@@ -30,6 +33,7 @@ window.addEventListener('DOMContentLoaded', () => {
     body.style.setProperty('--gb', `${Math.floor(Math.random() * 85)}%`);
     body.style.setProperty('--gh', `${2 + Math.random() * 5}%`);
     body.dataset.burst = 'tear';
+    AiCling.glitch(); // 11/07
     if (window.PhaseFX) PhaseFX.crackle(.08, .06, 'hiss');
     setTimeout(() => { delete body.dataset.burst; }, 70 + Math.random() * 90);
     timer = setTimeout(blip, 2800 + Math.random() * 4000);

@@ -18,7 +18,7 @@
   screen.setAttribute('role', 'button');
   screen.setAttribute('aria-label', '게임 시작. 아무 곳이나 누르거나 아무 키를 누르세요.');
   const art = document.createElement('img');
-  art.src = '@@data:assets/images/game-start-title.png@@';
+  art.src = '@@data:assets/images/game-start-title.webp@@';
   art.alt = '';
   art.draggable = false;
   screen.append(art);

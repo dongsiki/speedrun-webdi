@@ -300,7 +300,7 @@
 
     function setRound(phase, cfg) {
       state.phase = phase; state.cfg = cfg; state.lines = cfg.child ? root.MemoryPhase.lines(cfg.story) : null;
-      state.served = false; state.ending = null; state.room = -1;
+      state.served = false; state.ending = null; state.room = -1; state.motherAway = 0;
       const child = !!cfg.child;
       for (const m of mom) m.visible = child && !state.lines?.hidden;
       for (const p of kidProps) p.visible = child;
@@ -429,6 +429,15 @@
         b.rotation.y = Math.atan2(camera.position.x - tmp.x, camera.position.z - tmp.z);
       }
       momBrush();
+      if (state.cfg?.stealLipstick && state.motherAway > 0) {
+        const k = state.motherAway, mother = mom[0];
+        const home = brushArm ? brushArm.home : V(.55, 0, -1.95);
+        mother.position.copy(home).lerp(V(-.05, 0, -1.96), k);
+        const front = Math.atan2(camera.position.x - mother.position.x, camera.position.z - mother.position.z);
+        const delta = Math.atan2(Math.sin(Math.PI - front), Math.cos(Math.PI - front));
+        mother.rotation.y = front + delta * k;
+        if (brushArm) { brushArm.arm.rotation.x = -.6 * k; if (brushArm.tool) brushArm.tool.visible = k > .15; }
+      }
       moveRoaches(dt, performance.now() / 1000);
       // 날파리: 이상한 음식이 접시에 있으면 접시 위를 맴돈다.
       flies.visible = !!state.cfg?.food && info.stageIndex === 1 && kitchen.bites.some(b => b.visible);
@@ -446,6 +455,7 @@
 
     return {
       setRound, enterRoom, childEye, collapse, clearCollapse, brushing, serving, ate, eating, endEating, roadOpen, ending, clearEnding, update, say,
+      motherAway(amount) { state.motherAway = Math.max(0, Math.min(1, amount)); },
       get child() { return !!state.cfg?.child; },
       get phase() { return state.phase; },
       get served() { return state.served; },

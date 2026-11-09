@@ -34,6 +34,7 @@
   let phase = 1, burstTimer = 0, captionTimer = 0;
   function burst(strength = 1) {
     if (phase !== 2) return;
+    window.AiCling?.glitch(); // 11/07 AI 집착 단서: 가끔 「가지 마세요」「아직 아니에요」 한 프레임, 가끔 「연명치료 거부」 서류(src/shell/dev/ai-cling.js)
     body.style.setProperty('--gx', `${(Math.random() - .5) * 40 * strength}px`);
     body.style.setProperty('--gy', `${(Math.random() - .5) * 14 * strength}px`);
     body.style.setProperty('--gb', `${Math.floor(Math.random() * 80)}%`);

@@ -1,9 +1,9 @@
 // 기억 스테이지 침실에 할아버지의 꾸미는 취향을 얹는다(2026-10-27 사용자: 시안 좋으니 스테이지에 바로).
 // 그림은 전부 images/ 의 PNG(Codex 제작)이고, 코드로는 붙일 자리만 정한다.
-// 시안 원본: src/dev-pages/bedroom-taste/. 이미지는 assets/images/bedroom-taste-*.png.
+// 시안 원본: src/dev-pages/bedroom-taste/. 이미지는 assets/images/bedroom-taste-*.webp.
 (function(root){
   'use strict';
-  const images={quilt:'@@data:assets/images/bedroom-taste-quilt.png@@',pillow:'@@data:assets/images/bedroom-taste-pillow.png@@',uniform:'@@data:assets/images/bedroom-taste-uniform.png@@',vanity:'@@data:assets/images/bedroom-taste-vanity.png@@',poster:'@@data:assets/images/bedroom-taste-poster.png@@'};
+  const images={quilt:'@@data:assets/images/bedroom-taste-quilt.webp@@',pillow:'@@data:assets/images/bedroom-taste-pillow.webp@@',uniform:'@@data:assets/images/bedroom-taste-uniform.webp@@',vanity:'@@data:assets/images/bedroom-taste-vanity.webp@@',poster:'@@data:assets/images/bedroom-taste-poster.webp@@'};
   const DEBUG=/[?&]slots\b/.test(location.search);
 
   // 그림을 불러와 순수 흑/백 두 색으로 바꾼다(회색이 1비트 화면에서 점으로 뭉개지지 않게).

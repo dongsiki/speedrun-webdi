@@ -71,7 +71,7 @@
     showPressed(false);
     grid.append(button); return button;
   });
-  const SwitchMemoryAssets = /* @json assets/data/switches-game-switch-memory-assets-05652ef819.json */ null;
+  const SwitchMemoryAssets = /* @json assets/data/switches-memory-assets.json */ null;
   const switchMemory = (() => {
     const root = $('experience'), button = buttons[P.ROWS[0] - 1];
     const lamp = button.querySelector('.lamp');

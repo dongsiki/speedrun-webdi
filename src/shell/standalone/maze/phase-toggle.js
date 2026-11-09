@@ -3,7 +3,7 @@
    「2페이즈라면 화면 자체에도 글리치가 있어야겠지」
    2페 = 본편 2페이즈에서 미로가 바뀌었을 때와 같게: 길 막힘(phase.js와 같은 치환) · 미로 소리 깨짐 ·
    순간 찢김/반전 · 지직 소리 · 낮은 웅웅 · 들어가면 깨진 자막 한 줄.
-   10/29 사용자 미로 2·3(기록\todo.md 원문) → 2페: 원래 EXIT가 글리치로 막히고, 그걸 제대로 보면 검은 배경·음산·스토커·더 어려운 맵
+   10/29 사용자 미로 2·3(records\todo.md 원문) → 2페: 원래 EXIT가 글리치로 막히고, 그걸 제대로 보면 검은 배경·음산·스토커·더 어려운 맵
    (maze-phase2.js). 3페: 바닥·벽 화살표와 막다른 길마다 기억의 단편 그림(maze-phase3.js, memory-art.js). */
 (() => {
   'use strict';
@@ -28,6 +28,7 @@
   let phase = 1, burstTimer = 0, captionTimer = 0, dreadTimer = 0, darkTimers = [];
   function burst(strength = 1) {
     if (phase !== 2) return;
+    window.AiCling?.glitch(); // 11/07 AI 집착 단서: 가끔 「가지 마세요」「아직 아니에요」 한 프레임, 가끔 「연명치료 거부」 서류(src/shell/dev/ai-cling.js)
     body.style.setProperty('--gx', `${(Math.random() - .5) * 40 * strength}px`);
     body.style.setProperty('--gy', `${(Math.random() - .5) * 14 * strength}px`);
     body.style.setProperty('--gb', `${Math.floor(Math.random() * 80)}%`);

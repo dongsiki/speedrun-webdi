@@ -1,3 +1,4 @@
+// 2026-11-03: 게임은 이제 .mp3 소리를 씁니다. 이 스크립트가 새로 만든 .wav는 MP3로 바꾸고(ffmpeg -codec:a libmp3lame -q:a 3) 같은 이름 .mp3로 두어야 게임에 들어갑니다.
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const dir = __dirname, out = require('path').join(__dirname, '../../../assets/audio/phase3'); // story.js를 고친 뒤: node src/phase/phase3/make-voice.cjs  (일부만: … h1,m3)
 const window = {}; eval(fs.readFileSync(dir + '/story.js', 'utf8'));
@@ -6,6 +7,7 @@ const S = window.Phase3Story, jobs = [];
 (function walk(x) { if (!x || typeof x !== 'object') return; if (x.voice && x.say) jobs.push([x.voice, x.say]); for (const v of Object.values(x)) walk(v); })(S.refuse);
 for (const k of ['help', 'ask']) for (const x of S[k]) if (x.voice) jobs.push([x.voice, x.say]);
 jobs.push([S.holdWait.voice, S.holdWait.say]);
+if (S.thanks) jobs.push([S.thanks.voice, S.thanks.say]); // 11/07 개발자용 일반 엔딩 「고마워요」
 for (const m of S.memories) jobs.push([m.voice, [...m.lines, m.clue].filter(Boolean).join(' ')]);
 const only = process.argv[2] ? process.argv[2].split(',') : null;
 const py = 'C:/Users/admin/Documents/코덱스 섹션/소설/로컬ai/음성/supertonic-venv/Scripts/python.exe';

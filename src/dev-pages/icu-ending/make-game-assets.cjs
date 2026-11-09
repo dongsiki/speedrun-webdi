@@ -1,5 +1,5 @@
 // 중환자실 엔딩 그림·음성을 「마지막 걸음」 안에 넣을 수 있게 data URI 스크립트로 만듭니다.
-// 실행: 깃허브 폴더에서 node src/dev-pages/icu-ending/make-game-assets.cjs
+// 실행: github 폴더에서 node src/dev-pages/icu-ending/make-game-assets.cjs
 // 결과: src/stages/last-walk/ending-assets.js (game 템플릿이 @inline 으로 넣음)
 // 음성은 용량을 줄이려고 44.1kHz → 22.05kHz(모노 16비트)로 낮춥니다.
 const fs = require('node:fs');

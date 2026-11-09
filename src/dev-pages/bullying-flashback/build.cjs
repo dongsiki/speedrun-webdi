@@ -15,7 +15,7 @@ let html = read('index.html')
   .replace('<script src="flashback.js"></script>', `<script>\n${read('flashback.js')}</script>`)
   .replaceAll('../../../02_speedrun_dev.html', '../02_speedrun_dev.html');
 
-const outDir = path.join(site, '../게임/개발자용/dev-pages'); // 10/27 게임 폴더로 이동
+const outDir = path.join(site, '../game/dev/dev-pages'); // 10/27 game 폴더로 이동
 fs.mkdirSync(outDir, { recursive: true });
 const out = path.join(outDir, 'bullying-flashback.html');
 fs.writeFileSync(out, html);

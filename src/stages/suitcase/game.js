@@ -26,6 +26,9 @@
     const next=want?[...state.selected,id]:state.selected.filter(x=>x!==id),placed=R.arrange(next);
     if(!placed){state.overflows++;state.blocked=id;state.blockedAt=state.elapsed;speak('가방에 더 들어가지 않습니다. 다른 물건을 꺼낼 수 있습니다.');sound(true);return false;}
     if(inside&&!want)state.returns++;state.selected=next;state.placed=placed;state.guide=3;
+    //#dev 개발자용(02)에만 · 11/07 사용자 OK: 1페에서 물건을 넣을 때마다 AI가 먼저 넣은 물건을 하나씩 다시 꺼내 놓는다(못 떠나게 붙잡음).
+    if(P===1&&want&&state.selected.length>1){const s0=state,other=state.selected.find(x=>x!==id);setTimeout(()=>{if(state!==s0||state.phase!=='pack'||!state.selected.includes(other)||drag)return;const left=state.selected.filter(x=>x!==other);state.selected=left;state.placed=R.arrange(left)||[];state.blocked=other;state.blockedAt=state.elapsed;speak('AI가 '+R.ITEMS.find(x=>x.id===other).name+'을 다시 꺼내 놓았습니다.');sound(true);sync();},700);}
+    //#end
     speak(R.ITEMS.find(x=>x.id===id).name+(want?'을 가방에 넣었습니다.':'을 다시 꺼냈습니다.'));sound();sync();return true;
   }
   function closeCase(){if(state.phase!=='pack')return;drag=null;state.phase='closing';state.t=0;state.sequence=R.memories(state.selected);sound(true);sync();speak('가방을 닫았습니다.');}

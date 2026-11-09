@@ -7,24 +7,24 @@
   'use strict';
   if (window.VoiceNarration) return; // 개발자용 T6 시안 페이지는 자체 음성 코드를 먼저 싣는다(두 번 나오지 않게)
   const CLIPS = {
-    'n-switches': '@@data:assets/audio/voice/n-switches.wav@@',
-    'n-maze': '@@data:assets/audio/voice/n-maze.wav@@',
-    'n-routine': '@@data:assets/audio/voice/n-routine.wav@@',
-    'n-limb': '@@data:assets/audio/voice/n-limb.wav@@',
-    'n-needle': '@@data:assets/audio/voice/n-needle.wav@@',
-    'n-suitcase': '@@data:assets/audio/voice/n-suitcase.wav@@',
-    'n-mri': '@@data:assets/audio/voice/n-mri.wav@@',
-    'w-1': '@@data:assets/audio/voice/w-1.wav@@',
-    'w-2': '@@data:assets/audio/voice/w-2.wav@@',
-    'w-3': '@@data:assets/audio/voice/w-3.wav@@',
-    't-paper': '@@data:assets/audio/voice/t-paper.wav@@',
-    't-moved': '@@data:assets/audio/voice/t-moved.wav@@',
-    't-hold': '@@data:assets/audio/voice/t-hold.wav@@',
-    't-done': '@@data:assets/audio/voice/t-done.wav@@',
-    'f-1': '@@data:assets/audio/voice/f-1.wav@@',
-    'f-2': '@@data:assets/audio/voice/f-2.wav@@',
-    'f-3': '@@data:assets/audio/voice/f-3.wav@@',
-    'f-4': '@@data:assets/audio/voice/f-4.wav@@'
+    'n-switches': '@@data:assets/audio/voice/n-switches.mp3@@',
+    'n-maze': '@@data:assets/audio/voice/n-maze.mp3@@',
+    'n-routine': '@@data:assets/audio/voice/n-routine.mp3@@',
+    'n-limb': '@@data:assets/audio/voice/n-limb.mp3@@',
+    'n-needle': '@@data:assets/audio/voice/n-needle.mp3@@',
+    'n-suitcase': '@@data:assets/audio/voice/n-suitcase.mp3@@',
+    'n-mri': '@@data:assets/audio/voice/n-mri.mp3@@',
+    'w-1': '@@data:assets/audio/voice/w-1.mp3@@',
+    'w-2': '@@data:assets/audio/voice/w-2.mp3@@',
+    'w-3': '@@data:assets/audio/voice/w-3.mp3@@',
+    't-paper': '@@data:assets/audio/voice/t-paper.mp3@@',
+    't-moved': '@@data:assets/audio/voice/t-moved.mp3@@',
+    't-hold': '@@data:assets/audio/voice/t-hold.mp3@@',
+    't-done': '@@data:assets/audio/voice/t-done.mp3@@',
+    'f-1': '@@data:assets/audio/voice/f-1.mp3@@',
+    'f-2': '@@data:assets/audio/voice/f-2.mp3@@',
+    'f-3': '@@data:assets/audio/voice/f-3.mp3@@',
+    'f-4': '@@data:assets/audio/voice/f-4.mp3@@'
   };
   const LINES = {
     'n-switches': '그 방의 불은 늘 켜져 있었다. 밤에도, 아무도 없을 때도.',

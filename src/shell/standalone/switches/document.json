@@ -1,8 +1,8 @@
 {
-  "entry": "src/stages/switches/dev-game.template.html",
+  "entry": "src/stages/cctv/dev-game.template.html",
   "metadata": {
     "stage": "switches",
-    "title": "전구 퍼즐"
+    "title": "빈건물 CCTV"
   },
   "propertyOrder": [
     "stage",

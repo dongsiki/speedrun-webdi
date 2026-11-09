@@ -15,7 +15,7 @@ if (fs.existsSync(imageDir)) for (const file of fs.readdirSync(imageDir).sort())
 let html = createBuilder().render('src/dev-pages/bedroom-taste/page.template.html');
 html = html.replace('/* @taste-images */ {}', () => JSON.stringify(images));
 if (/@@data:|\/\* @(?:inline|json|jsonraw|standalone|documents|taste-images) /.test(html)) throw new Error('Unexpanded directive');
-const out = path.join(root, '../게임/개발자용/dev-pages', 'bedroom-taste.html'); // 10/27 게임 폴더로 이동
+const out = path.join(root, '../game/dev/dev-pages', 'bedroom-taste.html'); // 10/27 game 폴더로 이동
 fs.mkdirSync(path.dirname(out), { recursive: true });
 fs.writeFileSync(out, html);
 console.log(`${path.relative(root, out)}: ${Buffer.byteLength(html).toLocaleString('en-US')} bytes, images: ${Object.keys(images).join(', ') || '(none)'}`);

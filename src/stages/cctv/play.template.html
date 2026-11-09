@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>빈건물 CCTV</title>
+  <style>/* @inline src/stages/cctv/style.css */</style>
+</head>
+<body>
+  <main id="experience" data-phase="playing" aria-label="빈 건물 CCTV 화면 네 개를 지켜보는 게임">
+    <div class="console">
+      <div class="desk"><div id="clock" aria-label="시각">00:00</div><p id="radio" aria-hidden="true"></p></div>
+      <div id="monitors" class="monitors" role="group" aria-label="CCTV 화면 네 개"></div>
+    </div>
+    <p id="status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+  </main>
+  <div id="shift-end" aria-hidden="true"></div>
+  <script>/* @inline src/stages/cctv/game.js */</script>
+<button class="demo-back" id="stage-back" type="button" aria-label="땅파기 로비로 돌아가기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 5.5 3.5 12 10 18.5M4 12c5-.3 10-.2 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><script>/* @inline src/stages/cctv/back.js */</script></body>
+</html>

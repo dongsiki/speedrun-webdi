@@ -25,7 +25,7 @@
   const ROUNDS = {
     // 2026-10-31 사용자: 치매 스테이지 5회차로. 1페 5회차 = 더 어질러진 집, 2페 5회차 = 침대 컷신(cutscene, 엔딩 아님), 3페 = 아이 맵 한 번 더.
     // roaches/bathRoaches = 2페 바퀴벌레 수(주방/화장실).
-    1: [{ notes: 1 }, { notes: 2 }, { child: true, story: 'mom' }, { notes: 1, mess: 2 }, { notes: 1, mess: 4 }],
+    1: [{ notes: 1 }, { notes: 2 }, { child: true, story: 'mom', stealLipstick: true }, { child: true, story: 'mom', school: true }, { notes: 1, mess: 4 }],
     2: [{ notes: 1, mess: 1, food: 'mold', roaches: 1 }, { notes: 2, mess: 2, food: 'rotten', roaches: 2 }, { notes: 3, mess: 3, food: 'tissue', roaches: 3, bathRoaches: 1 }, { notes: 4, mess: 4, food: 'soap', roaches: 5, bathRoaches: 2 }, { notes: 1, mess: 4, cutscene: 'collapse' }],
     3: [{ child: true, story: 'mom' }, { child: true, story: 'mom' }, { child: true, story: 'key' }, { child: true, story: 'voice' }, { child: true, story: 'road', ending: 'road' }]
   };

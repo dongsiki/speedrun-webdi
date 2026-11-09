@@ -2,7 +2,9 @@
 
 각 스테이지의 `.template.html`은 화면 마크업과 **기존 실행 순서**를 담습니다. CSS는 `style.css`, 동작은 역할별 `.js`에서 수정합니다. `game.js`는 해당 스테이지의 조작·갱신 루프이며, 미로의 예전 `maze-app.js`에 해당하는 파일도 `maze/game.js`입니다.
 
-`play.template.html`은 실제용, `dev-game.template.html`은 개발용 게임 본체입니다. 같은 파일은 공유하고, 실제로 다른 소스는 `.dev.js`·`.dev.css`로 구분합니다. 미로 동선 차이를 지우려고 두 버전을 덮어쓰지 않습니다.
+`play.template.html`은 실제용, `dev-game.template.html`·`dev.template.html`은 개발용 게임 본체입니다. 같은 파일은 공유합니다. 몇 줄만 다른 파일은 한 파일 안에서 `//#play … //#dev … //#end`로 다른 줄만 표시하고, 개발용 템플릿은 `/* @inline 경로 #dev */`로 부릅니다. 개발용에만 있는 파일은 `.dev.js`로 둡니다.
+
+긴 `game.js`(치매 스테이지·실 꿰기·마지막 걸음)는 장 목록이고, 실제 코드는 옆 `game/01-…js`~`08-…js`에 장별로 있습니다. 빌드가 순서대로 이어 붙이므로 결과는 나누기 전과 같습니다.
 
 `shell/standalone/`은 개발자 모음 속 단독 게임 프레임입니다. 게임 본체를 다시 큰 문자열로 저장하지 않고 `document.json`의 `entry`로 스테이지 템플릿을 가리킵니다. `shell/dev/documents.json`은 메뉴 항목을 이 프레임 또는 직접 실행 가능한 템플릿과 연결합니다.
 
@@ -10,7 +12,7 @@
 
 ES module로 재작성하지 않고 기존 클래식 스크립트의 스코프와 순서를 보존합니다.
 
-- `/* @inline 경로 */`: 해당 파일을 그 위치에 삽입합니다.
+- `/* @inline 경로 */`: 해당 파일을 그 위치에 삽입합니다. 끝에 `#dev`를 붙이면 개발용 줄을 고릅니다(안에서 다시 부르는 조각도 같은 쪽을 따릅니다).
 - `/* @json 경로 */ null`: JSON을 자바스크립트 값으로 내장합니다.
 - `/* @jsonraw 경로 */ null`: 기존 수치 표기까지 유지해야 하는 모델 JSON을 그대로 내장합니다.
 - `@@data:자산경로@@`: 파일을 원래 MIME의 base64 data URI로 내장합니다.
@@ -27,7 +29,9 @@ ES module로 재작성하지 않고 기존 클래식 스크립트의 스코프�
 | `common/stage-transition.js` | 프레임 생성·제거, 복귀·흰 전환·실패 되감기 |
 | `common/save-compatibility.js` | 기존 저장 기록 호환 |
 | `common/clear-rules.js` | 기존 전체 클리어 판정 |
-| `common/guides.js`, `motion.js` | 기존 안내·모션 관련 규칙 |
+| `common/guide-cursor.js`, `motion.js` | 안내 손가락 커서·모션 관련 규칙 |
+| `common/failure-rewind.js` | 실패했을 때 화면 되감기 효과 |
+| `common/standalone-stage-control.js` | 개발자 모음 단독 게임 틀의 시작·정지 신호 |
 | `intro/ai-gate.js`, `hand-cursor.js` | 현재 AI 관문과 손 움직임 |
 
 같은 코드를 공유하는 범위만 공통화했습니다. 각 게임의 좌표·입력·게임 규칙을 하나의 새 엔진으로 바꾸지 않았습니다.

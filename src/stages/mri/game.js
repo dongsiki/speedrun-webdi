@@ -9,12 +9,21 @@
   //      → 기계 안이 어두워지고, 화면 아래 스페이스바 위로 바퀴벌레가 하나씩 모여든다(누르고 있을수록 사각사각·심장 소리).
   //        검사 중 두 번, 짧은 얼굴 컷(0.2초·화면 일부·작은 소리)이 튀어나온다. 2페이즈 끝 점프스케어(화면 전체·1.45초·비명)보다 약하다.
   //  3페 「아예 없애는 걸로」 → 게임이 없다(개발자용에서는 빈 화면).
+  //#dev 개발자용(02)에만
+  // 2026-11-01 새 서사(개발자용만): 병원 검사가 아니라 AI가 할배를 가상현실로 다시 켜는(리부팅) 과정.
+  //  처음부터 암전. 스페이스바를 꾹 누른 채 떼지 않아야 한다. AI가 좋은 기억을 학습하는 사이 불쾌한 장면(바퀴벌레·얼굴 컷·암전 쿵)이 끼어
+  //  떼고 싶게 만들고, 「이제 괜찮습니다.」 같은 페이크(스피커 → AI 말, 가짜 완료)로 방해한다. 목소리는 reboot-voices.js.
+  //#end
   // 페이즈는 window.SpeedrunStagePhase(1·2·3) 또는 주소 ?phase=, 또는 postMessage {channel:'speedrun-dev-phase', phase}로 받는다.
   const $ = id => document.getElementById(id), body = document.body;
   const params = new URLSearchParams(location.search);
   const SPEED = Math.max(1, Number(params.get('fast')) || 1);
   const SCAN = 90, GRACE = .6, SETTLE = 3.2;
+  //#play 플레이용(01)에만
   const reduced = matchMedia('(prefers-reduced-motion:reduce-off)').matches;
+  //#dev 개발자용(02)에만
+  const reduced = matchMedia('(prefers-reduced-motion:reduce-off-off)').matches;
+  //#end
   const bore = $('bore'), bugCanvas = $('bug'), away = $('elsewhere'), scareCanvas = $('scare');
   let W = 1, H = 1, dpr = 1;
   const toPhase = v => [1, 2, 3].includes(Number(v)) ? Number(v) : 1;
@@ -114,6 +123,9 @@
   // ---------- 그림: 기계 안쪽 (1비트) ----------
   const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + .5) / 16);
   function drawBore() {
+    //#dev 개발자용(02)에만
+    if (true) { bore.width = W; bore.height = H; const c = bore.getContext('2d'); c.fillStyle = '#000'; c.fillRect(0, 0, W, H); return; } // 11/01: 처음부터 암전
+    //#end
     const ctx = bore.getContext('2d'), cell = 3, w = Math.ceil(W / cell), h = Math.ceil(H / cell);
     const img = ctx.createImageData(w, h), data = img.data, cx = w / 2, cy = h * .46;
     const dark = stagePhase === 2 ? .5 : 1; // 2페: 기계 안이 어둡다
@@ -293,7 +305,11 @@
   }
   function finish() {
     clearLures(); knocking = false; stopHum(); setPhase('done'); say('done'); beep(3, 1200);
+    //#play 플레이용(01)에만
     $('done').querySelector('.count').textContent = retakes ? `다시 찍은 횟수 ${retakes}번.` : '';
+    //#dev 개발자용(02)에만
+    $('done').querySelector('.count').textContent = retakes ? `다시 켠 횟수 ${retakes}번.` : '';
+    //#end
     $('done').querySelector('.record').textContent = retakes ? '' : '끝까지 떼지 않았다.';
     if (parent !== window) setTimeout(() => parent.postMessage({ channel: 'speedrun-midterm-v1', type: 'complete' }, '*'), 2400);
   }
@@ -338,13 +354,21 @@
     if (phase === 'scan') retake(reason);
   }
   addEventListener('keydown', e => {
+    //#play 플레이용(01)에만
     if (e.target?.closest?.('#mri-back') || !isSpace(e)) return;
+    //#dev 개발자용(02)에만
+    if (!isSpace(e)) return;
+    //#end
     e.preventDefault();
     if (e.repeat || spaceDown) return;
     spaceDown = true; body.dataset.space = 'down';
     if (phase === 'ready') beginScan();
   }, true);
+  //#play 플레이용(01)에만
   addEventListener('keyup', e => { if (!isSpace(e)) return; if (!e.target?.closest?.('#mri-back')) e.preventDefault(); release('release'); }, true);
+  //#dev 개발자용(02)에만
+  addEventListener('keyup', e => { if (!isSpace(e)) return; e.preventDefault(); release('release'); }, true);
+  //#end
   addEventListener('blur', () => release('blur'));
   document.addEventListener('visibilitychange', () => { if (document.hidden) release('blur'); });
 

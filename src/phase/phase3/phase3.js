@@ -11,7 +11,7 @@
   if (!S) return;
   const assets = window.Phase3Assets || {};
   const imgUrl = p => assets[p] || p;
-  const voiceUrl = id => assets['voice/' + id + '.wav'] || ('voice/' + id + '.wav');
+  const voiceUrl = id => assets['voice/' + id + '.mp3'] || ('voice/' + id + '.mp3');
   const body = document.body;
 
   // ---------- 화면 ----------
@@ -120,7 +120,11 @@
     voiceEl.defaultPlaybackRate = voiceEl.playbackRate = rate;
     return new Promise(done => { voiceEl.onended = voiceEl.onerror = done; voiceEl.play().catch(done); });
   }
+  //#play
   const hush = () => { voiceEl.pause(); beatOff(); };
+  //#dev 11/07 AI 집착 단서: 심전도 박동은 장면이 바뀌어도 계속, AI 버튼을 끄는 진엔딩에서만 멈춘다(final의 beatOff)
+  const hush = () => { voiceEl.pause(); };
+  //#end
 
   // ---------- 화면 효과 ----------
   function burst(strength = 1, ms = 120) {
@@ -177,6 +181,9 @@
   const scenes = { refuse, help, story, ask, final };
   async function go(name) {
     const my = ++run; root.hidden = false; body.classList.add('p3-on'); reset(); mark(name === 'final' ? 'ask' : name);
+    //#dev 11/07: 첫 화면부터 작은 심전도 박동
+    beatOn(950);
+    //#end
     try { await scenes[name](my); } catch (e) { if (!(e instanceof Stop)) throw e; }
   }
 
@@ -393,12 +400,22 @@
     }
     box.classList.remove('ready'); el.textContent = '';
   }
+  //#play 플레이용(01)에만
   async function help(my) {
     mark('help');
     await talk(S.help, my);
     await wait(500, my);
     return story(my);
   }
+  //#dev 개발자용(02)에만. 11/06 사용자 OK 계획: 「도와주세요」 뒤 내레이션·기록 발표를 빼고 바로 땅파기(3페이즈판 게임들)로.
+  //   땅파기는 02 본 파일이 연다(src/shell/dev/phase3-run.js). 다 깨면 진엔딩이면 #scene=ask 로 돌아온다.
+  async function help(my) {
+    mark('help');
+    await talk(S.help.slice(0, 1), my);
+    await fadeTo(true, false, 600, my);
+    location.href = '../../02_speedrun_dev.html#p3dig';
+  }
+  //#end
 
   // 3) 이야기 공개
   async function story(my) {

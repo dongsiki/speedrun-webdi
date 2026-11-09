@@ -1,7 +1,8 @@
+// 2026-11-03: 게임은 이제 .mp3 소리를 씁니다. 이 스크립트가 새로 만든 .wav는 MP3로 바꾸고(ffmpeg -codec:a libmp3lame -q:a 3) 같은 이름 .mp3로 두어야 게임에 들어갑니다.
 /* 11/01 새 서사 목소리 만들기(Claude Code). Supertonic F1, 22.05kHz.
    AI 말(tease.js): c-* 1페 서툰 위로, b-* 2페 차단, h-* 3페 도와달라 → assets/audio/voice/
-   MRI 다시 켜기(개발자용 game.dev.js): hold·retake·nurse·fakedone·done → assets/audio/mri-reboot/
-   실행: 웹디2/깃허브 에서  node src/voice/make-story-voices.cjs  (일부만: … c-1,hold) */
+   MRI 다시 켜기(src/stages/mri/game.js의 개발자용 줄): hold·retake·nurse·fakedone·done → assets/audio/mri-reboot/
+   실행: 웹디2/github 에서  node src/voice/make-story-voices.cjs  (일부만: … c-1,hold) */
 const fs = require('fs'), path = require('path'), { execFileSync } = require('child_process');
 const root = path.join(__dirname, '../..');
 const half = require('../phase/phase3/wav-half.cjs');

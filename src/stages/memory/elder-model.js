@@ -44,13 +44,13 @@ function createElderModel(T) {
   });
   geometry.setAttribute('uv',new T.Float32BufferAttribute(uv.flat(),2));
   geometry.setIndex(data.triangles.flatMap(part=>part.flatMap(([a,b,c])=>[c,b,a])));
-  const atlas=new T.TextureLoader().load('@@data:assets/images/elder-model-143319738660.png@@');
+  const atlas=new T.TextureLoader().load('@@data:assets/images/elder-model-atlas.webp@@');
   atlas.colorSpace=T.SRGBColorSpace;atlas.magFilter=T.NearestFilter;
   atlas.minFilter=T.LinearFilter;atlas.generateMipmaps=false;
-  const eyePaint=new T.TextureLoader().load('@@data:assets/images/elder-model-909eb9a596a5.png@@');
+  const eyePaint=new T.TextureLoader().load('@@data:assets/images/elder-model-eyes.webp@@');
   eyePaint.colorSpace=T.SRGBColorSpace;eyePaint.magFilter=T.NearestFilter;
   eyePaint.minFilter=T.LinearFilter;eyePaint.generateMipmaps=false;
-  const smilePaint=new T.TextureLoader().load('@@data:assets/images/elder-model-f6e62ce9dc17.png@@');
+  const smilePaint=new T.TextureLoader().load('@@data:assets/images/elder-model-smile.webp@@');
   smilePaint.colorSpace=T.SRGBColorSpace;smilePaint.magFilter=T.NearestFilter;
   smilePaint.minFilter=T.LinearFilter;smilePaint.generateMipmaps=false;
   const smileUniform={value:0};

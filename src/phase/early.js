@@ -4,6 +4,10 @@
   'use strict';
   const KEY = 'speedrun-phase-v2'; // 10/27: v1에는 바로가기로 덮어쓴 2·3페이즈 기록이 섞여 있어 새 이름으로 시작(본편은 1페이즈부터)
   const games = ['switches', 'maze', 'routine', 'limb', 'needle', 'suitcase', 'mri'];
+  // 11/07 사용자: 「2페에는 걍 겜을 제외시키자. 오브제도 제외해서」 「걍 둘 다 빼 2페에서」 「2페에는 그게 빼져도 다른 게임 다 클리어하면 클리어하는 형식으로」
+  // → 2페이즈에서는 짐 싸기가 없다(땅에 가방을 안 묻고, 나머지 여섯 곳을 깨면 2페이즈 클리어).
+  // 11/09 사용자: 「1페에만 나오게 하고, 2,3페에는 나오게 하지 말자」 → 실 꿰기도 2페이즈에서 뺀다(짐 싸기와 같은 방식, 나머지 다섯 곳을 깨면 2페이즈 클리어).
+  const games2 = games.filter(g => g !== 'suitcase' && g !== 'needle');
   const blank = () => ({ v: 1, phase: 1, corrupted: [], run2: [], swapUsed: false });
   // 10/27: 02의 발표용 바로가기(#demo)로 들어간 판은 이 탭 안에서만(sessionStorage) 기억한다.
   // 전에는 바로가기가 본편 진행 기록(localStorage)을 2·3페이즈로 덮어써서, 01을 그냥 열어도 글리치 인트로가 나왔다.
@@ -49,8 +53,8 @@
   if (demo === 'reset' || demo === 'finale1') state = blank();
   if (demo === 'phase2') state = { ...blank(), phase: 2 };
   if (demo === 'phase2-last' || demo === 'scare') {
-    const done = games.filter(g => g !== 'switches');
-    state = { ...blank(), phase: 2, run2: done, corrupted: ['maze', 'routine', 'limb', 'needle', 'suitcase', 'mri'], swapUsed: true };
+    const done = games2.filter(g => g !== 'switches');
+    state = { ...blank(), phase: 2, run2: done, corrupted: ['maze', 'routine', 'limb', 'mri'], swapUsed: true };
   }
   if (demo) { save(); history.replaceState(null, '', location.pathname + location.search); }
   // 02의 바로가기로 들어오면 이미 본 인트로는 건너뛴다. 단 '2페이즈 처음부터'는 글리치 인트로가 볼거리라 그대로 둔다.
@@ -87,7 +91,7 @@
   for (const name of ['pointerdown', 'keydown', 'touchstart']) window.addEventListener(name, () => audio(), { capture: true, passive: true });
 
   window.SpeedrunPhase = {
-    KEY, games, demo, autoTarget,
+    KEY, games, games2, demo, autoTarget,
     get state() { return state; },
     set(patch) { state = { ...state, ...patch }; save(); document.body.dataset.phase = String(state.phase); },
     audio, get master() { audio(); return master; }

@@ -2,7 +2,7 @@
   "01-switches.html": {
     "entry": "src/shell/standalone/switches/index.template.html",
     "metadata": {
-      "title": "전구 퍼즐"
+      "title": "빈건물 CCTV"
     },
     "propertyOrder": [
       "title",
@@ -93,6 +93,16 @@
     "entry": "src/extras/ending-credits/index.template.html",
     "metadata": {
       "title": "엔딩 크레딧"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
+  },
+  "p3-digging.html": {
+    "entry": "src/stages/digging/play.template.html",
+    "metadata": {
+      "title": "땅파기 · 3페이즈"
     },
     "propertyOrder": [
       "title",

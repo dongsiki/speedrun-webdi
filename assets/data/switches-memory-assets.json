@@ -1,0 +1,5 @@
+{
+  "occupied": "@@data:assets/images/switches-memory-occupied.svg@@",
+  "empty": "@@data:assets/images/switches-memory-empty.svg@@",
+  "voice": "@@data:assets/audio/switches-memory-voice.mp3@@"
+}

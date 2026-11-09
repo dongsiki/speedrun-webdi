@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff"><title>speedrun — 중간 시연 · 반항 기록</title><style>/* @inline src/shell/play/style.css */</style><style>/* @inline src/shell/play/additional-2.css */</style><style>/* @inline src/phase/phase.css */</style></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#ffffff"><title>speedrun — 중간 시연 · 반항 기록</title><style>/* @inline src/shell/play/style.css */</style><style>/* @inline src/shell/play/ai-gate.css */</style><style>/* @inline src/phase/phase.css */</style></head>
 <body data-stage="intro" data-completed="">
 <style>/* @inline src/intro/transformation.css */</style>
 <script>/* @inline src/phase/early.js */</script>
@@ -25,7 +25,7 @@
       <p class="clear-tally"><span id="clear-label">클리어</span><output id="clear-count" aria-labelledby="clear-label" aria-live="off">001</output></p>
       <div class="ai-control"><button id="ai-switch" type="button" role="switch" aria-checked="true" aria-label="AI 자동 클리어 ON. 끄고 직접 플레이 시작"><span>AI</span><span class="track" aria-hidden="true"><span class="knob"></span></span><span id="ai-state">ON</span></button></div>
     </div>
-    <div id="ai-hand" data-pose="open" aria-hidden="true" hidden><img id="ai-hand-art" src="@@data:assets/images/index-template-a9844f536afc.png@@" alt="" hidden><canvas id="ai-hand-pixels" width="128" height="256"></canvas></div>
+    <div id="ai-hand" data-pose="open" aria-hidden="true" hidden><img id="ai-hand-art" src="@@data:assets/images/ai-hand.webp@@" alt="" hidden><canvas id="ai-hand-pixels" width="128" height="256"></canvas></div>
   </section>
   <iframe id="digging" class="stage" title="땅파기 로비" hidden></iframe>
   <iframe id="switches" class="stage" title="전구 퍼즐" hidden></iframe>
@@ -42,7 +42,7 @@
 <script>/* @inline src/shell/play/documents.js */</script>
 <script>/* @inline src/common/flow.js */</script>
 <script>/* @inline src/common/clear-rules.js */</script>
-<script>/* @inline src/common/guides-2.js */</script>
+<script>/* @inline src/common/failure-rewind.js */</script>
 <script>/* @inline src/common/save-compatibility.js */</script>
 <script>/* @inline src/shell/play/navigation.js */</script>
 <script>/* @inline src/intro/hand-cursor.js */</script>
