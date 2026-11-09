@@ -1,0 +1,1 @@
+const DevStage = /* @standalone src/shell/standalone/warehouse/document.json */ {};

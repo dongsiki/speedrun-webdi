@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>물류센터 야간 분류</title>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#fff;font-family:"Malgun Gothic",sans-serif}
+#view{position:fixed;inset:0;width:100%;height:100%;display:block;image-rendering:pixelated}
+#clock{position:fixed;left:24px;top:20px;padding:6px 14px;border:3px solid #000;background:#fff;font:900 40px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em}
+#slip{position:fixed;right:24px;top:20px;width:210px;border:6px solid #000;border-radius:6px;background:#000;color:#fff;padding:10px 14px;font:700 16px/1.2 ui-monospace,Consolas,monospace}
+#slip b{display:block;font-size:64px;line-height:1;margin-top:6px}
+#ai{position:fixed;right:24px;top:170px;max-width:300px;margin:0;padding:10px 14px;border:3px solid #000;border-radius:14px;background:#fff;font:700 18px/1.35 "Malgun Gothic",sans-serif;opacity:0;transition:opacity .2s}
+#ai.show{opacity:1}
+#ai::before{content:"AI ▸ ";font-weight:900}
+#bins{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);display:flex;gap:14px}
+#bins button{width:72px;height:52px;border:3px solid #000;background:#fff;font:900 26px/1 ui-monospace,monospace;cursor:pointer}
+#end{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);margin:0;padding:10px 22px;border:3px solid #000;background:#fff;font:900 46px/1 ui-monospace,Consolas,monospace;letter-spacing:.08em;opacity:0;transition:opacity 1.2s;pointer-events:none}
+#end.show{opacity:1}
+#note{position:fixed;left:24px;bottom:18px;margin:0;font:12px/1.3 sans-serif;color:#000;background:#fff;padding:2px 6px}
+</style></head><body>
+<canvas id="view"></canvas>
+<div id="clock">00:00</div>
+<div id="slip">송장 · 칸 번호<b id="slip-n">-</b></div>
+<p id="ai"></p>
+<div id="bins"><button id="bin1">1</button><button id="bin2">2</button><button id="bin3">3</button><button id="bin4">4</button></div>
+<p id="end">06:00</p>
+<p id="note">시안 · 확정 전</p>
+<script>/* @inline src/stages/memory/three.js */</script>
+<script>/* @inline src/stages/warehouse/game.js */</script>
+</body></html>

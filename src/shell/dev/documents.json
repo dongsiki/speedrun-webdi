@@ -108,5 +108,15 @@
       "title",
       "html"
     ]
+  },
+  "12-warehouse.html": {
+    "entry": "src/shell/standalone/warehouse/index.template.html",
+    "metadata": {
+      "title": "물류센터 야간 분류"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
   }
 }

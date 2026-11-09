@@ -1,0 +1,12 @@
+{
+  "entry": "src/stages/warehouse/dev-game.template.html",
+  "metadata": {
+    "stage": "warehouse",
+    "title": "물류센터 야간 분류"
+  },
+  "propertyOrder": [
+    "stage",
+    "title",
+    "html"
+  ]
+}
