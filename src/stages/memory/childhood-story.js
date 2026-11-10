@@ -1,4 +1,4 @@
-// 2026-11-09 승인된 1페 3회차 립스틱 → 4회차 교실. 다른 페이즈에는 켜지지 않는다.
+// 1페 3회차 립스틱 → 4회차 인사. 따돌림 장면은 2026-11-10 승인대로 2페 3회차로 이동.
 window.MemoryChildhoodStory = {
   create({ T, scene, stages, camera, canvas, PH, props, kit, finish, sound }) {
     const { box, cylinder, rod, line, mesh, torus, material, C, V } = kit;
@@ -6,7 +6,7 @@ window.MemoryChildhoodStory = {
     const ink = new T.MeshBasicMaterial({ color: 0x000000, side: T.DoubleSide });
     const paper = new T.MeshBasicMaterial({ color: 0xffffff, side: T.DoubleSide });
     let mode = 'off', time = 0, enabled = false, schoolEnabled = false, inventory = 'absent', schoolStage = 'off';
-    let active = false, lastLine = -1, nextSound = 0;
+    let active = false, lastLine = -1, nextSound = 0, bullying = false;
     const startPosition = V(), startTarget = V(), currentTarget = V();
     const clamp = x => Math.max(0, Math.min(1, x));
     const smooth = x => { x = clamp(x); return x * x * (3 - 2 * x); };
@@ -47,7 +47,7 @@ window.MemoryChildhoodStory = {
     line(pocket, [[-.075, .055, .039], [.075, .055, .039]], false);
     const heldLipstick = lipstick(hand); heldLipstick.visible = false;
 
-    // 별도 교실 그룹. 다른 방과 2·3페이즈의 형상은 바꾸지 않는다.
+    // 두 학교 회차가 같은 교실 형상을 공유하고, 인사/따돌림 진행만 나눈다.
     const classroom = new T.Group(); scene.add(classroom); classroom.visible = false;
     box(classroom, 0, -.06, -.4, 7.4, .12, 8, C.white);
     box(classroom, 0, 1.5, -4.4, 7.4, 3, .1, C.white);
@@ -144,8 +144,13 @@ window.MemoryChildhoodStory = {
       canvas.dataset.schoolActive = String(active && schoolEnabled);
     }
     function reset(cfg, phase, round) {
-      active = false; mode = 'off'; nextSound = 0; enabled = phase === 1 && !!cfg.stealLipstick; schoolEnabled = phase === 1 && !!cfg.school;
+      active = false; mode = 'off'; nextSound = 0; enabled = phase === 1 && !!cfg.stealLipstick;
+      bullying = phase === 2 && !!cfg.schoolBully;
+      schoolEnabled = !!cfg.school && (phase === 1 || bullying);
       if (round === 1 || enabled || phase !== 1) { inventory = 'absent'; schoolStage = 'off'; }
+      // 개발자용에서 2페 3회차에 바로 들어와도 필통에 립스틱이 있어야 한다.
+      if (schoolEnabled) { inventory = 'pocket'; schoolStage = 'off'; }
+      pencil.visible = bullying;
       classroom.visible = false; hand.visible = pocket.visible = shelfLipstick.visible = heldLipstick.visible = lipCue.visible = false;
       seatCue.visible = friendCue.visible = pencilCue.visible = fallenLipstick.visible = false;
       props.mirrorTarget = 0; PH.motherAway(0); lid.rotation.x = 0;
@@ -159,6 +164,9 @@ window.MemoryChildhoodStory = {
     }
     function beginSchool() {
       active = true; schoolStage = 'enter'; PH.say(''); set('enter');
+    }
+    function finishSchool() {
+      active = false; classroom.visible = false; mode = 'off'; schoolStage = 'done'; finish('school');
     }
     function click() {
       if (!active || !canClick()) return;
@@ -203,14 +211,14 @@ window.MemoryChildhoodStory = {
         else if (mode === 'drop') cameraAt(actionPosition, deskTarget.clone().lerp(V(-.60, .70, .62), smooth(time / .7)));
         else cameraAt(actionPosition, deskTarget.clone().lerp(V(-.35, .82, .45), ['crowd', 'grab', 'away', 'fade'].includes(mode) ? smooth(time / 1.3) : 0));
         friendCue.lookAt(camera.position); seatCue.lookAt(camera.position);
-        const avoids = (mode === 'drop' && time > .3) || ['crowd', 'grab', 'away', 'fade'].includes(mode);
+        const avoids = bullying && ((mode === 'drop' && time > .3) || ['crowd', 'grab', 'away', 'fade'].includes(mode));
         friend.update(avoids ? .85 : sitting ? -.95 : 0, 0, false);
         canvas.dataset.friendGaze = avoids ? 'away' : sitting ? 'toward' : 'neutral';
         if (mode === 'enter' && time > .7) { schoolStage = 'seat'; set('seat'); }
-        else if (mode === 'sit' && time > 1.8) { schoolStage = 'friend'; set('friend'); }
+        else if (mode === 'sit' && time > 1.8) { schoolStage = bullying ? 'pencil' : 'friend'; set(schoolStage); }
         else if (mode === 'greeting') {
           if (time > 1.4 && lastLine < 0) { lastLine = 1; PH.say('…안녕.', 1400); }
-          if (time > 3) { schoolStage = 'pencil'; set('pencil'); }
+          if (time > 3) finishSchool();
         } else if (mode === 'opening') {
           lid.rotation.x = -smooth(time / .65) * 2.0;
           if (time > .45) {
@@ -240,7 +248,7 @@ window.MemoryChildhoodStory = {
           children[0].holder.position.lerpVectors(ends[0], V(-1.8, 0, -.4), t);
           fallenLipstick.position.copy(children[0].holder.localToWorld(V(-.13, .63, .36)));
           if (time > 2.5) { schoolStage = 'fade'; set('fade'); }
-        } else if (mode === 'fade' && time > .5) { active = false; classroom.visible = false; mode = 'off'; schoolStage = 'done'; finish('school'); }
+        } else if (mode === 'fade' && time > .5) finishSchool();
       }
       updateUI();
     }

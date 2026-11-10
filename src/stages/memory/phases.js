@@ -26,7 +26,7 @@
     // 2026-10-31 사용자: 치매 스테이지 5회차로. 1페 5회차 = 더 어질러진 집, 2페 5회차 = 침대 컷신(cutscene, 엔딩 아님), 3페 = 아이 맵 한 번 더.
     // roaches/bathRoaches = 2페 바퀴벌레 수(주방/화장실).
     1: [{ notes: 1 }, { notes: 2 }, { child: true, story: 'mom', stealLipstick: true }, { child: true, story: 'mom', school: true }, { notes: 1, mess: 4 }],
-    2: [{ notes: 1, mess: 1, food: 'mold', roaches: 1 }, { notes: 2, mess: 2, food: 'rotten', roaches: 2 }, { notes: 3, mess: 3, food: 'tissue', roaches: 3, bathRoaches: 1 }, { notes: 4, mess: 4, food: 'soap', roaches: 5, bathRoaches: 2 }, { notes: 1, mess: 4, cutscene: 'collapse' }],
+    2: [{ notes: 1, mess: 1, food: 'mold', roaches: 1 }, { notes: 2, mess: 2, food: 'rotten', roaches: 2 }, { notes: 3, mess: 3, school: true, schoolBully: true }, { notes: 4, mess: 4, hikki: true }, { notes: 1, mess: 4, cutscene: 'collapse' }],
     3: [{ child: true, story: 'mom' }, { child: true, story: 'mom' }, { child: true, story: 'key' }, { child: true, story: 'voice' }, { child: true, story: 'road', ending: 'road' }]
   };
   // 엄마 말(메모 대신). 방 번호: 0 화장실, 1 주방, 2 현관, 3 침실.
@@ -69,11 +69,13 @@
     round(phase, round) { const list = ROUNDS[phase] || ROUNDS[1]; return Object.assign({ notes: 0, mess: 0, food: null, child: false, story: null }, list[Math.max(0, Math.min(list.length - 1, round - 1))]); },
     lines(story) { return LINES[story] || null; },
     rounds(phase) { return (ROUNDS[phase] || ROUNDS[1]).length; },
-    // 2페 거울 일그러짐 0~1: 1회차 0 → 거울이 나오는 마지막 회차(컷신 회차 제외) 1. 회차가 늘어도 마지막 = 최대.
+    // 실제 욕실 거울을 방문하는 회차만 세어 첫 거울 0 → 마지막 거울 1.
     distort(phase, round) {
       if (phase !== 2) return 0;
-      const mirrorRounds = ROUNDS[2].filter(r => !r.cutscene).length;
-      return mirrorRounds > 1 ? Math.max(0, Math.min(1, (round - 1) / (mirrorRounds - 1))) : 1;
+      const mirrorRounds = ROUNDS[2].flatMap((r, i) => !r.cutscene && !r.school && !r.hikki && !r.ending ? [i + 1] : []);
+      if (!mirrorRounds.length) return 0;
+      const passed = mirrorRounds.filter(n => n <= round).length;
+      return mirrorRounds.length > 1 ? Math.max(0, Math.min(1, (passed - 1) / (mirrorRounds.length - 1))) : (passed ? 1 : 0);
     },
     onChange(fn) { listeners.push(fn); }
   });

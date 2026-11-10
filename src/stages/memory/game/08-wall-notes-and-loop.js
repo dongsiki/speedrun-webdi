@@ -107,7 +107,11 @@
       if (eyeDrop) { camera.position.y += eyeDrop; eyeDrop = 0; }
       Childhood.update(dt, { reduced, clock });
     }
-    updateChildRoundClickView();positionAction();Childhood.positionAction(positionTarget);positionNotes();
+    if (Hikki.active) {
+      if (eyeDrop) { camera.position.y += eyeDrop; eyeDrop = 0; }
+      Hikki.update(dt, { reduced, clock });
+    }
+    updateChildRoundClickView();positionAction();Childhood.positionAction(positionTarget);Hikki.positionAction(positionTarget);positionNotes();
     PH.update(dt,{stageIndex});if(phase==='ready')PH.enterRoom(stageIndex);
     // Actual face volumes, eye line and shoulder/head turns follow the camera.
     const pose=elder.update(mirrorView(),clock,reduced,reflectionAmount,reflectionSway,reflectionSmile);

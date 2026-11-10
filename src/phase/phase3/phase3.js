@@ -411,7 +411,7 @@
   //   땅파기는 02 본 파일이 연다(src/shell/dev/phase3-run.js). 다 깨면 진엔딩이면 #scene=ask 로 돌아온다.
   async function help(my) {
     mark('help');
-    await talk(S.help.slice(0, 1), my);
+    // 11/10: 「도와주세요.」는 첫 화면 울먹임 마지막 줄(story.js owner)로 옮겨서 여기서는 바로 땅파기로.
     await fadeTo(true, false, 600, my);
     location.href = '../../02_speedrun_dev.html#p3dig';
   }

@@ -1,6 +1,6 @@
   // ── 6장. 마우스 입력: 무엇을 눌렀는지 찾기, 끌어서 둘러보기 ──
   const childRoundPickCamera = camera.clone();
-  const isGuidedChildRound = () => stagePhase === 1 && (round === 3 || cfg.school) && PH.child;
+  const isGuidedChildRound = () => Childhood.active || Hikki.active || stagePhase === 1 && (round === 3 || cfg.school) && PH.child;
   function updateChildRoundClickView() {
     // frame() 끝에서는 아이 눈높이 보정이 되돌려진다. 클릭에는 되돌리기 전,
     // 실제 화면을 그린 카메라의 위치·각도·투영을 한 벌로 보관해 사용한다.
@@ -15,6 +15,7 @@
     pointer.set(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
     raycaster.setFromCamera(pointer, isGuidedChildRound() ? childRoundPickCamera : camera);
     scene.updateMatrixWorld(true);
+    if (Hikki.active) return raycaster.intersectObjects(Hikki.targets(), false)[0] ? 'hikki-story' : null;
     if (Childhood.active) return raycaster.intersectObjects(Childhood.targets(), false)[0] ? 'child-story' : null;
     let targets;
     if(stageIndex===0){targets=[stages[0].hit,...Object.values(stages[0].props.hits)];if(!sinkFocused)targets.push(stages[0].props.approachHit);}
@@ -31,14 +32,14 @@
     return hit?(hit.object.userData.interaction||'main'):null;
   }
   canvas.addEventListener('pointerdown', event => {
-    if ((phase !== 'ready' && !(Childhood.active && Childhood.canClick)) || drag || event.button !== 0) return;
+    if ((phase !== 'ready' && !(Childhood.active && Childhood.canClick) && !(Hikki.active && Hikki.canClick)) || drag || event.button !== 0) return;
     drag = { id: event.pointerId, x: event.clientX, y: event.clientY, startX: event.clientX, startY: event.clientY, moved: false };
     canvas.setPointerCapture(event.pointerId);
     canvas.focus({ preventScroll: true });
   });
   canvas.addEventListener('pointermove', event => {
     if (!drag) {
-      if ((phase === 'ready' || Childhood.active && Childhood.canClick) && event.pointerType !== 'touch') canvas.style.cursor = hitAt(event.clientX, event.clientY) ? 'pointer' : 'grab';
+      if ((phase === 'ready' || Childhood.active && Childhood.canClick || Hikki.active && Hikki.canClick) && event.pointerType !== 'touch') canvas.style.cursor = hitAt(event.clientX, event.clientY) ? 'pointer' : 'grab';
       return;
     }
     if (drag.id !== event.pointerId) return;
@@ -53,7 +54,8 @@
     const clicked = !drag.moved && event.type === 'pointerup' && hitAt(event.clientX, event.clientY);
     try { canvas.releasePointerCapture(event.pointerId); } catch (_) {}
     drag = null;
-    if(clicked==='child-story')Childhood.click();
+    if(clicked==='hikki-story')Hikki.click();
+    else if(clicked==='child-story')Childhood.click();
     else if(clicked==='approach')beginApproach(event);
     else if(clicked==='main')activate(event);
     else if(clicked==='chair')sit(event);

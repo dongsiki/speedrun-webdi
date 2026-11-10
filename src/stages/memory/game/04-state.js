@@ -17,6 +17,13 @@
       } else { round = Math.min(lastRound(), round + 1); wakeAtBed(); }
     }
   });
+  const Hikki = MemoryHikkiStory.create({
+    T: THREE, scene, bedroom: stages[3], camera, canvas, PH,
+    kit: { box, cylinder, rod, line, torus, mesh, C, V }, blink,
+    start() { startAudio(); transition('story'); },
+    finish() { round = Math.min(lastRound(), round + 1); wakeAtBed(); },
+    sound: (...args) => tone(...args)
+  });
   const maskForeground = new THREE.MeshBasicMaterial({ color: C.white, side: THREE.DoubleSide });
   const maskOccluder = new THREE.MeshBasicMaterial({ color: C.ink, side: THREE.DoubleSide });
   const maskHidden = new THREE.MeshBasicMaterial({ visible: false });

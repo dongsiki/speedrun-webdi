@@ -502,8 +502,8 @@
   },
   "assets/audio/phase3/b1.mp3": {
     "mime": "audio/mpeg",
-    "sha256": "3efc6e4c296f4a2006aaf71edf6039060cc4c8c9121605647c1e979d2a0ca6a5",
-    "bytes": 16645,
+    "sha256": "40306aaafc38e7ee3573f2d94290b61279eddf55d3aa0fd15f5d522ac1e01d21",
+    "bytes": 11158,
     "usedBy": [
       "src/phase/phase3/assets.js"
     ]
@@ -518,16 +518,16 @@
   },
   "assets/audio/phase3/c1.mp3": {
     "mime": "audio/mpeg",
-    "sha256": "0789202490e3f0adc46d78c8c021ec84d109ef52935c2f2b8542ec39cff20cef",
-    "bytes": 13675,
+    "sha256": "67120b6af2dabd35e71410a8209fe2de30e6a564e069c0ff6a7b9833e92b5791",
+    "bytes": 12121,
     "usedBy": [
       "src/phase/phase3/assets.js"
     ]
   },
   "assets/audio/phase3/c2.mp3": {
     "mime": "audio/mpeg",
-    "sha256": "5c0f2b0f050b064c6b49a6761a7e4948603c2ffbdb9db076db74dc0f3f6a1206",
-    "bytes": 7200,
+    "sha256": "8d635546a66bb7bba6f21996ccd88327dc8fef1592b2fad327a49a42e298bf91",
+    "bytes": 9001,
     "usedBy": [
       "src/phase/phase3/assets.js"
     ]
@@ -646,32 +646,40 @@
   },
   "assets/audio/phase3/o1.mp3": {
     "mime": "audio/mpeg",
-    "sha256": "6446378051e4ec9c03bcf511fa3c6baed1094bd4bd3deff60d534b917844a943",
-    "bytes": 14200,
+    "sha256": "71813002f3e9ac03206bedd6428a6233aa087b5f54fb0d8107d5b068474b62fa",
+    "bytes": 9155,
     "usedBy": [
       "src/phase/phase3/assets.js"
     ]
   },
   "assets/audio/phase3/o2.mp3": {
     "mime": "audio/mpeg",
-    "sha256": "6f6f42e5460b5bba4f5a5dfead82fd57806d2d70cd2917b8526543d4fd5c4da0",
-    "bytes": 26075,
+    "sha256": "73a90c34025618f00ce3bf9621f5acc6e2c61786605bd3f0ba8b962707d623e8",
+    "bytes": 30811,
     "usedBy": [
       "src/phase/phase3/assets.js"
     ]
   },
   "assets/audio/phase3/o3.mp3": {
     "mime": "audio/mpeg",
-    "sha256": "50743554ad10bd19f966543ddddb6e3fa949c7893ddc3da4c582914f94cd0766",
-    "bytes": 21934,
+    "sha256": "22245eee9915f9b62d5cd298d9070b9b47076d76151297d48675cc7910e086ed",
+    "bytes": 13088,
     "usedBy": [
       "src/phase/phase3/assets.js"
     ]
   },
   "assets/audio/phase3/o4.mp3": {
     "mime": "audio/mpeg",
-    "sha256": "5644edd12807c453c0cd4b9124e14b8c6388c86213f5adc1013c5b16fdbc1578",
-    "bytes": 29111,
+    "sha256": "145ac21fce20144977222f6c7147148d843fc086f9540901ff0e8517c01d33c9",
+    "bytes": 12152,
+    "usedBy": [
+      "src/phase/phase3/assets.js"
+    ]
+  },
+  "assets/audio/phase3/o5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "8c3b5831777415eab827637c4876760f1425db8827471d2d1d04750d7816cff9",
+    "bytes": 12411,
     "usedBy": [
       "src/phase/phase3/assets.js"
     ]

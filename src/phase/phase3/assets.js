@@ -32,6 +32,7 @@ window.Phase3Assets = {
   'voice/o2.mp3': '@@data:assets/audio/phase3/o2.mp3@@',
   'voice/o3.mp3': '@@data:assets/audio/phase3/o3.mp3@@',
   'voice/o4.mp3': '@@data:assets/audio/phase3/o4.mp3@@',
+  'voice/o5.mp3': '@@data:assets/audio/phase3/o5.mp3@@',
   'voice/r1.mp3': '@@data:assets/audio/phase3/r1.mp3@@',
   'voice/r2.mp3': '@@data:assets/audio/phase3/r2.mp3@@',
   'voice/r3.mp3': '@@data:assets/audio/phase3/r3.mp3@@',

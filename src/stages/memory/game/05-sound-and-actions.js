@@ -48,7 +48,7 @@
     canvas.setAttribute('aria-busy', String(['waking','rising','leavingBed','approaching','reflection','sitting','serving','acting','eating','leaving','leavingKitchen','closing','opening','ending','collapse'].includes(next)));
   }
   function syncTargets(){
-    if (Childhood.active) {
+    if (Childhood.active || Hikki.active) {
       for (const id of ['action','approach',...propIds.map(id=>'prop-'+id),'chair','fridge','fridge-food','food']) { $(id).hidden = true; $(id).disabled = true; }
       return;
     }
@@ -129,7 +129,7 @@
     stages[0].handle.rotation.y = 0; stages[0].water.visible = true;
     sinkFocused=false;
     seated=fridgeOpen=foodCollected=poured=eaten=false;fridgeAmount=0;pendingRoom=1;
-    cfg=MemoryPhase.round(stagePhase,round);PH.setRound(stagePhase,cfg);PH.clearEnding();Childhood.reset(cfg,stagePhase,round);
+    cfg=MemoryPhase.round(stagePhase,round);PH.setRound(stagePhase,cfg);PH.clearEnding();Childhood.reset(cfg,stagePhase,round);Hikki.reset(cfg,stagePhase);
     if(PH.child)poured=true; // 아이 맵: 차는 없고 엄마가 차려 준 음식만 먹는다.
     reflectionAmount=reflectionSway=reflectionSmile=0;canvas.dataset.reflectionShot='idle';
     propState=RoutineProps.create();updateProps(0);
