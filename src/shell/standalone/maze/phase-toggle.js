@@ -13,7 +13,10 @@
   const atEnd = (html, code) => { const i = html.toLowerCase().lastIndexOf('</body>'); const tag = '<script>' + code + '<' + '/script>'; return i < 0 ? html + tag : html.slice(0, i) + tag + html.slice(i); };
   // phase.js applyMaps()의 미로 치환과 같다. 미로 맵이 바뀌어 치환이 안 먹으면 버튼에 표시한다.
   const blocked = original.replace("'#.#########.#########'", "'#.###################'").replace("'#.....#...#.........#'", "'#.....#.............#'");
-  const glitched = atEnd(blocked.replace(/<head>/i, () => '<head><script>(' + phaseStageAudioGlitch.toString() + ')();<' + '/script>'), source('maze-phase2-src'));
+  // 11/14 추격전 프로토타입(maze-chaser.js): 1페 = 코너마다 뒤에서 따라오는 암시, 2페 = 검게 바뀐 뒤 같은 그림이 변형되어 추격. 3페는 그대로.
+  const chaser = mode => 'window.MAZE_CHASER_MODE=' + mode + ';window.MAZE_CHASER_ART=' + JSON.stringify($('maze-chaser-art')?.getAttribute('src') || '') + ';\n' + source('maze-chaser-src');
+  const calm = atEnd(original, chaser(1));
+  const glitched = atEnd(blocked.replace(/<head>/i, () => '<head><script>(' + phaseStageAudioGlitch.toString() + ')();<' + '/script>'), source('maze-phase2-src') + '\n' + chaser(2));
   const story = atEnd(original, source('maze-memory-art-src') + '\n' + source('maze-phase3-src'));
   const LINE = '매일 걷던 길이 어느 날부터 매일 달라졌다.'; // rebellion.js 열쇠(미로) story[1], 본편 2페이즈 자막과 같은 줄
 
@@ -61,7 +64,7 @@
     phase = next;
     body.dataset.devPhase = String(next);
     for (const b of bar.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.p === String(next)));
-    DevStage.html = next === 2 ? glitched : next === 3 ? story : original;
+    DevStage.html = next === 2 ? glitched : next === 3 ? story : calm;
     quiet();
     if (next === 2) FX?.droneOn(.047); else FX?.droneOff(true);
     $('again').click(); // 같은 판을 새로 연다(guides-3.js start)
@@ -85,6 +88,13 @@
     }
     if (type === 'stalker-seen') FX?.whisper(.7, .12);
     if (type === 'stalker-gone') { burst(1.4); FX?.crackle(.22, .3); }
+    if (type === 'chaser-on') { burst(2.2); FX?.sting?.(.3); }
+    if (type === 'chaser-caught') { for (let i = 0; i < 4; i++) setTimeout(() => burst(2.6), i * 90); }
+  });
+  // 1페 암시: 들켜서 숨을 때 아주 작은 속삭임(1페에는 글리치 없음)
+  window.addEventListener('message', event => {
+    if (event.source !== $('stage').contentWindow || event.data?.channel !== 'speedrun-maze-dev-phase' || phase === 3) return;
+    if (event.data.type === 'chaser-hint-seen') FX?.whisper?.(.6, .07);
   });
   bar.addEventListener('click', event => {
     const b = event.target.closest('button[data-p]');
@@ -92,4 +102,5 @@
   });
   for (const b of bar.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b.dataset.p === '1'));
   body.dataset.devPhase = '1';
+  DevStage.html = calm; $('again').click(); // 처음 여는 판도 1페 암시가 들어간 판으로
 })();

@@ -155,6 +155,15 @@
       "src/stages/maze/dev-game.template.html"
     ]
   },
+  "assets/images/maze-chaser.webp": {
+    "mime": "image/webp",
+    "sha256": "2a24494425d85efc42f13db915640bb897f8164fcebf33fadb80724c24c5aced",
+    "bytes": 68140,
+    "usedBy": [
+      "src/shell/standalone/maze/index.template.html"
+    ],
+    "source": "2026-11-14 Claude Code, drawn on a browser canvas by records/make-maze-chaser-art-20261114.cjs (maze chase prototype, one image instead of a 3D model)"
+  },
   "assets/images/elder-model-atlas.webp": {
     "mime": "image/webp",
     "sha256": "72fccf38eb770815f3450d055fe9679a1cdb309e6962e9ee9d4a8741360b4db6",
