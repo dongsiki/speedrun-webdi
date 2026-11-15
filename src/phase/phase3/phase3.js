@@ -178,7 +178,11 @@
     block.innerHTML = ''; block.className = 'p3-block'; intro.classList.remove('quake');
     q('.p3-end-tag').classList.remove('show'); q('.p3-end-buttons').classList.remove('show');
   }
+  //#play
   const scenes = { refuse, help, story, ask, final };
+  //#dev 11/15: 3페 시작 쫓아내기(expel)를 첫 화면 앞에
+  const scenes = { expel, refuse, help, story, ask, final };
+  //#end
   async function go(name) {
     const my = ++run; root.hidden = false; body.classList.add('p3-on'); reset(); mark(name === 'final' ? 'ask' : name);
     //#dev 11/07: 첫 화면부터 작은 심전도 박동
@@ -205,6 +209,130 @@
     return off;
   }
 
+  //#dev 개발자용(02)에만. 11/15 사용자: 「처음에 ai가 아직도 안 갔어? 가. 하면서 점프스케어를 다시 보여주고 그리고 또 한 번 더 하다가 나가게 하는 데 실패하고 그 다음에 ai버튼페이지가 나오는거」
+  //   (두 번째 점프스케어는 「덜 놀라는 거지」). 얼굴은 2페 끝 점프스케어(src/phase/fx.js face)와 같은 변신 영상 8.45초 장면, 같은 자르기.
+  //   ① 까만 화면에 대사(효과 없는 목소리) → ② 점프스케어(2페 끝보다 작고 덜 흔들리고 짧고 소리 작게)
+  //   → ③ 한 번 더 띄우다가 중간에 멈춰 찢어지고 화면이 한 줄로 꺼지며 소리가 끊김(실패) → 첫 화면(AI 버튼)
+  let expelFacePromise = null;
+  function expelFace() {
+    if (expelFacePromise) return expelFacePromise;
+    return (expelFacePromise = new Promise(resolve => {
+      const v = document.createElement('video');
+      v.muted = true; v.playsInline = true; v.preload = 'auto';
+      v.src = '../../assets/video/elder-transformation-10s.mp4?v=13eb1e890d6b';
+      let finished = false;
+      const done = ok => {
+        if (finished) return; finished = true;
+        const c = document.createElement('canvas'); c.width = 480; c.height = 560;
+        const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+        if (ok && Math.abs(v.currentTime - 8.45) < 1) g.drawImage(v, 30, 400, 480, 560, 0, 0, c.width, c.height);
+        g.fillStyle = '#000'; g.beginPath();
+        g.ellipse(98, 282, 37, 27, -.08, 0, 7); g.ellipse(242, 284, 37, 27, .08, 0, 7);
+        g.ellipse(152, 404, 62, 34, 0, 0, 7); g.fill();
+        g.fillStyle = '#fff'; g.fillRect(99, 283, 5, 5); g.fillRect(241, 285, 5, 5);
+        v.removeAttribute('src'); v.load(); resolve(c);
+      };
+      v.addEventListener('loadedmetadata', () => { v.currentTime = Math.min(8.45, (v.duration || 10) - .1); }, { once: true });
+      v.addEventListener('seeked', () => done(true), { once: true });
+      v.addEventListener('error', () => done(false), { once: true });
+      setTimeout(() => done(false), 9000);
+    }));
+  }
+  // 2페 끝 비명(fx.js scream)과 같은 짜임을 작게. cut = 그 초에 소리가 뚝 끊긴다(실패).
+  function expelScream(dur, gain, cut = 0) {
+    const c = ac(); if (!c) return;
+    const t = c.currentTime, end = t + (cut || dur);
+    const sh = c.createWaveShaper(), curve = new Float32Array(1024);
+    for (let i = 0; i < curve.length; i++) { const x = i / 512 - 1; curve[i] = Math.tanh(x * 9); }
+    sh.curve = curve;
+    const comp = c.createDynamicsCompressor(); comp.threshold.value = -26; comp.ratio.value = 14; comp.attack.value = .002; comp.release.value = .12;
+    const g = c.createGain(); sh.connect(comp).connect(g).connect(c.destination);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + .01);
+    if (cut) { g.gain.setValueAtTime(gain, end); g.gain.linearRampToValueAtTime(0, end + .012); }
+    else { g.gain.setValueAtTime(gain, t + dur - .3); g.gain.exponentialRampToValueAtTime(.0001, t + dur); }
+    for (const base of [620, 845, 1290, 2010]) {
+      const o = c.createOscillator(); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(base * .7, t); o.frequency.exponentialRampToValueAtTime(base * 1.35, t + .12); o.frequency.exponentialRampToValueAtTime(base * .8, t + dur);
+      const wob = c.createOscillator(), wg = c.createGain(); wob.frequency.value = 17 + Math.random() * 9; wg.gain.value = base * .09; wob.connect(wg).connect(o.frequency);
+      const og = c.createGain(); og.gain.value = .3; o.connect(og).connect(sh); o.start(t); wob.start(t); o.stop(end + .05); wob.stop(end + .05);
+    }
+  }
+  async function expel(my) {
+    mark('expel'); show('first');
+    const st = document.createElement('div'); st.className = 'p3-expel'; st.setAttribute('aria-label', 'AI');
+    st.style.cssText = 'position:absolute;inset:0;z-index:70;background:#000;cursor:none;overflow:hidden';
+    const cv = document.createElement('canvas'); cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%';
+    const tx = document.createElement('p'); tx.setAttribute('aria-live', 'polite');
+    tx.style.cssText = 'position:absolute;left:0;right:0;top:50%;margin:0;transform:translateY(-50%);text-align:center;color:#fff;font:700 clamp(30px,6vw,76px)/1.2 "Courier New","Malgun Gothic",monospace;letter-spacing:.08em';
+    st.append(cv, tx); root.insertBefore(st, fade);
+    const g = cv.getContext('2d');
+    let mode = 'dark', t0 = 0, raf = 0, frozen = null;
+    const face = await expelFace(); alive(my);
+    function draw(now) {
+      raf = requestAnimationFrame(draw);
+      const W = cv.width = innerWidth, H = cv.height = innerHeight, k = (now - t0) / 1000;
+      g.fillStyle = '#000'; g.fillRect(0, 0, W, H);
+      if (mode === 'dark') return;
+      if (mode === 'soft' || (mode === 'fail' && k < .42)) {
+        // 2페 끝(높이 꽉 참·코앞까지 다가옴·크게 흔들림·반전 번쩍임)보다 작고 덜 흔들리게. 반전·번쩍임 없음.
+        const z = .66 + Math.min(.22, k * .3) + Math.sin(now / 40) * .02;
+        const s = H / (face.height * .8) * z, w = face.width * s, h = face.height * s;
+        const x = (W - w) / 2 + (Math.random() - .5) * 18, y = (H - h) / 2 + (Math.random() - .5) * 18;
+        g.filter = 'contrast(1.8)'; g.drawImage(face, x, y, w, h);
+        for (let i = 0; i < (k < .3 ? 0 : 2); i++) {
+          const sy = Math.random() * face.height, sh = 10 + Math.random() * 40;
+          g.drawImage(face, 0, sy, face.width, sh, x + (Math.random() - .5) * 90, y + sy * s, w, sh * s);
+        }
+        g.filter = 'none';
+        frozen = { x, y, w, h, s };
+        return;
+      }
+      if (mode === 'fail' && frozen) {
+        // 멈춘 얼굴이 가로로 찢어져 밀려나고, 화면이 한 줄로 접히며 꺼진다.
+        const f = Math.min(1, (k - .42) / .9), { x, w, s } = frozen;
+        const fold = f < .6 ? 1 : Math.max(.004, 1 - (f - .6) / .4);
+        const h = frozen.h * fold, y = (H - h) / 2;
+        g.filter = 'contrast(1.8) grayscale(1)';
+        const bands = 14;
+        for (let i = 0; i < bands; i++) {
+          const sy = face.height * i / bands, sh = face.height / bands;
+          const dx = (Math.sin(i * 12.9 + now / 90) * .5 + (Math.random() - .5)) * 260 * f * f;
+          g.globalAlpha = Math.max(0, 1 - f * .5);
+          g.drawImage(face, 0, sy, face.width, sh, x + dx, y + h * i / bands, w, h / bands + 1);
+        }
+        g.globalAlpha = 1; g.filter = 'none';
+        for (let i = 0; i < 18 * f; i++) { g.fillStyle = Math.random() < .5 ? '#fff' : '#000'; g.fillRect(Math.random() * W, (H - h) / 2 + Math.random() * h, Math.random() * W * .5, 1 + Math.random() * 6); }
+        if (fold < .05) { g.fillStyle = '#fff'; g.fillRect(W * (.5 - .3 * fold * 10), H / 2 - 1, W * .6 * fold * 10 + 2, 2); }
+        if (f >= 1) mode = 'dark';
+      }
+    }
+    try {
+      raf = requestAnimationFrame(draw);
+      await wait(700, my);
+      // ① 「아직도 안 가셨어요? 가세요.」 (2페 끝 경고처럼 한 글자씩, 목소리는 효과 없이)
+      const spoken = voice(S.expel.voice);
+      for (const ch of S.expel.say) { alive(my); tx.textContent += ch; await wait(110, my); }
+      await Promise.race([spoken, wait(4000, my)]); await wait(900, my);
+      tx.textContent = ''; await wait(600, my);
+      // ② 점프스케어(덜 놀랍게)
+      mode = 'soft'; t0 = performance.now(); expelScream(.95, .2);
+      await wait(950, my);
+      mode = 'dark'; await wait(1500, my);
+      // ③ 한 번 더 띄우다가 실패: 0.42초에 멈추고 소리가 끊긴 뒤 찢어지며 꺼진다
+      mode = 'fail'; t0 = performance.now(); expelScream(1.4, .2, .42);
+      await wait(420, my); crackle(.06, .05);
+      await wait(260, my); crackle(.04, .03);
+      await wait(700, my); tone(55, .4, .05, 'sine');
+      await wait(1400, my);
+      // 첫 화면(AI 버튼)으로
+      fade.style.setProperty('--fd', '0ms'); fade.classList.add('on');
+    } finally { cancelAnimationFrame(raf); st.remove(); }
+    await wait(60, my);
+    mark('refuse');
+    await fadeTo(false, false, 900, my);
+    return refuse(my);
+  }
+  //#end
   async function refuse(my) {
     show('first');
     await dontStage(my);
@@ -512,7 +640,11 @@
     mount();
     document.querySelectorAll('[data-jump]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); go(b.dataset.jump); }));
     const start = (location.hash.match(/scene=(\w+)/) || [])[1];
+    //#play
     go(scenes[start] ? start : 'refuse');
+    //#dev 11/15: 처음 열면 쫓아내기부터. 「1 첫 화면」 버튼·#scene=refuse 는 바로 AI 버튼 화면.
+    go(scenes[start] ? start : 'expel');
+    //#end
     return;
   }
   // 본편 01: 점프스케어 뒤 다시 열린 첫 화면(페이즈 3)에서, 변신 인트로가 끝나면 시작한다.

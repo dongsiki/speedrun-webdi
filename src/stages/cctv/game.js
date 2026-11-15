@@ -79,12 +79,21 @@
   function clear(cam) { cam.event = null; Cctv3D.stand(cam.scene, null); paint(cam); }
   function draw() {}
   function paint(cam) { if (cam.index === current) Cctv3D.render(cam.scene, cam.canvas3d); }
+  // 11/15 사용자(코디네이터 되물음 「한 화면을 10초 보면 저절로 다음 카메라로 … 이전 카메라로는 돌아가지 못하게 … 네 화면을 두 바퀴 돌 때까지는 아무것도 나타나지 않고」에 「ㅇㅇ」):
+  //   한 화면을 10초 보면 저절로 다음 카메라. → / D로 기다리지 않고 다음으로 건너뛰기. ← / A(이전으로)는 뺌.
+  //   네 화면을 한 번씩 보면 한 바퀴, 두 바퀴 동안은 아무것도 안 나옴(「그래야 유저가 보기에 이게 기본상태구나임을 알지」). 그동안 시계도 00:00에 멈춰 있음.
+  const HOLD = 10000, QUIET_VIEWS = CAMS.length * 2;
+  let views = 0, held = 0, quiet = true;
   function showCam(i) {
     current = (i + cams.length) % cams.length;
+    views++; held = 0;
     cams.forEach(c => { c.button.dataset.current = String(c.index === current); });
     paint(cams[current]); cams[current].button.focus({ preventScroll: true });
+    main.dataset.lap = String(Math.min(3, Math.ceil(views / CAMS.length)));
+    if (quiet && views > QUIET_VIEWS) { quiet = false; begin(); }
   }
-  addEventListener('keydown', e => { const k = e.key.toLowerCase(); if (k === 'arrowleft' || k === 'a') { e.preventDefault(); showCam(current - 1); } if (k === 'arrowright' || k === 'd') { e.preventDefault(); showCam(current + 1); } });
+  function nextCam() { if (running && !done) showCam(current + 1); }
+  addEventListener('keydown', e => { const k = e.key.toLowerCase(); if (k === 'arrowright' || k === 'd') { e.preventDefault(); nextCam(); } });
   addEventListener('resize', () => paint(cams[current]));
   function noise(cam) {
     const c = cam.canvas, ctx = c.getContext('2d'), img = ctx.createImageData(c.width, c.height);
@@ -216,7 +225,8 @@
     raf = 0;
     if (!running) return;
     const dt = last ? Math.min(100, now - last) : 0; last = now;
-    if (RATE && !document.hidden) minutes += RATE * dt / 1000;
+    if (RATE && !quiet && !document.hidden) minutes += RATE * dt / 1000;
+    if (!document.hidden) { held += dt; if (held >= HOLD) showCam(current + 1); }
     for (const cam of cams) {
       if (!cam.event) continue;
       draw(cam, now);
@@ -240,10 +250,16 @@
   function start() {
     if (running || done) return;
     running = true; last = 0; main.dataset.phase = 'playing';
-    if (phase === 1) { say(P1.start, 3600); spawnTimer = setTimeout(spawn, 1600); }
-    if (phase === 2) { say(P2.start, 3600); spawnTimer = setTimeout(spawn, 1400); extraTimer = setTimeout(glitchStatic, 900); blockTimer = setTimeout(aiBlock, 6000); }
-    if (phase === 3) { say(P3.start, 3600); setTimeout(nextScene, 1500); }
+    say(phase === 1 ? P1.start : phase === 2 ? P2.start : P3.start, 3600);
+    if (!quiet) begin();
     raf = requestAnimationFrame(frame);
+  }
+  // 두 바퀴가 끝나고 셋째 바퀴 첫 화면이 열릴 때 한 번: 전과 같은 간격으로 나타나기 시작.
+  function begin() {
+    if (!running || done) return;
+    if (phase === 1) spawnTimer = setTimeout(spawn, 1600);
+    if (phase === 2) { spawnTimer = setTimeout(spawn, 1400); extraTimer = setTimeout(glitchStatic, 900); blockTimer = setTimeout(aiBlock, 6000); }
+    if (phase === 3) setTimeout(nextScene, 1500);
   }
   function pause() { running = false; stopTimers(); }
 
@@ -256,5 +272,5 @@
   showClock();
   showCam(0);
   start();
-  globalThis.CctvGame = { get phase() { return phase; }, get minutes() { return minutes; }, cams, finish: () => finish(0, '') };
+  globalThis.CctvGame = { get phase() { return phase; }, get minutes() { return minutes; }, get current() { return current; }, get views() { return views; }, get quiet() { return quiet; }, cams, finish: () => finish(0, '') };
 })();

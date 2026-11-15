@@ -3,7 +3,8 @@
    정한 방향(사용자 말씀): 2페에 추격전, 잡힐 때보다 잡히기 전이 긴장되니 「잡힐랑 말랑하는 그 선」.
    1페에는 뒤에서 따라오는 무언가의 암시(코너를 돌 때마다 뒤에서 누가 따라옴), 2페에서 그것이 변형되어 무섭게 쫓아옴.
    따라오는 것은 실제 일진이 아니라 「일진에 대한 기억이 뭉쳐진 무언가」 → 그림 한 장(assets/images/maze-chaser.webp)을 판에 붙여 늘 나를 보게 한다.
-   1페(MODE 1): 코너를 돌고 조금 가면 뒤에서 발소리 → 방금 돈 모퉁이에 그것이 반쯤 숨어 서 있음 → 돌아보면 0.35초 뒤 모퉁이 뒤로 숨음. 피해 없음.
+   1페(MODE 1): 코너를 돌고 조금 가면 뒤에서 발소리 → 방금 돈 모퉁이 벽 뒤에서 머리를 기울이며 빼꼼 내다봄(11/15) → 돌아보면 0.35초 뒤 벽 뒤로 쏙 들어감. 피해 없음.
+   그림은 아래 흩어지는 자국만큼 바닥 아래로 내려 땅에 붙어 있다(11/15, 1페·2페 같음).
    2페(MODE 2): 검은 배경으로 바뀌기 전에는 1페와 같다. 바뀐 뒤 2.5초 지나 같은 그림이 찢기고 일그러진 모습으로 쫓아온다.
      계속 움직이면 1.5칸쯤 뒤에 붙어 있기만 하고, 멈추거나(0.7초) 막다른 길에 들어가면 빨라져서 잡는다 → 「되감기 실패」 화면.
      가까울수록 화면 가장자리가 어두워지고 심장 소리가 빨라진다. */
@@ -59,6 +60,8 @@
   // ---- 그림 한 장을 판에 붙인다(비율 512:768 그대로) ----
   const art = new Image(); art.src = ART;
   const ASPECT = 512 / 768;
+  // 그림 아래 약 23%는 흩어지는 자국·투명이라 판 밑을 바닥에 두면 떠 보인다 → 그만큼 바닥 아래로 내려 덩어리 밑이 땅에 닿게 한다(2026-11-15 「이미지를 좀 땅에 붙게」).
+  const SINK = .23;
   function makeFigure(world, height, warped) {
     const { T, scene } = world.kit, map = new T.Texture(art);
     map.colorSpace = T.SRGBColorSpace; map.needsUpdate = true;
@@ -81,14 +84,30 @@
     const mesh = new T.Mesh(new T.PlaneGeometry(height * ASPECT, height), material);
     mesh.name = warped ? 'maze-chaser-warped' : 'maze-chaser'; mesh.visible = false; scene.add(mesh);
     return { mesh, material, height, x: 0, z: 0,
-      place(x, z, lift = 0) { this.x = x; this.z = z; mesh.position.set(x, height / 2 + lift, z); mesh.rotation.y = Math.atan2(player.x - x, player.z - z); } };
+      place(x, z, lift = 0) { this.x = x; this.z = z; mesh.position.set(x, height * (.5 - SINK) + lift, z); mesh.rotation.y = Math.atan2(player.x - x, player.z - z); } };
   }
 
   // ---- 1페(그리고 2페 검게 바뀌기 전): 코너마다 뒤에서 따라오는 암시 ----
   function hints(world) {
     const fig = makeFigure(world, .95, false);
     const trail = [];
-    let corner = null, shown = 0, seen = 0, hiding = 0, cooldown = 0, first = true, t0 = 0, hideDir = [0, 0];
+    let corner = null, shown = 0, seen = 0, hiding = 0, cooldown = 0, first = true, t0 = 0, hideDir = [0, 0], base = null;
+    // 빼꼼(2026-11-15 「저렇게 서 있는 게 아니라 약간 문 밖으로 빼꼼 하는 것처럼 해줘 1페에서는」):
+    // 지나온 모퉁이(b)에서 왔던 쪽(a) 통로 벽 뒤에 숨어 있다가, 0.7초에 걸쳐 머리를 기울이며 한쪽만 벽 밖으로 내민다.
+    // 돌아보면 0.35초 뒤 벽 뒤로 쏙 들어간다. 발밑(땅)을 축으로 기울인다.
+    const HIDE_AT = 1.12, PEEK_AT = .86, TILT = .34, PEEK_MS = 700, BACK_MS = 190;
+    const ease = k => 1 - Math.pow(1 - k, 3);
+    function pose(along, tilt) {
+      // along: 모퉁이 칸 가운데에서 왔던 쪽으로 몇 칸, tilt: 여는 쪽(모퉁이 쪽)으로 기울기(라디안)
+      const x = base.x + hideDir[0] * along, z = base.z + hideDir[1] * along, m = fig.mesh;
+      const yaw = Math.atan2(player.x - x, player.z - z), lx = Math.cos(yaw), lz = -Math.sin(yaw);
+      // 판의 오른쪽(local x)이 모퉁이 쪽(-hideDir)을 향하면 +, 아니면 - → 윗부분이 모퉁이 쪽으로 나오게 굴린다
+      const side = (lx * -hideDir[0] + lz * -hideDir[1]) >= 0 ? 1 : -1, roll = -side * tilt;
+      const up = fig.height * (.5 - SINK);
+      m.rotation.set(0, yaw, roll);
+      m.position.set(x - Math.sin(roll) * up * lx, Math.cos(roll) * up, z - Math.sin(roll) * up * lz);
+      fig.x = x; fig.z = z;
+    }
     world.addFrameHook(() => {
       if (stopHints) { fig.mesh.visible = false; return; }
       const t = now(), dt = t0 ? Math.min(.1, (t - t0) / 1000) : 0; t0 = t;
@@ -108,28 +127,31 @@
         const bx = corner.b[0] + .5, bz = corner.b[1] + .5, d = Math.hypot(bx - player.x, bz - player.z);
         if (t - corner.at > 9000) corner = null;
         else if (d > 1.6 && d < 4.2 && Math.abs(angleTo(bx, bz)) > 1.7) {
-          // 왔던 쪽(a)으로 0.32칸 물러나 벽 모서리에 반쯤 가린 자리
-          const ox = (corner.a[0] - corner.b[0]) * .32, oz = (corner.a[1] - corner.b[1]) * .32;
           if (first || Math.random() < .8) {
-            hideDir = [corner.a[0] - corner.b[0], corner.a[1] - corner.b[1]];
-            fig.place(bx + ox, bz + oz); fig.mesh.visible = true; shown = t; seen = 0; hiding = 0; first = false;
+            hideDir = [corner.a[0] - corner.b[0], corner.a[1] - corner.b[1]]; base = { x: bx, z: bz };
+            pose(HIDE_AT, 0); fig.mesh.visible = true; shown = t; seen = 0; hiding = 0; first = false;
             footsteps(bx, bz, 3); tell('chaser-hint'); debug.chaserHint = 'out';
           }
           corner = null; cooldown = t + rand(4500, 7000);
         }
       }
       if (!fig.mesh.visible) return;
-      fig.mesh.rotation.y = Math.atan2(player.x - fig.x, player.z - fig.z);
       if (hiding) {
-        // 들킨 뒤: 왔던 쪽으로 미끄러지며 사라짐
-        const k = Math.min(1, (t - hiding) / 380);
-        fig.mesh.position.x = fig.x + hideDir[0] * k * .55; fig.mesh.position.z = fig.z + hideDir[1] * k * .55;
-        fig.mesh.scale.set(1 - k * .3, 1 + k * .15, 1);
-        if (k >= 1) { fig.mesh.visible = false; fig.mesh.scale.set(1, 1, 1); debug.chaserHint = 'hid'; }
+        // 들킨 뒤(또는 못 보고 지나간 뒤): 벽 뒤로 쏙
+        const k = Math.min(1, (t - hiding.at) / BACK_MS), e = ease(k), from = hiding.from;
+        pose(from.along + (HIDE_AT + .25 - from.along) * e, from.tilt * (1 - e));
+        if (k >= 1) { fig.mesh.visible = false; debug.chaserHint = hiding.why; }
         return;
       }
-      if (sees(fig.x, fig.z, .6)) { seen += dt; if (seen >= .35) { hiding = t; tell('chaser-hint-seen'); footsteps(fig.x, fig.z, 2); } }
-      else if (t - shown > 3800) { fig.mesh.visible = false; debug.chaserHint = 'missed'; }
+      // 벽 뒤에서 머리를 기울이며 내다봄 + 바퀴벌레처럼 미세하게 움찔거림
+      const k = Math.min(1, (t - shown) / PEEK_MS), e = ease(k), twitch = k >= 1 ? Math.sin(t / 47) * Math.sin(t / 131) * .035 : 0;
+      const along = HIDE_AT + (PEEK_AT - HIDE_AT) * e + twitch * .4, tilt = TILT * e + twitch;
+      pose(along, tilt); debug.chaserPeek = e.toFixed(2);
+      const look = { x: base.x + hideDir[0] * .45, z: base.z + hideDir[1] * .45 }; // 내민 머리가 보이는 모퉁이 틈
+      if (e > .6 && sees(look.x, look.z, .6)) {
+        seen += dt;
+        if (seen >= .35) { hiding = { at: t, from: { along, tilt }, why: 'hid' }; tell('chaser-hint-seen'); footsteps(base.x, base.z, 2); }
+      } else if (t - shown > 3800) hiding = { at: t, from: { along, tilt }, why: 'missed' };
     });
   }
 
@@ -231,7 +253,7 @@
     debug.chaser = 'caught'; tell('chaser-caught');
     // 얼굴 앞으로 확 다가옴 → 0.45초 뒤 되감기 실패
     const fx = player.x + Math.cos(player.yaw) * .42, fz = player.z + Math.sin(player.yaw) * .42;
-    fig.place(fx, fz, -.2); fig.mesh.scale.set(1.5, 1.5, 1); fig.material.uniforms.tear.value = 3;
+    fig.place(fx, fz, -.2 + fig.height * SINK); fig.mesh.scale.set(1.5, 1.5, 1); // 잡을 때 얼굴 높이는 땅에 붙이기 전과 같게 fig.material.uniforms.tear.value = 3;
     vignette.style.opacity = '1';
     if (ac) { const t = ac.currentTime; for (let i = 0; i < 6; i++) thump(t + i * .05, 40 + i * 9, .5, 0, .2, 1); }
     setTimeout(() => parent.postMessage({ channel: stageChannel, type: 'fail' }, '*'), 450);

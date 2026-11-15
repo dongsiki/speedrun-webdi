@@ -8,6 +8,7 @@ const S = window.Phase3Story, jobs = [];
 for (const k of ['help', 'ask']) for (const x of S[k]) if (x.voice) jobs.push([x.voice, x.say]);
 jobs.push([S.holdWait.voice, S.holdWait.say]);
 if (S.thanks) jobs.push([S.thanks.voice, S.thanks.say]); // 11/07 개발자용 일반 엔딩 「고마워요」
+if (S.expel) jobs.push([S.expel.voice, S.expel.say]); // 11/15 개발자용 3페 시작 「아직도 안 가셨어요? 가세요.」
 for (const m of S.memories) jobs.push([m.voice, [...m.lines, m.clue].filter(Boolean).join(' ')]);
 const only = process.argv[2] ? process.argv[2].split(',') : null;
 const py = 'C:/Users/admin/Documents/코덱스 섹션/소설/로컬ai/음성/supertonic-venv/Scripts/python.exe';
