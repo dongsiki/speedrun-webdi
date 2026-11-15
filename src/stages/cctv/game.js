@@ -48,7 +48,9 @@
 
   // --- 시계(00:00 → 06:00) ---
   let minutes = phase === 3 ? 300 : 0, running = false, done = false, last = 0, raf = 0;
-  const RATE = phase === 1 ? 360 / 46 : phase === 2 ? 360 / 54 : 0; // 1초에 몇 분
+  // 11/15 사용자 「2분까지 되도록 해」(코디네이터 되물음 「1페와 2페의 시계가 00:00에서 06:00까지 가는 시간을 2분으로」에 「어 맞아. 작업해」·「ㅇㅇ」):
+  //   1페 46초·2페 54초였던 밤을 둘 다 120초로(두 바퀴 비우는 동안 00:00에 멈춰 있는 것은 그대로, 시계가 가기 시작한 뒤부터 120초).
+  const RATE = phase === 1 || phase === 2 ? 360 / 120 : 0; // 1초에 몇 분
   function showClock() {
     const m = Math.max(0, Math.min(360, Math.round(minutes)));
     clockEl.textContent = `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
@@ -133,10 +135,23 @@
     const free = cams.filter(c => !c.event && c.button.dataset.block !== 'on');
     return free.length ? pick(free) : null;
   }
+  // 11/15 사용자(코디네이터 되물음 「CCTV 나오는 횟수를 1페 16번쯤, 2페 23번쯤으로 줄여 2분에 고르게 퍼뜨립니다」에 「ㅇㅇ」):
+  //   밤을 2분으로 늘린 뒤 간격을 그대로 둬서 1페 약 43번·2페 약 51번 나오던 것을, 시계(00:00→06:00)에 맞춰 1페 16번·2페 23번만 고르게 나오게.
+  //   한 칸(1페 22.5분·2페 약 15.7분)마다 하나씩, 칸 안에서 조금씩만 앞뒤로 흔들어 똑같은 박자로 들리지 않게. 빈 화면이 없으면 다음 프레임에 다시 시도(횟수는 그대로).
+  const SPAWNS = phase === 1 ? 16 : phase === 2 ? 23 : 0;
+  let spawnIndex = 0, spawnAt = Infinity;
+  function spawnTime(k) { const step = 360 / SPAWNS; return step * (k + rand(.3, .7)); }
+  function resetSpawns() { spawnIndex = 0; spawnAt = SPAWNS ? spawnTime(0) : Infinity; }
+  function spawnByClock() {
+    if (spawnIndex >= SPAWNS || minutes < spawnAt) return;
+    if (!spawn()) return;
+    spawnIndex++; spawnAt = spawnIndex < SPAWNS ? spawnTime(spawnIndex) : Infinity;
+  }
   function spawn() {
-    if (!running || done) return;
+    if (!running || done) return false;
     const cam = freeCam();
-    if (cam) {
+    if (!cam) return false;
+    {
       if (phase === 1) place(cam, pick(['cat', 'bag', 'mannequin', 'robot']), { life: rand(6000, 7500) });
       else {
         sightings++;
@@ -147,7 +162,7 @@
         beep(140, .18);
       }
     }
-    spawnTimer = setTimeout(spawn, phase === 1 ? rand(2000, 3600) : rand(1700, 3000));
+    return true;
   }
   function glitchStatic() {
     if (!running || done) return;
@@ -179,11 +194,34 @@
       say(phase === 1 ? pick(P1.ok[kind]) : pick(P2.ok));
     } else if (phase === 1) say(pick(P1.empty), 2000);
   }
+  // 11/15 사용자 「한 번 틀릴 때마다 목숨이 하나 깎이게 해서, 각 페이즈당 3번의 기회를 주게끔 해」(되물음: 놓칠 때마다 하나, 다 쓰면 그 페이즈 처음부터, 놓쳤을 때 시계가 뒤로 가던 것은 없앰 → 「어 맞아. 작업해」·「ㅇㅇ」).
+  //   목숨은 시계 옆에 ♥로. 2페 지직거림 때 가끔 15분 뒤로 가는 것(glitchStatic)은 말씀에 없어 그대로 둠.
+  //   3페는 할배 화면이 사라지지 않아 「놓친다」가 없으므로 목숨을 넣지 않음.
+  const LIVES = 3;
+  let lives = LIVES, restartTimer = 0;
+  const livesEl = phase === 3 ? null : document.createElement('div');
+  if (livesEl) { livesEl.id = 'lives'; clockEl.after(livesEl); }
+  function showLives() {
+    if (!livesEl) return;
+    livesEl.textContent = '♥'.repeat(lives) + '♡'.repeat(LIVES - lives);
+    livesEl.setAttribute('aria-label', `목숨 ${lives}`);
+  }
   function missed(cam) {
+    if (!running || done) return;
     clear(cam);
-    minutes = Math.max(0, minutes - (phase === 1 ? 12 : 15)); // 놓치면 시계가 조금 뒤로(안 눌러도 아주 느리게는 간다)
     mark(cam, 'miss', phase === 1 ? '놓침' : '…', 900);
+    lives = Math.max(0, lives - 1); showLives();
+    if (lives === 0) return restartPhase();
     say(phase === 1 ? pick(P1.miss) : pick(P2.miss));
+  }
+  // 목숨을 다 쓰면 그 페이즈를 처음부터: 처음 들어왔을 때와 똑같이(시계 00:00, 목숨 3, CAM 1부터, 두 바퀴 비우기도 다시).
+  function restartPhase() {
+    running = false; stopTimers();
+    restartTimer = setTimeout(() => {
+      cams.forEach(c => { clear(c); delete c.button.dataset.block; delete c.button.dataset.static; delete c.button.dataset.mark; });
+      minutes = 0; lives = LIVES; caught = 0; sightings = 0; views = 0; held = 0; quiet = true;
+      showLives(); showClock(); showCam(0); start();
+    }, 1200);
   }
 
   // --- 3페 ---
@@ -219,13 +257,14 @@
     if (text) { endCard.innerHTML = text; endCard.classList.add('show'); }
     setTimeout(() => parent.postMessage({ channel, type: 'complete' }, '*'), delay);
   }
-  function stopTimers() { clearTimeout(spawnTimer); clearTimeout(extraTimer); clearTimeout(blockTimer); cancelAnimationFrame(raf); raf = 0; }
+  function stopTimers() { clearTimeout(spawnTimer); clearTimeout(extraTimer); clearTimeout(blockTimer); clearTimeout(restartTimer); cancelAnimationFrame(raf); raf = 0; }
 
   function frame(now) {
     raf = 0;
     if (!running) return;
     const dt = last ? Math.min(100, now - last) : 0; last = now;
     if (RATE && !quiet && !document.hidden) minutes += RATE * dt / 1000;
+    if (!quiet && phase !== 3) spawnByClock();
     if (!document.hidden) { held += dt; if (held >= HOLD) showCam(current + 1); }
     for (const cam of cams) {
       if (!cam.event) continue;
@@ -257,8 +296,8 @@
   // 두 바퀴가 끝나고 셋째 바퀴 첫 화면이 열릴 때 한 번: 전과 같은 간격으로 나타나기 시작.
   function begin() {
     if (!running || done) return;
-    if (phase === 1) spawnTimer = setTimeout(spawn, 1600);
-    if (phase === 2) { spawnTimer = setTimeout(spawn, 1400); extraTimer = setTimeout(glitchStatic, 900); blockTimer = setTimeout(aiBlock, 6000); }
+    if (phase === 1 || phase === 2) resetSpawns();
+    if (phase === 2) { extraTimer = setTimeout(glitchStatic, 900); blockTimer = setTimeout(aiBlock, 6000); }
     if (phase === 3) setTimeout(nextScene, 1500);
   }
   function pause() { running = false; stopTimers(); }
@@ -270,7 +309,8 @@
   });
   document.addEventListener('visibilitychange', () => { last = 0; });
   showClock();
+  showLives();
   showCam(0);
   start();
-  globalThis.CctvGame = { get phase() { return phase; }, get minutes() { return minutes; }, get current() { return current; }, get views() { return views; }, get quiet() { return quiet; }, cams, finish: () => finish(0, '') };
+  globalThis.CctvGame = { get phase() { return phase; }, get minutes() { return minutes; }, get current() { return current; }, get views() { return views; }, get quiet() { return quiet; }, get lives() { return lives; }, get running() { return running; }, cams, finish: () => finish(0, '') };
 })();
