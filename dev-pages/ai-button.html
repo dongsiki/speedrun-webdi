@@ -292,6 +292,103 @@ if (/first-run/.test(location.hash)) {
   window.SpeedrunIntroOnce = true;
 }
 </script>
+<script>
+// 11/16 (02만, Claude Code): 11/10 교수님 피드백 ③ 「첫 스타트 때 게임플레이를 엄청 빠르게 돌려 클리어하는 모습 → 「뭐고 이거」」
+// 사용자 확인: 「5번은 02에만, 첫 시작 때 게임을 엄청 빠르게 돌려 클리어하는 모습을 넣습니다.」 → 「ㅇㅇ」
+// 11/16 사용자 「2.5초 말고 1초로 해봐」 「5초판의 영상이나 씬을 걍 배속하는 게 어떻냐는 거지 내 말은」
+//   「일단 그렇게 바꿔. 그리고 글리치같은 걸 더하면, 4k화면이든 그보다 더한 화면이든 '글리치라서 화면이 깨지는 구나' 하고 화질이 구려지는 걸 막을 수 있지 않을까?」
+// → 5초 판(실제 게임 화면 땅파기 → 전구 → 미로 → 기억 → 마지막 걸음 → 실 꿰기 → 짐 싸기 → MRI를 빨리 감기로 돌리던 것)을
+//   영상(assets/video/first-run-fast.webm, 1920×1080, 소리 없음)으로 찍어 두고, 스타트를 누르면 그 영상을 배속으로 틀어 약 1초에 끝낸다.
+//   영상은 낮은 해상도 캔버스에 옮겨 그리며 줄 밀림·블록 깨짐·지직 점을 얹는다(큰 화면에서 흐려지는 것이 글리치로 읽히게).
+//   영상 다시 찍기: records/record-first-run-fast-20261116.cjs (5초 판 ai-button.html 백업에서 찍음).
+// 보여 주기만 하는 것이라 클리어 수·페이즈·저장은 그대로. 01 본편(first-run.js)은 건드리지 않는다.
+(() => {
+  if (!window.FirstRunForce) return;
+  const SOURCE_SECONDS = 5.4;   // 찍어 둔 영상 길이(스타트 누름 → 클리어 직전)
+  const PLAY_SECONDS = 1;       // 사용자 「1초로」
+  const RATE = SOURCE_SECONDS / PLAY_SECONDS; // 약 5.4배
+  const LOW_W = 480;            // 글리치용 낮은 해상도(가로 픽셀). 화면에는 픽셀이 그대로 커져 보인다.
+  const blockKinds = ['pointerdown', 'pointerup', 'pointermove', 'mousedown', 'mouseup', 'mousemove', 'click', 'dblclick', 'touchstart', 'touchmove', 'touchend', 'wheel', 'contextmenu', 'keydown', 'keyup'];
+  const block = e => { if (!e.isTrusted) return; if (e.cancelable) e.preventDefault(); e.stopImmediatePropagation(); };
+  const video = document.createElement('video');
+  video.muted = true; video.defaultMuted = true; video.playsInline = true; video.preload = 'auto';
+  video.setAttribute('muted', ''); video.setAttribute('playsinline', '');
+  video.style.cssText = 'position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none';
+
+  function fastPlay() {
+    return new Promise(resolve => {
+      for (const k of blockKinds) window.addEventListener(k, block, { capture: true, passive: false });
+      const box = document.createElement('div');
+      box.id = 'first-run-fast'; box.setAttribute('aria-hidden', 'true');
+      box.style.cssText = 'position:fixed;inset:0;z-index:2147483100;background:#fff;overflow:hidden;cursor:none';
+      const canvas = document.createElement('canvas');
+      canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated';
+      box.append(canvas); document.body.append(box);
+      const lowH = Math.round(LOW_W * innerHeight / Math.max(1, innerWidth));
+      canvas.width = LOW_W; canvas.height = lowH;
+      const x = canvas.getContext('2d');
+      x.imageSmoothingEnabled = true;
+      let raf = 0, finished = false, shift = 0;
+      const finish = () => {
+        if (finished) return; finished = true;
+        cancelAnimationFrame(raf); clearTimeout(guard);
+        try { video.pause(); } catch (_) {}
+        box.remove();
+        for (const k of blockKinds) window.removeEventListener(k, block, { capture: true });
+        resolve();
+      };
+      const guard = setTimeout(finish, PLAY_SECONDS * 1000 + 900); // 영상이 멈춰도 연출은 넘어간다
+      function frame() {
+        if (finished) return;
+        const w = LOW_W, h = lowH;
+        // 영상 한 장을 화면 비율에 맞게 꽉 채워 그린다
+        const vw = video.videoWidth || 16, vh = video.videoHeight || 9, s = Math.max(w / vw, h / vh);
+        x.globalCompositeOperation = 'source-over';
+        x.drawImage(video, (w - vw * s) / 2, (h - vh * s) / 2, vw * s, vh * s);
+        // 줄 밀림: 가로 띠 몇 줄이 옆으로 밀린다
+        const bands = 2 + Math.floor(Math.random() * 5);
+        for (let i = 0; i < bands; i++) {
+          const y = Math.floor(Math.random() * h), bh = 1 + Math.floor(Math.random() * h * .07), dx = Math.round((Math.random() - .5) * w * .12);
+          x.drawImage(canvas, 0, y, w, bh, dx, y, w, bh);
+        }
+        // 블록 깨짐: 네모 조각이 엉뚱한 자리로 복사된다
+        if (Math.random() < .55) for (let i = 0; i < 1 + Math.floor(Math.random() * 3); i++) {
+          const bw = 8 + Math.floor(Math.random() * w * .18), bh = 4 + Math.floor(Math.random() * h * .12);
+          const sx = Math.floor(Math.random() * (w - bw)), sy = Math.floor(Math.random() * (h - bh));
+          x.drawImage(canvas, sx, sy, bw, bh, sx + Math.round((Math.random() - .5) * 40), sy + Math.round((Math.random() - .5) * 14), bw, bh);
+        }
+        // 지직 점과 가는 줄
+        x.fillStyle = '#000';
+        for (let i = 0; i < 70; i++) x.fillRect(Math.floor(Math.random() * w), Math.floor(Math.random() * h), 1, 1);
+        x.fillStyle = '#fff';
+        for (let i = 0; i < 40; i++) x.fillRect(Math.floor(Math.random() * w), Math.floor(Math.random() * h), 1, 1);
+        if (Math.random() < .5) { x.fillStyle = Math.random() < .5 ? '#000' : '#fff'; x.fillRect(0, Math.floor(Math.random() * h), w, 1); }
+        // 가끔 화면 전체가 반전되듯 번쩍
+        if (Math.random() < .06) { x.globalCompositeOperation = 'difference'; x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); x.globalCompositeOperation = 'source-over'; }
+        shift = Math.random() < .25 ? (Math.random() - .5) * 10 : 0;
+        canvas.style.translate = `${shift}px ${(Math.random() - .5) * 3}px`;
+        if (video.ended || video.currentTime >= SOURCE_SECONDS - .02) return finish();
+        raf = requestAnimationFrame(frame);
+      }
+      video.onended = finish;
+      try { video.currentTime = 0; } catch (_) {}
+      video.playbackRate = RATE;
+      const p = video.play();
+      if (p && p.then) p.then(() => { raf = requestAnimationFrame(frame); }, finish); // 재생이 안 되면 빨리 감기 없이 넘어간다
+      else raf = requestAnimationFrame(frame);
+    });
+  }
+  // 첫 플레이 연출의 맨 앞(스타트를 누른 직후)에 끼운다. 영상은 페이지가 열릴 때 미리 받아 둔다.
+  window.addEventListener('DOMContentLoaded', () => {
+    const gag = window.FirstRunGag;
+    if (!gag) return;
+    video.src = '../assets/video/first-run-fast.webm';
+    document.body.append(video);
+    try { video.load(); } catch (_) {}
+    window.FirstRunGag = Object.freeze({ play: async () => { await fastPlay().catch(() => {}); return gag.play(); } });
+  });
+})();
+</script>
 <style>/* 개발자용 02: 각 게임 위 1페/2페/3페 버튼(2026-10-29, Claude Code). 미로 버튼과 같은 모양. */
 #dev-phase-bar{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:2147483000;display:flex;gap:0;border:1.5px solid #000;background:#fff;box-shadow:0 0 0 1.5px #fff}
 #dev-phase-bar button{min-height:32px;padding:4px 14px;font:700 14px/1 "Malgun Gothic",sans-serif;border:0;background:#fff;color:#000;cursor:pointer}
