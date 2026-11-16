@@ -124,3 +124,17 @@ body.p3-on #phase3-panel,body.p3-on #phase-todo{display:none!important}
 #p3 .p3-fade.on{opacity:1}
 #p3 .p3-fade.white{background:#fff;transition-timing-function:ease}
 @media (max-width:600px){#p3 .p3-switch{gap:16px;padding:16px}}
+#p3 .p3-tool{position:absolute;z-index:4;padding:0;border:0;background:none;color:#cfcfcf;transition:color .25s;touch-action:manipulation}
+#p3 .p3-tool:hover,#p3 .p3-tool:focus-visible{color:#000}
+#p3 .p3-tool svg,#p3 .p3-held svg{display:block;width:100%;height:100%;overflow:visible;fill:#fff;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+#p3 .p3-tool.hammer{left:-24px;bottom:9vh;width:50px;height:100px;rotate:62deg}
+#p3 .p3-tool.pin{right:8vw;top:30vh;width:44px;height:11px;rotate:-41deg}
+#p3 .p3-tool.got{animation:p3-got .25s forwards;pointer-events:none}
+@keyframes p3-got{to{opacity:0;scale:1.7}}
+#p3 .p3-held{position:fixed;left:var(--x,50vw);top:var(--y,64vh);z-index:65;pointer-events:none;color:#000}
+#p3 .p3-held.hammer{width:30px;height:60px;translate:6px -88%;rotate:-28deg;transform-origin:50% 95%}
+#p3 .p3-held.pin{width:44px;height:11px;translate:4px -60%;rotate:-24deg;transform-origin:0 50%}
+#p3 .p3-held.hammer.swing{animation:p3-pull .24s steps(3)}
+@keyframes p3-pull{50%{rotate:-72deg}}
+#p3 .p3-held.pin.swing{animation:p3-pick .16s steps(2)}
+@keyframes p3-pick{50%{rotate:-10deg;translate:9px -60%}}

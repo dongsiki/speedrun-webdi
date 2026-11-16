@@ -9,6 +9,23 @@
   if (window.Phase3) return;
   const S = window.Phase3Story, DEV = !!window.Phase3Dev, P = window.SpeedrunPhase;
   if (!S) return;
+  //#dev 11/17 사용자(코디네이터 되묻기에 「ㅇㅇ」): 3페 AI 버튼 화면 대사를 담백·오글 두 버전으로 골라 해 보기.
+  //   story.js talk의 [자리, 대사, 목소리]를 골라 끼운다. 고른 것은 이 탭에서 기억(sessionStorage), 주소 #talk=plain|cringe 가 먼저.
+  const TALK_KEY = 'speedrun-p3-talk';
+  let talkKind = (location.hash.match(/talk=(plain|cringe)/) || [])[1] || (() => { try { return sessionStorage.getItem(TALK_KEY); } catch (_) { return null; } })() || 'plain';
+  function useTalk(kind) {
+    if (!S.talk || !S.talk[kind]) kind = 'plain';
+    if (!S.talk || !S.talk[kind]) return;
+    talkKind = kind;
+    try { sessionStorage.setItem(TALK_KEY, kind); } catch (_) {}
+    for (const [where, say, voice] of S.talk[kind].lines) {
+      const line = where.split('.').reduce((o, k) => (o ? o[k] : null), S);
+      if (line) { line.say = say; line.voice = voice; }
+    }
+    document.querySelectorAll('[data-talk]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.talk === kind)));
+  }
+  useTalk(talkKind);
+  //#end
   const assets = window.Phase3Assets || {};
   const imgUrl = p => assets[p] || p;
   const voiceUrl = id => assets['voice/' + id + '.mp3'] || ('voice/' + id + '.mp3');
@@ -177,6 +194,9 @@
     count.textContent = '001';
     block.innerHTML = ''; block.className = 'p3-block'; intro.classList.remove('quake');
     q('.p3-end-tag').classList.remove('show'); q('.p3-end-buttons').classList.remove('show');
+    //#dev 11/17 숨긴 도구 치우기
+    dropTool();
+    //#end
   }
   //#play
   const scenes = { refuse, help, story, ask, final };
@@ -208,6 +228,35 @@
     target.addEventListener('click', h); addEventListener('keydown', h, true);
     return off;
   }
+  //#dev 개발자용(02)에만. 11/17 사용자(코디네이터 되묻기에 「ㅇㅇ」): 나무판자는 못 빼는 해머(장도리)로, 자물쇠는 자물쇠 따는 핀으로 풀린다.
+  //   두 도구는 화면 안에 숨겨 두고 찾게 한다(숨기는 자리는 Claude Code가 먼저 정함 → 사용자가 보고 고침).
+  //   장도리 = 왼쪽 아래 화면 가장자리에 반쯤 걸쳐 흐린 회색 / 핀 = 오른쪽 위쪽 빈 곳에 작고 흐린 회색. 마우스를 대면 까매진다.
+  //   도구 없이 누르면 판자·자물쇠가 덜컹거리기만 한다. 점프스케어·AI가 다시 조이기 같은 다른 방해는 그대로.
+  const toolSvg = {
+    hammer: `<svg viewBox="0 0 60 120" aria-hidden="true"><rect x="25" y="22" width="10" height="92" rx="4"/><path d="M25 82H35M25 90H35M25 98H35"/>
+      <path d="M4 8H16V6H38C47 6 53 12 57 24C51 18 46 16 40 17L38 26H16V24H4Z"/><path d="M41 11C47 13 51 17 54 21"/></svg>`,
+    pin: `<svg viewBox="0 0 84 20" aria-hidden="true"><path d="M80 6H20C8 6 8 15 20 15H58L61 12L64 15L67 12L70 15H76"/><path d="M4 10.5H14"/></svg>`
+  };
+  let held = null;
+  const holder = document.createElement('div'); holder.className = 'p3-held'; holder.hidden = true; root.append(holder);
+  const follow = e => { holder.style.setProperty('--x', e.clientX + 'px'); holder.style.setProperty('--y', e.clientY + 'px'); };
+  root.addEventListener('pointermove', follow); root.addEventListener('pointerdown', follow, true);
+  function pickTool(el) {
+    if (!el || el.classList.contains('got')) return;
+    held = el.dataset.tool; el.classList.add('got'); tone(1400, .05, .03, 'triangle'); tone(1800, .07, .025, 'triangle');
+    holder.className = 'p3-held ' + held; holder.innerHTML = toolSvg[held]; holder.hidden = false;
+    setTimeout(() => el.remove(), 260);
+  }
+  function hideTool(kind) {
+    const el = document.createElement('button'); el.type = 'button'; el.className = 'p3-tool ' + kind; el.dataset.tool = kind;
+    el.setAttribute('aria-label', kind === 'hammer' ? '장도리' : '핀'); el.innerHTML = toolSvg[kind];
+    el.addEventListener('click', e => { e.stopPropagation(); pickTool(el); });
+    sections.first.append(el);
+    return el;
+  }
+  function dropTool() { held = null; holder.hidden = true; holder.innerHTML = ''; holder.className = 'p3-held'; root.querySelectorAll('.p3-tool').forEach(x => x.remove()); }
+  const useTool = () => { holder.classList.remove('swing'); void holder.offsetWidth; holder.classList.add('swing'); };
+  //#end
 
   //#dev 개발자용(02)에만. 11/15 사용자: 「처음에 ai가 아직도 안 갔어? 가. 하면서 점프스케어를 다시 보여주고 그리고 또 한 번 더 하다가 나가게 하는 데 실패하고 그 다음에 ai버튼페이지가 나오는거」
   //   (두 번째 점프스케어는 「덜 놀라는 거지」). 얼굴은 2페 끝 점프스케어(src/phase/fx.js face)와 같은 변신 영상 8.45초 장면, 같은 자르기.
@@ -413,13 +462,31 @@
           if (boards.every(x => x.classList.contains('off'))) { off(); setTimeout(ok, 900); }
         }
       };
+      //#play
       // 판자를 눌러야 뜯긴다. 키보드는 맨 위 판자부터.
       const off = listen(sections.first, e => {
         if (e.type === 'keydown') return hit(boards.filter(x => !x.classList.contains('off')).pop());
         const b = e.target.closest?.('.p3-board');
         if (b) hit(b); else { jolt(sw); thunk(); }
       }, my, no);
+      //#dev 11/17: 장도리를 찾아 들어야 못이 빠진다(누를 때마다 못 하나). 장도리 없이 누르면 판자만 덜컹.
+      boards.forEach(b => b.setAttribute('aria-label', '판자. 장도리를 찾아 들고 누르면 못이 빠짐'));
+      hideTool('hammer');
+      const off = listen(sections.first, e => {
+        const t = e.target.closest?.('.p3-tool');
+        if (t) return pickTool(t);
+        const b = e.type === 'keydown' ? boards.filter(x => !x.classList.contains('off')).pop() : e.target.closest?.('.p3-board');
+        if (held !== 'hammer') {
+          if (b) { b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit'); }
+          jolt(sw); thunk(); return;
+        }
+        if (b) { useTool(); hit(b); } else { jolt(sw); thunk(); }
+      }, my, no);
+      //#end
     });
+    //#dev
+    dropTool();
+    //#end
   }
 
   // 1-3) 쇠사슬·자물쇠: 연타하거나 길게 눌러 게이지를 채운다. 손을 떼면 줄고, AI가 가끔 다시 조인다.
@@ -447,10 +514,21 @@
     block.append(hitArea, lock, gauge);
     await wait(30, my); lock.classList.add('in'); bang(); burst(1); say(L, true);
     await wait(500, my); gauge.classList.add('in');
+    //#dev 11/17: 자물쇠는 숨긴 핀을 찾아 들어야 따진다(핀을 든 채 연타하거나 길게 누름). 핀 없이 누르면 덜컹만.
+    hitArea.setAttribute('aria-label', '자물쇠. 핀을 찾아 들고 연타하거나 길게 누르면 따짐');
+    hideTool('pin');
+    //#end
     let g = 0, holding = false, last = performance.now(), lastTight = last, midSaid = false;
     await new Promise((ok, no) => {
       let raf = 0;
+      //#play
       const tap = () => { g = Math.min(1, g + .075); jolt(lock); clank(.9 + Math.random() * .3); if (Math.random() < .25) burst(.5); };
+      //#dev
+      const tap = () => {
+        if (held !== 'pin') { holding = false; jolt(lock); clank(.6); return; }
+        g = Math.min(1, g + .075); jolt(lock); useTool(); tone(2600 + Math.random() * 900, .03, .02, 'square'); if (Math.random() < .25) burst(.5);
+      };
+      //#end
       const tick = now => {
         if (my !== run) { cleanup(); no(new Stop()); return; }
         const dt = Math.min(.1, (now - last) / 1000); last = now;
@@ -466,7 +544,16 @@
       };
       const down = e => { if (e.button > 0) return; if (my !== run) return; e.preventDefault(); e.stopPropagation(); holding = true; tap(); };
       const up = () => { holding = false; };
+      //#play
       const kd = e => { if ((e.code === 'Space' || e.code === 'Enter') && mine(e)) { e.preventDefault(); e.stopPropagation(); if (!e.repeat) { holding = true; tap(); } } };
+      //#dev 11/17: 키보드로 핀에 가 있으면(Tab) 스페이스·엔터가 핀을 집는다
+      const kd = e => {
+        if (!((e.code === 'Space' || e.code === 'Enter') && mine(e))) return;
+        e.preventDefault(); e.stopPropagation();
+        const t = e.target.closest?.('.p3-tool'); if (t) { pickTool(t); return; }
+        if (!e.repeat) { holding = true; tap(); }
+      };
+      //#end
       const ku = e => { if (e.code === 'Space' || e.code === 'Enter') holding = false; };
       const cleanup = () => {
         cancelAnimationFrame(raf);
@@ -480,6 +567,9 @@
     // 부서진다
     snap(); quake(); for (let i = 0; i < 3; i++) setTimeout(() => burst(1.4), i * 90);
     block.classList.add('broken'); speech.textContent = ''; voiceEl.pause();
+    //#dev
+    dropTool();
+    //#end
     await wait(1100, my);
     block.innerHTML = ''; block.className = 'p3-block';
   }
@@ -639,6 +729,13 @@
   if (DEV) {
     mount();
     document.querySelectorAll('[data-jump]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); go(b.dataset.jump); }));
+    //#dev 11/17 대사 담백·오글 고르기: 누르면 그 버전으로 지금 장면을 처음부터 다시
+    useTalk(talkKind);
+    document.querySelectorAll('[data-talk]').forEach(b => b.addEventListener('click', e => {
+      e.stopPropagation(); useTalk(b.dataset.talk);
+      const now = root.dataset.scene; go(scenes[now] ? now : 'refuse');
+    }));
+    //#end
     const start = (location.hash.match(/scene=(\w+)/) || [])[1];
     //#play
     go(scenes[start] ? start : 'refuse');

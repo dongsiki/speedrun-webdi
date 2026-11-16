@@ -9,6 +9,21 @@
   if (window.Phase3) return;
   const S = window.Phase3Story, DEV = !!window.Phase3Dev, P = window.SpeedrunPhase;
   if (!S) return;
+  //   story.js talk의 [자리, 대사, 목소리]를 골라 끼운다. 고른 것은 이 탭에서 기억(sessionStorage), 주소 #talk=plain|cringe 가 먼저.
+  const TALK_KEY = 'speedrun-p3-talk';
+  let talkKind = (location.hash.match(/talk=(plain|cringe)/) || [])[1] || (() => { try { return sessionStorage.getItem(TALK_KEY); } catch (_) { return null; } })() || 'plain';
+  function useTalk(kind) {
+    if (!S.talk || !S.talk[kind]) kind = 'plain';
+    if (!S.talk || !S.talk[kind]) return;
+    talkKind = kind;
+    try { sessionStorage.setItem(TALK_KEY, kind); } catch (_) {}
+    for (const [where, say, voice] of S.talk[kind].lines) {
+      const line = where.split('.').reduce((o, k) => (o ? o[k] : null), S);
+      if (line) { line.say = say; line.voice = voice; }
+    }
+    document.querySelectorAll('[data-talk]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.talk === kind)));
+  }
+  useTalk(talkKind);
   const assets = window.Phase3Assets || {};
   const imgUrl = p => assets[p] || p;
   const voiceUrl = id => assets['voice/' + id + '.mp3'] || ('voice/' + id + '.mp3');
@@ -173,6 +188,7 @@
     count.textContent = '001';
     block.innerHTML = ''; block.className = 'p3-block'; intro.classList.remove('quake');
     q('.p3-end-tag').classList.remove('show'); q('.p3-end-buttons').classList.remove('show');
+    dropTool();
   }
   const scenes = { expel, refuse, help, story, ask, final };
   async function go(name) {
@@ -198,6 +214,33 @@
     target.addEventListener('click', h); addEventListener('keydown', h, true);
     return off;
   }
+  //   두 도구는 화면 안에 숨겨 두고 찾게 한다(숨기는 자리는 Claude Code가 먼저 정함 → 사용자가 보고 고침).
+  //   장도리 = 왼쪽 아래 화면 가장자리에 반쯤 걸쳐 흐린 회색 / 핀 = 오른쪽 위쪽 빈 곳에 작고 흐린 회색. 마우스를 대면 까매진다.
+  //   도구 없이 누르면 판자·자물쇠가 덜컹거리기만 한다. 점프스케어·AI가 다시 조이기 같은 다른 방해는 그대로.
+  const toolSvg = {
+    hammer: `<svg viewBox="0 0 60 120" aria-hidden="true"><rect x="25" y="22" width="10" height="92" rx="4"/><path d="M25 82H35M25 90H35M25 98H35"/>
+      <path d="M4 8H16V6H38C47 6 53 12 57 24C51 18 46 16 40 17L38 26H16V24H4Z"/><path d="M41 11C47 13 51 17 54 21"/></svg>`,
+    pin: `<svg viewBox="0 0 84 20" aria-hidden="true"><path d="M80 6H20C8 6 8 15 20 15H58L61 12L64 15L67 12L70 15H76"/><path d="M4 10.5H14"/></svg>`
+  };
+  let held = null;
+  const holder = document.createElement('div'); holder.className = 'p3-held'; holder.hidden = true; root.append(holder);
+  const follow = e => { holder.style.setProperty('--x', e.clientX + 'px'); holder.style.setProperty('--y', e.clientY + 'px'); };
+  root.addEventListener('pointermove', follow); root.addEventListener('pointerdown', follow, true);
+  function pickTool(el) {
+    if (!el || el.classList.contains('got')) return;
+    held = el.dataset.tool; el.classList.add('got'); tone(1400, .05, .03, 'triangle'); tone(1800, .07, .025, 'triangle');
+    holder.className = 'p3-held ' + held; holder.innerHTML = toolSvg[held]; holder.hidden = false;
+    setTimeout(() => el.remove(), 260);
+  }
+  function hideTool(kind) {
+    const el = document.createElement('button'); el.type = 'button'; el.className = 'p3-tool ' + kind; el.dataset.tool = kind;
+    el.setAttribute('aria-label', kind === 'hammer' ? '장도리' : '핀'); el.innerHTML = toolSvg[kind];
+    el.addEventListener('click', e => { e.stopPropagation(); pickTool(el); });
+    sections.first.append(el);
+    return el;
+  }
+  function dropTool() { held = null; holder.hidden = true; holder.innerHTML = ''; holder.className = 'p3-held'; root.querySelectorAll('.p3-tool').forEach(x => x.remove()); }
+  const useTool = () => { holder.classList.remove('swing'); void holder.offsetWidth; holder.classList.add('swing'); };
 
   //   (두 번째 점프스케어는 「덜 놀라는 거지」). 얼굴은 2페 끝 점프스케어(src/phase/fx.js face)와 같은 변신 영상 8.45초 장면, 같은 자르기.
   //   ① 까만 화면에 대사(효과 없는 목소리) → ② 점프스케어(2페 끝보다 작고 덜 흔들리고 짧고 소리 작게)
@@ -401,13 +444,20 @@
           if (boards.every(x => x.classList.contains('off'))) { off(); setTimeout(ok, 900); }
         }
       };
-      // 판자를 눌러야 뜯긴다. 키보드는 맨 위 판자부터.
+      boards.forEach(b => b.setAttribute('aria-label', '판자. 장도리를 찾아 들고 누르면 못이 빠짐'));
+      hideTool('hammer');
       const off = listen(sections.first, e => {
-        if (e.type === 'keydown') return hit(boards.filter(x => !x.classList.contains('off')).pop());
-        const b = e.target.closest?.('.p3-board');
-        if (b) hit(b); else { jolt(sw); thunk(); }
+        const t = e.target.closest?.('.p3-tool');
+        if (t) return pickTool(t);
+        const b = e.type === 'keydown' ? boards.filter(x => !x.classList.contains('off')).pop() : e.target.closest?.('.p3-board');
+        if (held !== 'hammer') {
+          if (b) { b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit'); }
+          jolt(sw); thunk(); return;
+        }
+        if (b) { useTool(); hit(b); } else { jolt(sw); thunk(); }
       }, my, no);
     });
+    dropTool();
   }
 
   // 1-3) 쇠사슬·자물쇠: 연타하거나 길게 눌러 게이지를 채운다. 손을 떼면 줄고, AI가 가끔 다시 조인다.
@@ -435,10 +485,15 @@
     block.append(hitArea, lock, gauge);
     await wait(30, my); lock.classList.add('in'); bang(); burst(1); say(L, true);
     await wait(500, my); gauge.classList.add('in');
+    hitArea.setAttribute('aria-label', '자물쇠. 핀을 찾아 들고 연타하거나 길게 누르면 따짐');
+    hideTool('pin');
     let g = 0, holding = false, last = performance.now(), lastTight = last, midSaid = false;
     await new Promise((ok, no) => {
       let raf = 0;
-      const tap = () => { g = Math.min(1, g + .075); jolt(lock); clank(.9 + Math.random() * .3); if (Math.random() < .25) burst(.5); };
+      const tap = () => {
+        if (held !== 'pin') { holding = false; jolt(lock); clank(.6); return; }
+        g = Math.min(1, g + .075); jolt(lock); useTool(); tone(2600 + Math.random() * 900, .03, .02, 'square'); if (Math.random() < .25) burst(.5);
+      };
       const tick = now => {
         if (my !== run) { cleanup(); no(new Stop()); return; }
         const dt = Math.min(.1, (now - last) / 1000); last = now;
@@ -454,7 +509,12 @@
       };
       const down = e => { if (e.button > 0) return; if (my !== run) return; e.preventDefault(); e.stopPropagation(); holding = true; tap(); };
       const up = () => { holding = false; };
-      const kd = e => { if ((e.code === 'Space' || e.code === 'Enter') && mine(e)) { e.preventDefault(); e.stopPropagation(); if (!e.repeat) { holding = true; tap(); } } };
+      const kd = e => {
+        if (!((e.code === 'Space' || e.code === 'Enter') && mine(e))) return;
+        e.preventDefault(); e.stopPropagation();
+        const t = e.target.closest?.('.p3-tool'); if (t) { pickTool(t); return; }
+        if (!e.repeat) { holding = true; tap(); }
+      };
       const ku = e => { if (e.code === 'Space' || e.code === 'Enter') holding = false; };
       const cleanup = () => {
         cancelAnimationFrame(raf);
@@ -468,6 +528,7 @@
     // 부서진다
     snap(); quake(); for (let i = 0; i < 3; i++) setTimeout(() => burst(1.4), i * 90);
     block.classList.add('broken'); speech.textContent = ''; voiceEl.pause();
+    dropTool();
     await wait(1100, my);
     block.innerHTML = ''; block.className = 'p3-block';
   }
@@ -618,6 +679,11 @@
   if (DEV) {
     mount();
     document.querySelectorAll('[data-jump]').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); go(b.dataset.jump); }));
+    useTalk(talkKind);
+    document.querySelectorAll('[data-talk]').forEach(b => b.addEventListener('click', e => {
+      e.stopPropagation(); useTalk(b.dataset.talk);
+      const now = root.dataset.scene; go(scenes[now] ? now : 'refuse');
+    }));
     const start = (location.hash.match(/scene=(\w+)/) || [])[1];
     go(scenes[start] ? start : 'expel');
     return;

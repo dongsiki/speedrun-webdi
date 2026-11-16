@@ -10,6 +10,8 @@ jobs.push([S.holdWait.voice, S.holdWait.say]);
 if (S.thanks) jobs.push([S.thanks.voice, S.thanks.say]); // 11/07 개발자용 일반 엔딩 「고마워요」
 if (S.expel) jobs.push([S.expel.voice, S.expel.say]); // 11/15 개발자용 3페 시작 「아직도 안 가셨어요? 가세요.」
 for (const m of S.memories) jobs.push([m.voice, [...m.lines, m.clue].filter(Boolean).join(' ')]);
+// 11/17 개발자용 3페 AI 버튼 대사 담백·오글(story.js talk). 「그대로」 줄은 지금 목소리를 쓰므로 pl-·cr- 이름만 만든다.
+if (S.talk) for (const v of Object.values(S.talk)) for (const [, say, id] of v.lines) if (/^(pl|cr)-/.test(id)) jobs.push([id, say]);
 const only = process.argv[2] ? process.argv[2].split(',') : null;
 const py = 'C:/Users/admin/Documents/코덱스 섹션/소설/로컬ai/음성/supertonic-venv/Scripts/python.exe';
 for (const [id, text] of jobs) {
