@@ -113,11 +113,33 @@ function stub(target) {
     + `<meta http-equiv="refresh" content="0;url=${encodeURI(target)}"><script>location.replace(${JSON.stringify(encodeURI(target))}+location.search+location.hash)</script></head>`
     + `<body><a href="${encodeURI(target)}">${target}</a></body></html>\n`;
 }
+// 2026-11-16 02 목록 「업뎃순」: 템플릿의 data-updated는 그 게임 소스를 마지막으로 실제 고친 git 커밋 시각
+// (2026-11-16 21:52 KST에 확인, 파일·경로 이름만 바꾼 커밋은 뺌). 그 뒤에 data-src 경로를 고친 커밋이나
+// 아직 커밋 안 한 수정이 있으면 빌드 때 그 시각으로 올린다. data-src는 결과 파일에서 지운다.
+const UPDATED_BASE = '2026-11-16T21:52:00+09:00';
+function refreshUpdated(text) {
+  const { execFileSync } = require('node:child_process');
+  const git = args => { try { return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch (_) { return ''; } };
+  return text.replace(/ data-updated="([^"]+)" data-src="([^"]+)"/g, (_, given, src) => {
+    const paths = src.split(' ');
+    let best = Date.parse(given);
+    const committed = Date.parse(git(['log', '-1', '--format=%cI', '--since=' + UPDATED_BASE, '--', ...paths]));
+    if (committed > best) best = committed;
+    for (const line of git(['status', '--porcelain', '--', ...paths]).split('\n')) {
+      const file = line.slice(3).replace(/^.* -> /, '').replace(/^"|"$/g, '');
+      if (!file || line.startsWith(' D') || line.startsWith('D')) continue;
+      try { const t = fs.statSync(path.join(root, file)).mtimeMs; if (t > best) best = t; } catch (_) {}
+    }
+    const kst = new Date(best + 9 * 3600e3).toISOString().slice(0, 19) + '+09:00';
+    return ` data-updated="${kst}"`;
+  });
+}
 function build({ write = false } = {}) {
   const builder = createBuilder();
   const outputs = {};
   for (const [variant, name, dir] of [['play', '01_speedrun_play.html', PLAY_DIR], ['dev', '02_speedrun_dev.html', DEV_DIR]]) {
-    const text = builder.render(`src/shell/${variant}/index.template.html`);
+    let text = builder.render(`src/shell/${variant}/index.template.html`);
+    if (variant === 'dev') text = refreshUpdated(text);
     if (/@@data:|\/\* @(?:inline|json|jsonraw|standalone|documents) /.test(text)) throw new Error('Unexpanded source directive in ' + name);
     outputs[dir + '/' + name] = text;
     if (write) {

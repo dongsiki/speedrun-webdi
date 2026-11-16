@@ -44,6 +44,19 @@
     if(!frame || event.source!==frame.contentWindow || event.data?.channel!==channel)return;
     if(event.data.type==='menu')showMenu();
   });
+  // 11/16 사용자: 게시판 「인기순, 날짜순」처럼 목록 위에서 「진행순」「업뎃순」 고르기.
+  // 진행순 = 소스에 적힌 게임 진행 순서 그대로, 업뎃순 = data-updated(그 게임을 마지막으로 고친 시각)가 최근인 것부터.
+  // 시각이 같으면 진행순 차례를 따른다.
+  const nav=menu.querySelector('nav'), links=[...nav.querySelectorAll('a')];
+  const sortButtons=[...menu.querySelectorAll('.sort button')];
+  function sortList(kind){
+    const order=kind==='updated'
+      ? links.map((a,i)=>({a,i,t:Date.parse(a.dataset.updated)||0})).sort((x,y)=>y.t-x.t||x.i-y.i).map(x=>x.a)
+      : links;
+    order.forEach(a=>nav.appendChild(a));
+    sortButtons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.sort===kind)));
+  }
+  sortButtons.forEach(b=>b.addEventListener('click',()=>sortList(b.dataset.sort)));
   window.addEventListener('pagehide',stopFrame);
   window.addEventListener('pageshow',event=>{if(event.persisted)showMenu();});
 })();
