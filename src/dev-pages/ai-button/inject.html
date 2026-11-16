@@ -111,6 +111,46 @@ if (/first-run/.test(location.hash)) {
   });
 })();
 </script>
+<style>
+#game-start .gs-frame{position:relative;width:min(100vw,calc(100vh * 1672 / 941));aspect-ratio:1672/941}
+#game-start .gs-frame>img{position:absolute;inset:0}
+#game-start .gs-dance{position:absolute;right:3%;bottom:2%;height:50%;width:auto;pointer-events:none;user-select:none}
+</style>
+<script>
+// 11/17 (02만, Claude Code): 사용자 「지금 그 댄스와 노래를 스피드런 스타트 화면에 오른쪽에 배치해줘」, 되묻기
+// 「02의 「AI0 첫 플레이 연출」 스타트 화면을 보내 주신 그 그림(start-screen-magical-girl-a, 글자 다시 그린 것)으로 바꾸고,
+//  그 화면 오른쪽에 할배 새 춤을 넣고, 새 노래도 그 화면에서 나오게 합니다 …」 → 「ㅇㅇ」.
+// → 스타트 화면(src/intro/start-screen.js, 01과 같은 코드)은 그대로 두고, 이 개발자용 페이지에서만 그림을 바꾸고
+//   오른쪽 아래에 할배 춤 영상(assets/video/start-dance.webm: 블렌더 새 춤을 바탕 없이 다시 렌더, VP9 투명 + 새 노래 16초, 반복)을 얹는다.
+//   소리가 막혀 있으면 영상만 소리 없이 돈다. 스타트를 눌러 화면이 닫히면 영상·노래도 멈춘다.
+(() => {
+  if (!window.FirstRunForce) return;
+  const dance = document.createElement('video');
+  dance.className = 'gs-dance';
+  dance.src = 'assets/video/start-dance.webm';
+  dance.loop = true; dance.playsInline = true; dance.preload = 'auto';
+  dance.disablePictureInPicture = true; dance.setAttribute('playsinline', ''); dance.setAttribute('aria-hidden', 'true');
+  dance.volume = 0.6;
+  const art = '@@data:assets/images/game-start-title-magical.webp@@';
+  function dress(screen) {
+    const img = screen.querySelector('img');
+    if (!img || screen.querySelector('.gs-frame')) return;
+    img.src = art;
+    const frame = document.createElement('div');
+    frame.className = 'gs-frame';
+    img.replaceWith(frame);
+    frame.append(img, dance);
+    dance.currentTime = 0; dance.muted = false;
+    dance.play().catch(() => { dance.muted = true; return dance.play(); }).catch(() => {});
+  }
+  new MutationObserver(() => {
+    const screen = document.getElementById('game-start');
+    if (screen) dress(screen);
+    else if (!dance.paused) dance.pause();
+  }).observe(document.body, { childList: true }); // 스타트 화면은 body 바로 아래에 붙었다 떨어진다
+  try { dance.load(); } catch (_) {}
+})();
+</script>
 <style>/* @inline src/shell/dev/phase-bar.css */</style>
 <style>body[data-burst] #intro{translate:var(--gx,0) var(--gy,0)}#phase-todo{top:50px}</style>
 <!-- 11/07 AI 집착 단서: 심전도 삑 소리·구석 「세션 #4,812」 늘, 2페 글리치 사이 한 프레임 혼잣말·「연명치료 거부」 서류 -->

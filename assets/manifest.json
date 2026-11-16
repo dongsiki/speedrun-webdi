@@ -485,6 +485,15 @@
       "src/intro/start-screen.js"
     ]
   },
+  "assets/images/game-start-title-magical.webp": {
+    "mime": "image/webp",
+    "sha256": "47cf53e779c8a1b452a0323f2d5e302a30e7846c2d747ebef59dd7459743a1b9",
+    "bytes": 350772,
+    "usedBy": [
+      "src/dev-pages/ai-button/inject.html"
+    ],
+    "source": "Start screen, magical-girl version A (materials/start-screen-magical-girl/start-screen-magical-girl-a.png, canvas code, 2026-11-17). Developer build only."
+  },
   "assets/audio/phase3/a1.mp3": {
     "mime": "audio/mpeg",
     "sha256": "aec1bf165fade16c10ba373675b14c2118d5425c09f3d1703ffa87620c7d3548",
