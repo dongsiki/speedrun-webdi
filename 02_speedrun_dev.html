@@ -17,20 +17,27 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
      다른 소리가 나면 바로 줄여 멈춘다(멈춘 자리부터 다시 이어 숨 쉰다).
    - 소리를 보는 법: ① <audio>·<video>가 소리 켠 채 재생 중인지 ② 웹 오디오는 스피커로 가는 길목에 귀(AnalyserNode)를 달아 실제 크기를 잰다.
      귀를 달기 전에 이미 스피커에 이어진 소리는 재생 시작·끝으로 센다.
-   - 사용 전 window.ElderBreathSrc 에 소리 주소를 넣는다. window.ElderBreath.force(true/false)로 장면이 직접 숨소리를 켜고 끌 수 있다(3페 시작 까만 화면). */
+   - 사용 전 window.ElderBreathSrc 에 소리 주소를 넣는다. window.ElderBreath.force(true/false)로 장면이 직접 숨소리를 켜고 끌 수 있다(3페 시작 까만 화면).
+   - window.ElderBreath.hold(true/false, document)로 장면이 숨소리를 잠시 막을 수 있다(11/17 AI0 첫 플레이 연출: 시작 → 클리어 → 인트로 → 건너뛰기 동안,
+     사용자 「거기부터 숨소리 넣어」 → AI 버튼 화면부터). 막은 페이지가 닫히거나 다른 곳으로 가면 저절로 풀린다. */
 (() => {
   'use strict';
   if (window.ElderBreath) return;
   try { if (window.top !== window && window.top.ElderBreath) return; } catch (_) {} // 바깥 02가 이미 맡고 있으면 둘이 같이 숨 쉬지 않게
   const SRC = window.ElderBreathSrc;
   if (!SRC) return;
-  const QUIET_MS = 1500, VOL = .3, THRESH = .004; // 11/17 숨소리 크기 절반(0.6 → 0.3)
+  const QUIET_MS = 1500, VOL = .2, THRESH = .004; // 11/17 숨소리 크기 절반(0.6 → 0.3), 또 줄임(0.3 → 0.2)
   //   심전도 삑(960Hz, ai-cling.js·phase3.js 박동)은 소리로 치지 않는다(사용자: 「2는 ㅇㅇ 그렇게 해」, 삑은 그대로 계속 난다).
   const IGNORE_BEAT = true;
 
   const el = new Audio(); el.src = SRC; el.loop = true; el.preload = 'auto'; el.volume = 0; el.__breath = true;
   const media = new Set(), taps = new Map(), loose = new Set(), beepUntil = new WeakMap();
   let quietSince = performance.now(), forced = false, nextTry = 0;
+  const holds = new Set(); // 숨소리를 막은 페이지(document)들
+  function held() {
+    for (const d of holds) { let alive = false; try { alive = !!d.defaultView; } catch (_) {} if (!alive) holds.delete(d); }
+    return holds.size > 0;
+  }
 
   const isBeat = (w, n) => n instanceof w.OscillatorNode && n.type === 'sine' && Math.abs(n.frequency.value - 960) < 1;
   function tapOf(w, ctx, connect) {
@@ -110,7 +117,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   function tick() {
     const now = performance.now();
     if (!forced && loud()) quietSince = now;
-    const want = !document.hidden && (forced || now - quietSince >= QUIET_MS);
+    const want = !document.hidden && (forced || (!held() && now - quietSince >= QUIET_MS));
     if (want) {
       if (el.paused && now >= nextTry) { nextTry = now + 1000; el.play().catch(() => {}); } // 사용자가 한 번 누르기 전에는 브라우저가 막는다 → 1초마다 다시
       el.volume = Math.min(VOL, el.volume + (forced ? .2 : .045));
@@ -123,6 +130,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   setInterval(tick, 100);
   window.ElderBreath = {
     force(on) { forced = !!on; if (!on) quietSince = performance.now(); tick(); },
+    hold(on, doc) { doc = doc || document; if (on) holds.add(doc); else if (holds.delete(doc)) quietSince = performance.now(); tick(); },
     get playing() { return !el.paused && el.volume > 0; },
     get audio() { return el; }
   };

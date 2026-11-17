@@ -22,6 +22,16 @@ if (devExpel) {
   try { sessionStorage.removeItem('speedrun-intro-seen'); sessionStorage.removeItem('speedrun-first-run-seen'); } catch (_) {}
   window.FirstRunForce = true;
   window.DevStartMagical = true;
+  // 11/17 (02만, Claude Code) 사용자 「거기부터 숨소리 넣어」, 되묻기 「처음 흐름(시작 → 클리어 → 인트로 → 건너뛰기) 동안에는 숨소리가 안 나오고,
+  //   그 뒤 AI 버튼 화면부터 숨소리가 나오게」 → 「ㅇㅇ」. 페이지를 연 때부터 스타트 화면이 닫히고 첫 플레이 연출이 끝날 때(gamestart:end)까지 막는다.
+  let breath = window.ElderBreath || null;
+  try { if (!breath && window.top !== window) breath = window.top.ElderBreath || null; } catch (_) {} // 02 목록 안에서 열면 바깥 02의 숨소리
+  if (breath && breath.hold) {
+    breath.hold(true, document);
+    const release = () => breath.hold(false, document);
+    addEventListener('gamestart:end', release, { once: true });
+    addEventListener('pagehide', release, { once: true });
+  }
   if (/one-clear/.test(location.hash)) window.FirstRunOneClear = true; // 11/02 시안: 클리어 화면 하나로
 } else {
   try { sessionStorage.setItem('speedrun-intro-seen', '1'); } catch (_) {}
