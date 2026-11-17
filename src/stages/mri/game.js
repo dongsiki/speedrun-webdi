@@ -180,6 +180,9 @@
   // ---------- 바퀴벌레 ----------
   // 1페: 검사 30초쯤 한 마리가 가운데를 맴돌다 떠난다. 2페: 그 한 마리 + 스페이스바로 모여드는 떼.
   let bugs = [];
+  //#dev 개발자용(02)에만: 11/17 사진 바퀴벌레(몸통·다리 따로) + 디더링
+  /* @inline src/stages/mri/roach.js */
+  //#end
   function spawnBug(toKey = false) {
     const k = keyBox();
     const fromSide = toKey ? (Math.random() < .5 ? -1 : 1) : 0;
@@ -191,7 +194,11 @@
   function stepBugs(dt) {
     const ctx = bugCanvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, W, H);
     if (stagePhase === 2 && ['ready', 'scan', 'settle'].includes(phase)) drawKey(ctx);
+    //#play 플레이용(01)에만
     for (const bug of bugs) stepBug(ctx, bug, dt);
+    //#dev 개발자용(02)에만: 벌레를 따로 그린 뒤 사진 + 흑백 점(절반 세기)을 한 번에 얹는다
+    const rc = Roach.begin(W, H, dpr); for (const bug of bugs) stepBug(rc, bug, dt); Roach.finish(ctx, W, H);
+    //#end
     bugs = bugs.filter(b => !b.gone);
   }
   function stepBug(ctx, bug, dt) {
@@ -216,6 +223,12 @@
     if (bug.leaving && (bug.x < -120 || bug.x > W + 120 || bug.y < -120 || bug.y > H + 120)) { bug.gone = true; return; }
     const s = Math.min(W, H) / 520 * bug.size, legs = bug.pause > 0 && !(bug.toKey && bug.arrived) ? 0 : Math.sin(bug.t * 28);
     ctx.save(); ctx.translate(bug.x + (bug.toKey && bug.arrived && spaceDown ? 4 : 0), bug.y + (bug.toKey && bug.arrived && spaceDown ? 4 : 0)); ctx.rotate(bug.heading + Math.PI / 2); ctx.scale(s, s);
+    //#dev 개발자용(02)에만: 사진 바퀴벌레. 다리는 세 개씩 번갈아 움직임(그림이 아직 안 읽혔으면 아래 예전 그림)
+    Roach.mark();
+    const walk = bug.dash ? 44 : bug.toKey && bug.arrived ? 9 : bug.pause > 0 ? 0 : 30;
+    bug.lp = (bug.lp || 0) + dt * walk;
+    if (!Roach.draw(ctx, bug.lp, bug.t, walk > 0)) {
+    //#end
     ctx.strokeStyle = '#000'; ctx.fillStyle = '#000'; ctx.lineWidth = 3; ctx.lineCap = 'round';
     for (const side of [-1, 1]) for (const [k, y] of [[0, -14], [1, 4], [2, 22]]) {
       const swing = (k % 2 ? -1 : 1) * legs * 6 * side;
@@ -226,6 +239,9 @@
     ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, -20); ctx.lineTo(0, 38); ctx.stroke();
     ctx.strokeStyle = '#000'; ctx.lineWidth = 2;
     for (const side of [-1, 1]) { ctx.beginPath(); ctx.moveTo(side * 5, -38); ctx.quadraticCurveTo(side * 30, -80, side * (50 + legs * 4), -96); ctx.stroke(); }
+    //#dev
+    }
+    //#end
     ctx.restore();
   }
 

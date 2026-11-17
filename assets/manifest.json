@@ -1189,5 +1189,15 @@
     "usedBy": [
       "src/phase/phase3/story.js"
     ]
+  },
+  "assets/images/mri/roach-atlas.webp": {
+    "mime": "image/webp",
+    "sha256": "60bc1d32c67dd7418ebdf78ad337ede2a28c766595740bd293deee3e5ca09bba",
+    "bytes": 50646,
+    "usedBy": [
+      "src/stages/mri/roach.js"
+    ],
+    "source": "Cut from the photo \"Top view of a cockroach\" by Johnnybam, Wikimedia Commons, CC0 1.0 (public domain dedication, no attribution required): https://commons.wikimedia.org/wiki/File:Top_view_of_a_cockroach.jpg (1920px thumbnail, original sha1 cb98b55b392c399aba2541c39d4180191948fcd1). Background removed; body and 7 leg/antenna pieces cut apart by Claude Code 2026-11-17.",
+    "rightsStatus": "CC0 1.0 Universal"
   }
 }
