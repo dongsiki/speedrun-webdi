@@ -11,11 +11,11 @@ function limb(parent, a, b, r, c) { // a→b 를 잇는 막대(팔·다리)
   const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 10), M(c));
   m.position.copy(A).add(B).multiplyScalar(.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), B.clone().sub(A).normalize()); parent.add(m); return m;
 }
-function shell(scene, W, H, D, wall, floor) {
+function shell(scene, W, H, D, wall, floor, cz = 0) { // cz = 방 가운데 z(11/17 창고를 뒤로 늘릴 때 씀, 나머지 방은 0 그대로)
   const s = new THREE.Mesh(new THREE.BoxGeometry(W, H, D), new THREE.MeshStandardMaterial({ color: wall, roughness: .95, side: THREE.BackSide }));
-  s.position.y = H / 2; scene.add(s);
-  box(scene, W, .02, D, floor, 0, 0, 0);
-  for (const [w, d, x, z] of [[W, .06, 0, -D / 2 + .03], [.06, D, -W / 2 + .03, 0], [.06, D, W / 2 - .03, 0]]) box(scene, w, .12, d, 0x2a2a2a, x, 0, z); // 걸레받이
+  s.position.set(0, H / 2, cz); scene.add(s);
+  box(scene, W, .02, D, floor, 0, 0, cz);
+  for (const [w, d, x, z] of [[W, .06, 0, -D / 2 + .03], [.06, D, -W / 2 + .03, 0], [.06, D, W / 2 - .03, 0]]) box(scene, w, .12, d, 0x2a2a2a, x, 0, z + cz); // 걸레받이
 }
 function lights(scene) {
   scene.add(new THREE.HemisphereLight(0xffffff, 0x666666, 1.0)); // 천장이 새까맣게 안 되게 아래쪽 빛도 조금
@@ -127,10 +127,13 @@ function buildLobby() { // CAM 3 로비: 엘리베이터, 안내 데스크, 긴 
   return { scene, camera: roomCam([4.6, 3.7, 4.2], [-1.2, .5, -2.2]), spots: { p1: [['cat', -1.6, 0, .4, .6]], far: [-1, 0, -3.6], near: [2.2, 0, 2.2], p3: [['elderSit', -1.4, 0, 1.4, .5]] } };
 }
 function buildStore() { // CAM 4 창고: 선반 두 줄, 상자 더미
-  const scene = new THREE.Scene(); shell(scene, 7, 3.2, 6, 0xb2b5af, 0x7a7c78); lights(scene);
-  for (const x0 of [-2.6, -.6]) { for (const x of [x0, x0 + 1.6]) for (const z of [-2.7, -2.1]) box(scene, .05, 2.2, .05, 0x2a2a2a, x, 0, z);
-    for (const y of [.15, .9, 1.65]) box(scene, 1.65, .04, .65, 0x555555, x0 + .8, y, -2.4);
-    box(scene, .5, .4, .45, 0x8b7355, x0 + .4, .94, -2.4); box(scene, .6, .5, .45, 0x7a6448, x0 + 1.1, .19, -2.4); box(scene, .4, .3, .4, 0x8b7355, x0 + 1.2, 1.69, -2.4); }
+  // 11/17 사용자 「ㅇㅇ」(선반 한 쌍과 똑같은 쌍을 앞뒤 줄로 3쌍 더 = 6개, 모델 자리를 안 가리게 창고를 뒤로 늘림):
+  //   방 깊이 6m(z -3~3) → 10.6m(z -7.6~3). 앞쪽(카메라·모델 자리)은 그대로, 뒤 벽만 4.6m 뒤로.
+  const scene = new THREE.Scene(); shell(scene, 7, 3.2, 10.6, 0xb2b5af, 0x7a7c78, -2.3); lights(scene);
+  for (const zc of [-2.4, -3.9, -5.4, -6.9]) for (const x0 of [-2.6, -.6]) { // 맨 앞 줄(-2.4)이 원래 선반 한 쌍, 뒤 세 줄이 새로 더한 것
+    for (const x of [x0, x0 + 1.6]) for (const z of [zc - .3, zc + .3]) box(scene, .05, 2.2, .05, 0x2a2a2a, x, 0, z);
+    for (const y of [.15, .9, 1.65]) box(scene, 1.65, .04, .65, 0x555555, x0 + .8, y, zc);
+    box(scene, .5, .4, .45, 0x8b7355, x0 + .4, .94, zc); box(scene, .6, .5, .45, 0x7a6448, x0 + 1.1, .19, zc); box(scene, .4, .3, .4, 0x8b7355, x0 + 1.2, 1.69, zc); }
   box(scene, .8, .6, .7, 0x7a6448, 2.2, 0, -1.2); box(scene, .7, .55, .6, 0x8b7355, 2.25, .6, -1.2, .2); box(scene, .6, .5, .6, 0x8b7355, 1.3, 0, -.4, -.3);
   // 11/17 물건: 왼쪽 벽 사다리·팔레트, 뒤 구석 드럼통·캐비닛·상자, 쓰레기 봉투·넘어진 의자. far→near 길과 할배·치마 자리는 비워 둠.
   prop(scene, 'ladder', -3.25, 0, .9, Math.PI / 2); prop(scene, 'pallet', -2.6, 0, 2.0, .15); prop(scene, 'boxes', -2.55, .13, 2.0, .4, 2);
