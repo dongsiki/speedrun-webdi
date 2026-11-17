@@ -60,12 +60,56 @@ const ACTORS = {
 };
 function put(scene, kind, x, y, z, ry = 0) { const g = ACTORS[kind](); g.position.set(x, y, z); g.rotation.y = ry; scene.add(g); return g; }
 
+// --- 방마다 놓아 두는 물건(11/17 사용자 「ㅇㅇ」: 화면마다 빈 건물에 어울리는 물건을 여러 개 더, 규칙·정답 자리는 그대로) ---
+// 모두 멈춰 있는 기본 도형. 모델이 서는 자리(actor·far→near 길·elder·hint)와 카메라 사이를 피해 벽·구석에 둔다.
+const PROPS = {
+  chair() { const g = new THREE.Group(), c = 0x3d3d3d; // 앞이 +z
+    for (const [x, z] of [[-.2, -.2], [.2, -.2], [-.2, .2], [.2, .2]]) cyl(g, .018, .018, .45, 0x222222, x, 0, z, 8);
+    box(g, .46, .05, .46, c, 0, .45, 0); box(g, .46, .45, .04, c, 0, .5, -.21); return g; },
+  chairDown() { const g = PROPS.chair(); g.rotation.x = -Math.PI / 2; g.position.y = .23; const o = new THREE.Group(); o.add(g); return o; }, // 넘어진 의자
+  bin() { const g = new THREE.Group(); cyl(g, .19, .15, .48, 0x2c2c2c, 0, 0, 0, 14); cyl(g, .2, .2, .03, 0x1a1a1a, 0, .48, 0, 14); ball(g, .1, 0xd8d8d8, .03, .52, .02, 1.2, .7, 1); return g; },
+  papers() { const g = new THREE.Group(); // 바닥에 흩어진 종이
+    for (const [x, z, r] of [[0, 0, .3], [.22, .1, -.5], [-.15, .2, 1.1], [.05, -.25, .8], [.3, -.15, 2.2]]) box(g, .3, .006, .22, 0xf0f0f0, x, 0, z, r); return g; },
+  paperStack() { const g = new THREE.Group(); for (let i = 0; i < 6; i++) box(g, .32, .025, .24, i % 2 ? 0xe8e8e8 : 0xcfcfcf, (i % 3) * .01, i * .025, 0, (i % 3 - 1) * .08); return g; },
+  sign() { const g = new THREE.Group(), c = 0xd9d9d9; // 바닥 주의 표지(A자)
+    for (const s of [-1, 1]) { const m = box(g, .32, .62, .02, c, 0, 0, s * .1); m.rotation.x = s * .28; m.position.y = .29; }
+    box(g, .2, .05, .01, 0x111111, 0, .38, .2); return g; },
+  cabinet() { const g = new THREE.Group(); box(g, .5, 1.3, .55, 0x5e5e5e, 0, 0, 0);
+    for (const y of [.2, .55, .9]) { box(g, .44, .02, .01, 0x1c1c1c, 0, y + .3, .28); box(g, .12, .03, .02, 0xbdbdbd, 0, y + .15, .29); } return g; },
+  extinguisher() { const g = new THREE.Group(); cyl(g, .08, .08, .42, 0x4a4a4a, 0, 0, 0, 12); cyl(g, .03, .03, .08, 0x111111, 0, .42, 0, 8); limb(g, [.03, .47, 0], [.12, .3, .04], .012, 0x111111); return g; },
+  cone() { const g = new THREE.Group(); box(g, .3, .03, .3, 0x222222, 0, 0, 0); const c = new THREE.Mesh(new THREE.ConeGeometry(.12, .45, 14), M(0xd0d0d0)); c.position.y = .26; g.add(c);
+    cyl(g, .085, .065, .07, 0x2a2a2a, 0, .18, 0, 14); return g; },
+  pallet() { const g = new THREE.Group(), c = 0x8a7a64;
+    for (const z of [-.45, -.15, .15, .45]) box(g, 1.1, .03, .16, c, 0, .1, z); for (const x of [-.48, 0, .48]) box(g, .1, .1, 1.05, 0x6f624f, x, 0, 0); return g; },
+  ladder() { const g = new THREE.Group(), c = 0x7d7d7d; const L = new THREE.Group(); // 벽에 기대 둔 사다리(앞이 +z, 뒤 벽 쪽으로 기움)
+    for (const x of [-.22, .22]) box(L, .05, 2.2, .05, c, x, 0, 0); for (let y = .3; y < 2.2; y += .35) box(L, .44, .03, .04, c, 0, y, 0);
+    L.rotation.x = -.22; g.add(L); return g; },
+  sack() { const g = new THREE.Group(); ball(g, .26, 0x1e1e1e, 0, .2, 0, 1, .8, .9); ball(g, .07, 0x1e1e1e, .02, .42, 0, .6, 1, .6); return g; }, // 쓰레기 봉투
+  boxes(n = 3) { const g = new THREE.Group(); let y = 0; // 쌓인 상자
+    for (let i = 0; i < n; i++) { const w = .5 - i * .06; box(g, w, .36 - i * .03, w * .85, i % 2 ? 0x8b7355 : 0x7a6448, (i % 2) * .04, y, 0, i * .25); y += .36 - i * .03; } return g; },
+  board() { const g = new THREE.Group(); box(g, 1.1, .7, .03, 0x6d6d6d, 0, 0, 0); // 벽 게시판 + 붙은 종이
+    for (const [x, y] of [[-.3, .15], [.05, .3], [.3, .1], [-.1, .42]]) box(g, .22, .28, .01, 0xeeeeee, x, y, .02); return g; },
+  clock() { const g = new THREE.Group(); const m = new THREE.Mesh(new THREE.CylinderGeometry(.22, .22, .04, 20), M(0xe6e6e6)); m.rotation.x = Math.PI / 2; g.add(m);
+    box(g, .02, .14, .01, 0x111111, 0, -.02, .03); box(g, .1, .02, .01, 0x111111, .04, -.01, .03); return g; },
+  exitSign() { const g = new THREE.Group(); box(g, .5, .2, .06, 0xf2f2f2, 0, 0, 0); box(g, .3, .06, .01, 0x111111, 0, .07, .035); return g; },
+  monitor() { const g = new THREE.Group(); box(g, .4, .3, .04, 0x1a1a1a, 0, .12, 0); box(g, .08, .12, .08, 0x2a2a2a, 0, 0, -.02); return g; },
+  phone() { const g = new THREE.Group(); box(g, .18, .06, .14, 0x222222, 0, 0, 0); box(g, .2, .04, .05, 0x111111, 0, .06, -.03); return g; },
+  drum() { const g = new THREE.Group(); cyl(g, .3, .3, .88, 0x4d4d4d, 0, 0, 0, 18); for (const y of [.28, .58]) cyl(g, .31, .31, .03, 0x2b2b2b, 0, y, 0, 18); return g; },
+  rug() { const g = new THREE.Group(); box(g, 2.2, .01, 1.3, 0x5a5a5a, 0, 0, 0); box(g, 2.0, .012, 1.1, 0x6e6e6e, 0, 0, 0); return g; }
+};
+function prop(scene, kind, x, y, z, ry = 0, arg) { const g = PROPS[kind](arg); g.position.set(x, y, z); g.rotation.y = ry; scene.add(g); return g; }
+
 // --- 방 ---
 function buildHall() { // CAM 1 복도: 폭 3m, 길이 16m, 양쪽 문, 천장 등
   const scene = new THREE.Scene(); shell(scene, 3, 3, 16, 0xbfc3bd, 0x8a8d88); lights(scene);
   for (const z of [-6, -2, 2]) for (const s of [-1, 1]) { box(scene, .06, 2.1, 1, 0x3c3c3c, s * 1.47, 0, z); box(scene, .03, .04, .12, 0xdddddd, s * 1.43, 1.0, z + .35); }
   for (const z of [-6, -2, 2, 6]) box(scene, .6, .04, 1.2, 0xffffff, 0, 2.94, z);
   box(scene, 3, 2.4, .06, 0x2f2f2f, 0, 0, -7.95); // 복도 끝 어두운 문
+  // 11/17 물건: 벽 쪽(x ±1.1 너머)과 문 사이에만. 가운데 길(모델·그림자 자리)은 비워 둠.
+  prop(scene, 'chair', -1.15, 0, .2, Math.PI / 2); prop(scene, 'chair', -1.15, 0, .85, Math.PI / 2 - .2); prop(scene, 'bin', -1.25, 0, -3.9);
+  prop(scene, 'boxes', -1.1, 0, -7.2, .3, 3); prop(scene, 'boxes', 1.15, 0, -6.9, -.2, 2); prop(scene, 'sign', 1.05, 0, -4.1, -.5);
+  prop(scene, 'extinguisher', 1.36, 0, 4.4); prop(scene, 'board', -1.46, 1.1, 4.6, Math.PI / 2); prop(scene, 'exitSign', 0, 2.55, -7.9);
+  prop(scene, 'papers', -.85, 0, 5.6, .4); prop(scene, 'papers', .75, 0, 1.0, 1.7); prop(scene, 'sack', 1.15, 0, 5.4); prop(scene, 'chairDown', 1.0, 0, -.9, 2.2);
   return { scene, camera: roomCam([.9, 2.7, 7.6], [-.1, .8, -4]), spots: { p1: [['mannequin', -.6, 0, -3.5, .3]], far: [-.2, 0, -6.5], near: [.1, 0, 3.8], p3: [['elder', .3, 0, -1.5, Math.PI]] } };
 }
 function buildLobby() { // CAM 3 로비: 엘리베이터, 안내 데스크, 긴 의자
@@ -74,6 +118,12 @@ function buildLobby() { // CAM 3 로비: 엘리베이터, 안내 데스크, 긴 
   box(scene, .9, .25, .06, 0x111111, -1, 2.95, -4.4); box(scene, .12, .3, .04, 0xe0e0e0, .55, 1.1, -4.42);
   box(scene, 3.2, 1.1, .8, 0x4a4a4a, 2.5, 0, -1.6); box(scene, 3.3, .05, .9, 0x2a2a2a, 2.5, 1.1, -1.6);
   box(scene, 2.2, .45, .5, 0x3a3a3a, -3.4, 0, 1.6); cyl(scene, .25, .2, .5, 0x3a3a3a, 3.9, 0, 3.2); ball(scene, .45, 0x2d2d2d, 3.9, 1.0, 3.2, 1, 1.2, 1);
+  // 11/17 물건: 안내 데스크 위·뒤, 왼쪽 벽 대기 의자, 뒤 벽 캐비닛·상자·게시판·시계. far→near 길과 할배·치마 자리는 비워 둠.
+  prop(scene, 'chair', 2.5, 0, -2.5, Math.PI - .3); prop(scene, 'monitor', 1.8, 1.15, -1.75, .3); prop(scene, 'paperStack', 3.3, 1.15, -1.5, .2); prop(scene, 'phone', 2.6, 1.15, -1.35, -.2);
+  for (const z of [-3.1, -2.3, -1.5]) prop(scene, 'chair', -4.55, 0, z, Math.PI / 2); prop(scene, 'chairDown', -4.0, 0, -.4, 1.1);
+  prop(scene, 'cabinet', 4.4, 0, -4.1); prop(scene, 'cabinet', 3.8, 0, -4.1); prop(scene, 'boxes', 1.1, 0, -3.95, .2, 3); prop(scene, 'boxes', 1.75, 0, -3.95, -.3, 1);
+  prop(scene, 'board', -3.6, 1.2, -4.47); prop(scene, 'clock', 3.0, 2.55, -4.44); prop(scene, 'bin', -2.0, 0, 2.35);
+  prop(scene, 'papers', -.2, 0, -1.0, .6); prop(scene, 'papers', 3.2, 0, .3, 2.0); prop(scene, 'sign', 4.2, 0, .8, -.9); prop(scene, 'sack', -4.4, 0, 3.6); prop(scene, 'rug', -3.3, 0, 2.7);
   return { scene, camera: roomCam([4.6, 3.7, 4.2], [-1.2, .5, -2.2]), spots: { p1: [['cat', -1.6, 0, .4, .6]], far: [-1, 0, -3.6], near: [2.2, 0, 2.2], p3: [['elderSit', -1.4, 0, 1.4, .5]] } };
 }
 function buildStore() { // CAM 4 창고: 선반 두 줄, 상자 더미
@@ -82,6 +132,10 @@ function buildStore() { // CAM 4 창고: 선반 두 줄, 상자 더미
     for (const y of [.15, .9, 1.65]) box(scene, 1.65, .04, .65, 0x555555, x0 + .8, y, -2.4);
     box(scene, .5, .4, .45, 0x8b7355, x0 + .4, .94, -2.4); box(scene, .6, .5, .45, 0x7a6448, x0 + 1.1, .19, -2.4); box(scene, .4, .3, .4, 0x8b7355, x0 + 1.2, 1.69, -2.4); }
   box(scene, .8, .6, .7, 0x7a6448, 2.2, 0, -1.2); box(scene, .7, .55, .6, 0x8b7355, 2.25, .6, -1.2, .2); box(scene, .6, .5, .6, 0x8b7355, 1.3, 0, -.4, -.3);
+  // 11/17 물건: 왼쪽 벽 사다리·팔레트, 뒤 구석 드럼통·캐비닛·상자, 쓰레기 봉투·넘어진 의자. far→near 길과 할배·치마 자리는 비워 둠.
+  prop(scene, 'ladder', -3.25, 0, .9, Math.PI / 2); prop(scene, 'pallet', -2.6, 0, 2.0, .15); prop(scene, 'boxes', -2.55, .13, 2.0, .4, 2);
+  prop(scene, 'drum', 3.0, 0, -2.5); prop(scene, 'drum', 2.35, 0, -2.6); prop(scene, 'cabinet', 1.55, 0, -2.65); prop(scene, 'boxes', -3.1, 0, -2.6, .2, 3);
+  prop(scene, 'sack', 3.0, 0, .5); prop(scene, 'sack', 2.7, 0, .95); prop(scene, 'chairDown', .9, 0, -1.85, .6); prop(scene, 'papers', -1.6, 0, 1.6, 1.2); prop(scene, 'cone', 2.95, 0, 1.6);
   return { scene, camera: roomCam([3.2, 3.0, 2.7], [-1, .6, -1.5]), spots: { p1: [['robot', -.5, 0, .2, 0]], far: [-2.8, 0, -1.4], near: [1.5, 0, 1.6], p3: [['elder', -1.2, 0, -.9, .4]] } };
 }
 
@@ -92,6 +146,10 @@ function buildStairs(json) { // CAM 2 계단: 11/05 시험 3D 그대로
   const camera = roomCam([5.8, 5.4, 8.8], [2.0, 1.0, 2.6]);
   scene.updateMatrixWorld(true);
   const ray = new THREE.Raycaster(), at = (x, z) => { ray.set(new THREE.Vector3(x, 5, z), new THREE.Vector3(0, -1, 0)); const h = ray.intersectObject(model, true)[0]; return [x, h ? h.point.y : 0, z]; };
+  // 11/17 물건: 아래층 왼쪽 벽 쪽(x 1.2 안쪽)에만. 모델 자리(x 2.6~4.2)·그림자 길은 비워 둠.
+  const P = (kind, x, z, ry = 0, arg) => { const [px, py, pz] = at(x, z); prop(scene, kind, px, py, pz, ry, arg); };
+  P('boxes', .45, 8.3, .3, 3); P('boxes', 1.05, 8.5, -.2, 1); P('bin', .35, 5.7); P('chair', .5, 6.7, Math.PI / 2 - .3); P('cone', 1.25, 4.6);
+  P('papers', 1.7, 7.9, .9); P('sack', .4, 4.4); P('extinguisher', .12, 7.5);
   return { scene, camera, spots: { actor: at(3.4, 6.8), far: at(1.6, 2.6), near: at(4.2, 6.8), elder: at(3.0, 5.2), hint: at(2.6, 6.2) } };
 }
 // 방마다 모델 세울 자리: actor = 1페 것들, far→near = 2페 그림자(확인할수록 가까이), elder = 3페 할배, hint = 교복 치마
@@ -115,7 +173,8 @@ function stand(s, kind, t = 0) {
 }
 function addSkirt(s, on) { if (s.skirt) { s.scene.remove(s.skirt); s.skirt = null; } if (on) { const p = s.spots.hint; s.skirt = put(s.scene, 'skirt', p[0], p[1], p[2], 0); } }
 // 인트로와 같은 흑백 4×4 디더 + 선·모서리 살짝 진하게(사용자 「선·모서리」「지금보다 살짝 더 진하게ㅇㅇ」)
-const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + .5) / 16), EDGE = .24;
+// 11/17 사용자 「ㅇㅇ」(디더링 세기 지금의 절반): 칸마다 흑/백(디더) 100% → 디더 50% + 원래 밝기 50%로 섞음. 점무늬 대비가 절반이 됨. 선·모서리는 그대로.
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + .5) / 16), EDGE = .24, DITHER = .5;
 let renderer = null;
 function render(s, canvas) {
   const rect = canvas.getBoundingClientRect(); if (!rect.width) return;
@@ -128,7 +187,7 @@ function render(s, canvas) {
   for (let i = 0; i < w * h; i++) L[i] = (.2126 * d[i * 4] + .7152 * d[i * 4 + 1] + .0722 * d[i * 4 + 2]) / 255;
   for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
     const i = y * w + x; let l = L[i]; l = l < .16 ? 0 : l > .88 ? 1 : (l - .16) / .72;
-    let v = l > BAYER[(y & 3) * 4 + (x & 3)] ? 255 : 0;
+    let v = Math.round(255 * (DITHER * (l > BAYER[(y & 3) * 4 + (x & 3)] ? 1 : 0) + (1 - DITHER) * l));
     if (x > 0 && y > 0 && x < w - 1 && y < h - 1) { const p = (dx, dy) => L[(y + dy) * w + x + dx];
       const gx = p(1, -1) + 2 * p(1, 0) + p(1, 1) - p(-1, -1) - 2 * p(-1, 0) - p(-1, 1), gy = p(-1, 1) + 2 * p(0, 1) + p(1, 1) - p(-1, -1) - 2 * p(0, -1) - p(1, -1);
       if (Math.hypot(gx, gy) > EDGE * 4) v = 0; }
