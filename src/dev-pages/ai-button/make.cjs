@@ -16,6 +16,10 @@ text = text.replace(bodyTag, tag => tag + '\n' + inject);
 const teasePlay = builder.render('src/phase/tease.js', 'play'), teaseDev = builder.render('src/phase/tease.js', 'dev');
 if (!text.includes(teasePlay)) throw new Error('tease.js not found in play template');
 text = text.replace(teasePlay, () => teaseDev);
+// 11/17: 2페 끝 점프스케어 얼굴이 사라진 뒤의 0.9초 까만 화면을 이 페이지에서만 inject.html의 DevAfterScare(4.5초 + 숨소리)로 바꾼다. 01은 그대로.
+const scareEnd = "mode = 'dark'; stage.classList.remove('scare'); FX.droneOff(true);\n    await sleep(900);";
+if (text.split(scareEnd).length !== 2) throw new Error('phase.js scare end not found once');
+text = text.replace(scareEnd, () => "mode = 'dark'; stage.classList.remove('scare'); FX.droneOff(true);\n    await (window.DevAfterScare ? window.DevAfterScare() : sleep(900));");
 text = text.replace(/<title>[^<]*<\/title>/, '<title>speedrun — 개발자용 · 처음 AI 버튼 스테이지</title>');
 // 결과 파일이 dev-pages/ 안에 있으므로 인트로 영상(따로 둔 파일)을 한 칸 위에서 찾게 한다.
 const before = text;

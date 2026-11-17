@@ -156,6 +156,7 @@ function build({ write = false } = {}) {
     const p3 = path.join(root, DEV_DIR, 'dev-pages/phase3');
     const p3src = path.join(root, 'src/phase/phase3');
     copyIfChanged(path.join(root, 'src/shell/dev/ai-cling.js'), path.join(p3, 'ai-cling.js')); // 11/07 AI 집착 단서(세션 번호)
+    copyIfChanged(path.join(root, 'src/shell/dev/breath-idle.js'), path.join(p3, 'breath-idle.js')); // 11/17 아무 소리도 없을 때 할배 숨소리(02 전체가 이 파일·voice/breath.mp3를 같이 씀)
     // 11/07: phase3.js·story.js의 //#dev 줄(개발자용 3페 땅파기 흐름)이 들어가도록 개발자용으로 골라 쓴다. 본편 01은 //#play 줄 그대로.
     for (const [from, to] of [['dev-index.html', 'index.html'], ['phase3.js', 'phase3.js'], ['phase3.css', 'phase3.css'], ['story.js', 'story.js']]) {
       const text = pickVariant(fs.readFileSync(path.join(p3src, from), 'utf8'), 'dev', from), out = path.join(p3, to);

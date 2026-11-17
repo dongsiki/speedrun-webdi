@@ -357,7 +357,8 @@
     }
     try {
       raf = requestAnimationFrame(draw);
-      await wait(700, my);
+      // 11/17: AI0에서 2페 점프스케어 → 인트로 → 스타트 클릭으로 넘어오면(#scene=expel&now) 누른 순간 바로 대사
+      await wait(/[#&]now\b/.test(location.hash) ? 120 : 700, my);
       // ① 「아직도 안 가셨어요? 가세요.」 (2페 끝 경고처럼 한 글자씩, 목소리는 효과 없이)
       const spoken = voice(S.expel.voice);
       for (const ch of S.expel.say) { alive(my); tx.textContent += ch; await wait(110, my); }

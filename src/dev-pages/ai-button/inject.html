@@ -1,3 +1,4 @@
+<script>window.ElderBreathSrc = 'phase3/voice/breath.mp3'; /* 11/17 아무 소리도 없을 때 할배 숨소리(src/shell/dev/breath-idle.js) */</script><script src="phase3/breath-idle.js"></script>
 <!-- 개발자용 새 항목(src/dev-pages/ai-button): 처음 AI 버튼 스테이지 + 1페/2페/3페 버튼 (2026-10-29 Claude Code).
      사용자: 「그리고 처음에 ai버튼도 목차에 넣어」 「없다면 넣고, 이건 1페, 3페버튼만 넣어」 「아니다 2페도 넣어.」 「2페에는 살짝의 글리치」
      본편(01)과 같은 게임을 그대로 쓰고(인트로만 건너뜀), 위쪽 버튼만 더한다.
@@ -5,14 +6,41 @@
 <script>
 // 10/31 사용자: 첫 플레이 연출을 개발자용에도(「걍 개발자용에만 올려」). 주소 끝 #demo=reset&first-run 이면
 // 1페이즈 처음 상태로 인트로 → 스타트 → 클리어 1초 → 다시 인트로 → 커서가 건너뛰기 → AI 버튼을 매번 보여 준다.
-if (/first-run/.test(location.hash)) {
+// 11/17 (02만, Claude Code) 3페 시작: 사용자 되묻기 「2페 클리어 때 큰 점프스케어 얼굴이 사라진 뒤, 화면 전체를 까맣게 4~5초 두고
+//   그동안 숨소리만 깝니다. 그다음 게임이 처음부터 다시 시작된 것처럼 할배 인트로가 나오고, 이어서 스타트 화면이 나옵니다.
+//   그 스타트 화면에서 플레이어가 클릭하는 순간 「아직도 안 가셨어요? 가세요.」 → 덜 놀라는 점프스케어 → 실패 → 3페 AI 버튼 화면」 → 「ㅇㅇ」.
+//   → 점프스케어 뒤(phase.js endPhase2의 0.9초 까만 화면, make.cjs가 이 페이지에서만 DevAfterScare로 바꿈) 4.5초 까맣게 + 숨소리 →
+//     표시를 남기고 새로고침 → 인트로·스타트 화면(AI0 처음과 같은 그림) → 스타트 클릭 → 3페이즈 페이지의 쫓아내기 장면(대사부터).
+let devExpel = '';
+try { devExpel = sessionStorage.getItem('dev-p3-expel') || ''; sessionStorage.removeItem('dev-p3-expel'); } catch (_) {}
+window.DevStartMagical = false;
+if (devExpel) {
+  try { sessionStorage.removeItem('speedrun-intro-seen'); sessionStorage.setItem('speedrun-first-run-seen', '1'); } catch (_) {}
+  window.DevExpelNext = true;
+  window.DevStartMagical = true; // 「처음부터 다시 시작된 것처럼」 → AI0 처음과 같은 마법소녀 스타트 화면(할배 춤·노래)
+} else if (/first-run/.test(location.hash)) {
   try { sessionStorage.removeItem('speedrun-intro-seen'); sessionStorage.removeItem('speedrun-first-run-seen'); } catch (_) {}
   window.FirstRunForce = true;
+  window.DevStartMagical = true;
   if (/one-clear/.test(location.hash)) window.FirstRunOneClear = true; // 11/02 시안: 클리어 화면 하나로
 } else {
   try { sessionStorage.setItem('speedrun-intro-seen', '1'); } catch (_) {}
   window.SpeedrunIntroOnce = true;
 }
+// 점프스케어 얼굴이 사라진 뒤: 4.5초 까맣게 두고 숨소리만(breath-idle.js). 끝나면 phase.js가 그대로 새로고침한다.
+window.DevAfterScare = async () => {
+  if (window.ElderBreath) ElderBreath.force(true);
+  await new Promise(r => setTimeout(r, 4500));
+  try { sessionStorage.setItem('dev-p3-expel', '1'); } catch (_) {}
+};
+// 스타트를 누르면 1페 AI 버튼 대신 3페이즈 페이지의 쫓아내기 장면으로(까만 화면으로 덮고 넘어간다).
+if (window.DevExpelNext) addEventListener('gamestart:end', e => {
+  if (e.detail && e.detail.reason !== 'start') return;
+  const cover = document.createElement('div');
+  cover.style.cssText = 'position:fixed;inset:0;z-index:2147483646;background:#000';
+  document.body.append(cover);
+  location.href = 'phase3/index.html#scene=expel&now';
+});
 </script>
 <script>
 // 11/16 (02만, Claude Code): 11/10 교수님 피드백 ③ 「첫 스타트 때 게임플레이를 엄청 빠르게 돌려 클리어하는 모습 → 「뭐고 이거」」
@@ -124,7 +152,7 @@ if (/first-run/.test(location.hash)) {
 //   오른쪽 아래에 할배 춤 영상(assets/video/start-dance.webm: 블렌더 새 춤을 바탕 없이 다시 렌더, VP9 투명 + 새 노래 16초, 반복)을 얹는다.
 //   소리가 막혀 있으면 영상만 소리 없이 돈다. 스타트를 눌러 화면이 닫히면 영상·노래도 멈춘다.
 (() => {
-  if (!window.FirstRunForce) return;
+  if (!window.DevStartMagical) return; // 11/17: 3페 시작(쫓아내기 앞) 스타트 화면도 같은 그림
   const dance = document.createElement('video');
   dance.className = 'gs-dance';
   dance.src = 'assets/video/start-dance.webm';
