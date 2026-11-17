@@ -24,7 +24,7 @@ body[data-transformation="awaiting-gesture"] .transformation-intro video{cursor:
   try { if (window.top !== window && window.top.ElderBreath) return; } catch (_) {} // 바깥 02가 이미 맡고 있으면 둘이 같이 숨 쉬지 않게
   const SRC = window.ElderBreathSrc;
   if (!SRC) return;
-  const QUIET_MS = 1500, VOL = .6, THRESH = .004;
+  const QUIET_MS = 1500, VOL = .3, THRESH = .004; // 11/17 숨소리 크기 절반(0.6 → 0.3)
   //   심전도 삑(960Hz, ai-cling.js·phase3.js 박동)은 소리로 치지 않는다(사용자: 「2는 ㅇㅇ 그렇게 해」, 삑은 그대로 계속 난다).
   const IGNORE_BEAT = true;
 
