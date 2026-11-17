@@ -1078,6 +1078,62 @@
       "src/stages/mri/reboot-voices.js"
     ]
   },
+  "assets/audio/mri-reboot/enter.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "8382b0305c97389f56321e78fa21c3624782719d912bf6d1a814e19a9b584b8e",
+    "bytes": 31539,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/t1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "783576905cb1b9e7f4420b7ef908db51ee24b0c7c79a7da87cf0fafea765e32b",
+    "bytes": 12431,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/t2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "8424e718d686435e00225a9828e3febb5372dac664ba01a17e8b2a2c6a580851",
+    "bytes": 14048,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/t3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "579ed0c5ad390465488297425dca23c004b4415670c85cf3496801f0a468ddf7",
+    "bytes": 17326,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/t4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "90918e91a336ef029e207a8fabcc353602bd12bcf9612df9dc6d44863eab53c5",
+    "bytes": 16049,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/t5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "0fcb6bfe8b8a1d079a0b32b68fbff595f164e46b12c7047a0b9d6d19002e9f08",
+    "bytes": 16207,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
+  "assets/audio/mri-reboot/maid.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "6a6f6d2f9a61d8b534cd881b8f30d659f4842796d503fb8782d2ca77cf823fd4",
+    "bytes": 13810,
+    "usedBy": [
+      "src/stages/mri/reboot-voices.js"
+    ]
+  },
   "assets/images/needle-sailor/needle-sailor.webp": {
     "mime": "image/webp",
     "sha256": "0492b47df261a07d87aaf9ca3566185ee4073f68009447fcc64bad1b5bbe044f",

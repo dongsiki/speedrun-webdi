@@ -159,6 +159,9 @@
     dpr = Math.min(devicePixelRatio || 1, 2); W = innerWidth; H = innerHeight;
     drawBore(); bugCanvas.width = W * dpr; bugCanvas.height = H * dpr; if (body.dataset.cut === 'true') drawElsewhere();
     scareCanvas.width = W; scareCanvas.height = H;
+    //#dev 개발자용(02)에만
+    Dream.resize();
+    //#end
   }
   addEventListener('resize', resize);
 
@@ -193,6 +196,9 @@
   }
   function stepBug(ctx, bug, dt) {
     bug.t += dt;
+    //#dev 개발자용(02)에만: 11/17 화면을 휙 가로지르는 바퀴벌레(dream.js dashBug)
+    if (bug.dash) { bug.x += Math.cos(bug.heading) * bug.dash * dt; bug.y += Math.sin(bug.heading) * bug.dash * dt; if (bug.t > .3 && (bug.x < -420 || bug.x > W + 420 || bug.y < -420 || bug.y > H + 420)) { bug.gone = true; return; } } else
+    //#end
     if (bug.toKey) {
       // 키 위의 제자리로 기어가서, 도착하면 그 자리에서 꿈틀거린다(가끔 조금씩 자리를 옮김).
       const dx = bug.tx - bug.x, dy = bug.ty - bug.y, d = Math.hypot(dx, dy);
@@ -247,7 +253,11 @@
     if (stagePhase !== 2 || phase !== 'scan') return;
     faceTile = faceTile || makeFace();
     const g = scareCanvas.getContext('2d'); g.imageSmoothingEnabled = false; g.clearRect(0, 0, W, H);
+    //#play 플레이용(01)에만
     const fh = H * .6, fw = fh * faceTile.width / faceTile.height;
+    //#dev 개발자용(02)에만: 11/17 「점프스케어 수준은 아닙니다」 → 얼굴을 작게(화면 높이 60% → 38%)
+    const fh = H * .38, fw = fh * faceTile.width / faceTile.height;
+    //#end
     g.drawImage(faceTile, W / 2 - fw / 2 + (Math.random() - .5) * 20, H * .46 - fh / 2, fw, fh);
     body.dataset.scare = 'on'; jolt(); knockKick = 2;
     clearTimeout(scareTimer);
@@ -255,10 +265,16 @@
       scareTimer = setTimeout(() => { body.dataset.scare = 'on';
         scareTimer = setTimeout(() => { body.dataset.scare = 'off'; g.clearRect(0, 0, W, H); }, 60); }, 45); }, 150);
   }
+  //#dev 개발자용(02)에만: 11/17 1페 꿈 · 2페 할배 머릿속 테스트 · 2페 끝 풀밭 AI 메이드
+  /* @inline src/stages/mri/dream.js */
+  //#end
 
   // ---------- 미끼 일정 (검사 시간 기준 초) ----------
   const lureSet = el => (on) => $(el).classList.toggle('on', on);
   function makeSchedule() {
+    //#dev 개발자용(02)에만: 11/17 미끼 대신 꿈·머릿속 일정(dream.js)
+    return Dream.schedule().map(e => ({ ...e, state: 0 }));
+    //#end
     const j = () => (Math.random() - .5) * 3;
     const list = [
       { at: 7 + j(), end: 19, name: 'ask', on: () => lureSet('ask')(true), off: () => lureSet('ask')(false) },
@@ -284,6 +300,9 @@
     for (const id of ['ask', 'phone', 'nurse', 'fakedone', 'winerr']) $(id).classList.remove('on');
     body.dataset.cut = 'false'; body.dataset.black = 'false'; bugs = []; fakeZero = false;
     clearTimeout(scareTimer); body.dataset.scare = 'off'; scareCanvas.getContext('2d').clearRect(0, 0, W, H);
+    //#dev 개발자용(02)에만
+    Dream.clear();
+    //#end
   }
 
   // ---------- 진행 ----------
@@ -293,7 +312,11 @@
   setPhase(stagePhase === 3 ? 'gone' : 'intro');
   function beginScan() {
     setPhase('scan'); scan = 0; schedule = makeSchedule();
+    //#play 플레이용(01)에만
     knocking = true; startHum(); beep(1); say('hold');
+    //#dev 개발자용(02)에만: 11/17 1페는 「다시 켜는 중」 안내 목소리 없이 바로 꿈, 2페는 dream.js의 enter 목소리
+    knocking = true; startHum(); beep(1); Dream.begin();
+    //#end
   }
   function retake(reason) {
     if (phase !== 'scan') return;
@@ -304,6 +327,9 @@
     beep(2, 520); say('retake');
   }
   function finish() {
+    //#dev 개발자용(02)에만: 11/17 2페 끝 = 풀밭 AI 메이드(1페 끝은 그대로)
+    if (Dream.finish()) return;
+    //#end
     clearLures(); knocking = false; stopHum(); setPhase('done'); say('done'); beep(3, 1200);
     //#play 플레이용(01)에만
     $('done').querySelector('.count').textContent = retakes ? `다시 찍은 횟수 ${retakes}번.` : '';
@@ -340,6 +366,9 @@
       }
     }
     stepBugs(dt);
+    //#dev 개발자용(02)에만
+    Dream.step(dt, dt / SPEED);
+    //#end
     beatKick = Math.max(0, beatKick - dt / SPEED * 5);
     // 쿵 할 때마다 화면이 살짝 떨린다
     if (!reduced && knockKick > 0) { bore.style.transform = `translate(${(Math.random() - .5) * 3 * knockKick}px,${(Math.random() - .5) * 3 * knockKick}px)`; knockKick = Math.max(0, knockKick - dt / SPEED * 12); }
@@ -375,6 +404,9 @@
   // ---------- 페이즈 바꾸기(개발자용 1페·2페·3페 버튼) ----------
   function setStagePhase(n) {
     stagePhase = toPhase(n); body.dataset.mriPhase = String(stagePhase);
+    //#dev 개발자용(02)에만
+    Dream.stopEnding();
+    //#end
     clearLures(); knocking = false; stopHum(); try { voiceNode?.stop(); } catch (_) {}
     $('notice').classList.remove('on'); scan = 0; retakes = 0; body.dataset.retakes = '0';
     setPhase(stagePhase === 3 ? 'gone' : 'intro'); drawBore();
