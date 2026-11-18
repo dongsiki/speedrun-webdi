@@ -1199,5 +1199,15 @@
     ],
     "source": "Cut from the photo \"Top view of a cockroach\" by Johnnybam, Wikimedia Commons, CC0 1.0 (public domain dedication, no attribution required): https://commons.wikimedia.org/wiki/File:Top_view_of_a_cockroach.jpg (1920px thumbnail, original sha1 cb98b55b392c399aba2541c39d4180191948fcd1). Background removed; body and 7 leg/antenna pieces cut apart by Claude Code 2026-11-17.",
     "rightsStatus": "CC0 1.0 Universal"
+  },
+  "assets/images/mri/roach-belly-atlas.webp": {
+    "mime": "image/webp",
+    "sha256": "3d6ca178ca90725756dc5795ea97799370cd54a9e93350c5572a7ebfa6e24f76",
+    "bytes": 174198,
+    "usedBy": [
+      "src/stages/mri/roach.js"
+    ],
+    "source": "Cut from the photo \"Opisthoplatia orientalis-underside\" by peterwchen, Wikimedia Commons, CC BY 4.0 (attribution required): https://commons.wikimedia.org/wiki/File:Opisthoplatia_orientalis-underside.jpg (960px thumbnail, sha1 ffd86c556e3f5bedd0e4128e4935511b40b47ae5). Background removed; body and 6 leg/antenna pieces cut apart (legs under the body filled in) by Claude Code 2026-11-18.",
+    "rightsStatus": "CC BY 4.0 (credit: peterwchen, Wikimedia Commons)"
   }
 }

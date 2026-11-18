@@ -196,15 +196,15 @@
     if (stagePhase === 2 && ['ready', 'scan', 'settle'].includes(phase)) drawKey(ctx);
     //#play 플레이용(01)에만
     for (const bug of bugs) stepBug(ctx, bug, dt);
-    //#dev 개발자용(02)에만: 벌레를 따로 그린 뒤 사진 + 흑백 점(절반 세기)을 한 번에 얹는다
-    const rc = Roach.begin(W, H, dpr); for (const bug of bugs) stepBug(rc, bug, dt); Roach.finish(ctx, W, H);
+    //#dev 개발자용(02)에만: 벌레를 따로 그린 뒤 사진 + 흑백 점(등 쪽 0.5, 11/18 배 쪽 0.65)을 한 번에 얹는다
+    const rc = Roach.begin(W, H, dpr); for (const bug of bugs) stepBug(bug.belly ? Roach.ctx(true) : rc, bug, dt); Roach.finish(ctx, W, H);
     //#end
     bugs = bugs.filter(b => !b.gone);
   }
   function stepBug(ctx, bug, dt) {
     bug.t += dt;
     //#dev 개발자용(02)에만: 11/17 화면을 휙 가로지르는 바퀴벌레(dream.js dashBug)
-    if (bug.dash) { bug.x += Math.cos(bug.heading) * bug.dash * dt; bug.y += Math.sin(bug.heading) * bug.dash * dt; if (bug.t > .3 && (bug.x < -420 || bug.x > W + 420 || bug.y < -420 || bug.y > H + 420)) { bug.gone = true; return; } } else
+    if (bug.dash) { bug.x += Math.cos(bug.heading) * bug.dash * dt; bug.y += Math.sin(bug.heading) * bug.dash * dt; const m = bug.margin || 420; if (bug.t > .3 && (bug.x < -m || bug.x > W + m || bug.y < -m || bug.y > H + m)) { bug.gone = true; return; } } else
     //#end
     if (bug.toKey) {
       // 키 위의 제자리로 기어가서, 도착하면 그 자리에서 꿈틀거린다(가끔 조금씩 자리를 옮김).
@@ -224,10 +224,10 @@
     const s = Math.min(W, H) / 520 * bug.size, legs = bug.pause > 0 && !(bug.toKey && bug.arrived) ? 0 : Math.sin(bug.t * 28);
     ctx.save(); ctx.translate(bug.x + (bug.toKey && bug.arrived && spaceDown ? 4 : 0), bug.y + (bug.toKey && bug.arrived && spaceDown ? 4 : 0)); ctx.rotate(bug.heading + Math.PI / 2); ctx.scale(s, s);
     //#dev 개발자용(02)에만: 사진 바퀴벌레. 다리는 세 개씩 번갈아 움직임(그림이 아직 안 읽혔으면 아래 예전 그림)
-    Roach.mark();
-    const walk = bug.dash ? 44 : bug.toKey && bug.arrived ? 9 : bug.pause > 0 ? 0 : 30;
+    Roach.mark(bug.belly);
+    const walk = bug.giant ? 18 : bug.dash ? 44 : bug.toKey && bug.arrived ? 9 : bug.pause > 0 ? 0 : 30;
     bug.lp = (bug.lp || 0) + dt * walk;
-    if (!Roach.draw(ctx, bug.lp, bug.t, walk > 0)) {
+    if (!Roach.draw(ctx, bug.lp, bug.t, walk > 0, bug.belly)) {
     //#end
     ctx.strokeStyle = '#000'; ctx.fillStyle = '#000'; ctx.lineWidth = 3; ctx.lineCap = 'round';
     for (const side of [-1, 1]) for (const [k, y] of [[0, -14], [1, 4], [2, 22]]) {

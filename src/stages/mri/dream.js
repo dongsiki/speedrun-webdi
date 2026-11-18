@@ -287,6 +287,8 @@
         { at: 27 + j() * .6, end: 0, name: 'scare', on: scare, off: () => {} },
         { at: 34, end: 48, name: 't3', on: () => { label(3, '벌레'); say('t3'); }, off: () => label(0) },
         { at: 42 + j() * .6, end: 0, name: 'burst', on: () => { for (let i = 0; i < 14; i++) dashBug(.9 + Math.random() * .8, i % 2 ? 1 : -1, true); skitter(22); knockKick = 1.5; }, off: () => {} },
+        // 11/18: 14마리가 지나간 직후 기형적으로 큰 배 쪽 바퀴벌레 한 마리가 화면을 아래에서 위로 지나쳐 간다(2페에만)
+        { at: 45 + j() * .2, end: 0, name: 'giant', on: () => giantBug(), off: () => {} },
         { at: 49, end: 55.4, name: 't4', on: () => { label(4, '기억'); say('t4'); body.dataset.cut = 'true'; drawElsewhere(); fx.slowMumble = true; }, off: () => { body.dataset.cut = 'false'; fx.slowMumble = false; label(0); } },
         { at: blackAt, end: blackAt + .9, name: 'black', on: () => { body.dataset.black = 'true'; bang(); }, off: () => { body.dataset.black = 'false'; } },
         { at: blackAt + 1, end: 0, name: 'whisper', on: whisper, off: () => {} },
@@ -302,7 +304,14 @@
     // 화면을 휙 가로지르는 바퀴벌레
     function dashBug(size, side, scatter) {
       const fromLeft = side < 0, y = scatter ? H * (.25 + Math.random() * .6) : H * .55;
-      bugs.push({ x: fromLeft ? -260 : W + 260, y, heading: (fromLeft ? 0 : Math.PI) + (Math.random() - .5) * (scatter ? .9 : .15), speed: 0, t: 0, leaving: false, pause: 0, toKey: false, size, dash: scatter ? 700 + Math.random() * 500 : 1300 });
+      // 11/18: 휙 지나가는 바퀴벌레는 전부 배 쪽 사진(화면 유리 안쪽을 기어가 배가 보임)
+      bugs.push({ x: fromLeft ? -260 : W + 260, y, heading: (fromLeft ? 0 : Math.PI) + (Math.random() - .5) * (scatter ? .9 : .15), speed: 0, t: 0, leaving: false, pause: 0, toKey: false, size, dash: scatter ? 700 + Math.random() * 500 : 1300, belly: true });
+    }
+    // 11/18: 기형적으로 큰 바퀴벌레(2페). 몸 길이 = 화면 짧은 쪽의 약 1.2배, 화면 아래 밖 → 위 밖으로 약 3초.
+    function giantBug() {
+      const S = Math.min(W, H), len = S * 1.2, size = len / (S / 520) / 84; // 그리는 몸 길이 = 84 × (S / 520) × size
+      const margin = len * .75, dist = H + margin * 2;
+      bugs.push({ x: W * (.42 + Math.random() * .16), y: H + margin, heading: -Math.PI / 2 + (Math.random() < .5 ? -1 : 1) * (.06 + Math.random() * .06), speed: 0, t: 0, leaving: false, pause: 0, toKey: false, size, dash: dist / 3, margin, belly: true, giant: true });
     }
 
     // ---------- 2페 끝: 풀밭 ----------
