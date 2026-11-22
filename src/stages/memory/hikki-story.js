@@ -16,22 +16,12 @@ window.MemoryHikkiStory = {
     cylinder(door, .97, 1.04, .045, .033, .033, .055, C.ink, 10).rotation.x = Math.PI / 2;
     const mother = window.MemoryPhaseModels.build(T, 'mom'); group.add(mother.group);
     mother.parts.brush.visible = false; mother.group.position.set(0, 0, -2.64); mother.group.visible = false;
-    const father = createElderModel(T); group.add(father.object); father.object.scale.setScalar(.97); father.object.visible = false;
-    // 거울용 조명은 방문 쪽 인물에게 역광이다. 이 인물의 기존 스킨만 은은하게 보이게 한다.
-    const fatherPaint = father.object.children[0].material;
-    fatherPaint.emissive.setHex(0xffffff); fatherPaint.emissiveMap = fatherPaint.map; fatherPaint.emissiveIntensity = .62;
-    // 기존 모델의 피부·옷 이미지를 재사용한다. 스킨이나 무늬를 코드로 그리지 않는다.
-    const fatherGeometry = father.object.children[0].geometry, fp = fatherGeometry.attributes.position, rest = fp.array.slice();
-    const armPivot = V(.20, 1.46, 0), tmp = V();
-    function fatherReach(amount) {
-      const rotate = new T.Matrix4().makeRotationX(-amount * 1.5);
-      for (let i = 0; i < fp.count; i++) {
-        tmp.fromArray(rest, i * 3);
-        if (tmp.x > .16 && tmp.y > .72 && tmp.y < 1.49) tmp.sub(armPivot).applyMatrix4(rotate).add(armPivot);
-        fp.setXYZ(i, tmp.x, tmp.y, tmp.z);
-      }
-      fp.needsUpdate = true; fatherGeometry.computeVertexNormals();
-    }
+    // 2026-11-23: 아빠 = Codex 2026-11-10 아빠 모델(dad-model.json + dad-model-atlas.png, 손대지 않고 그대로). 전에는 할배 모델을 줄여 썼다.
+    // 역광 보정(스킨이 스스로 밝히는 빛 .62)은 엄마와 같은 MemoryPhaseModels.build 안에서 한다. 스킨이나 무늬를 코드로 그리지 않는다.
+    const dad = window.MemoryPhaseModels.build(T, 'dad');
+    const father = { object: dad.group }; group.add(father.object); father.object.visible = false;
+    // 붙잡으려고 뻗는 팔 = 아빠 자신의 왼팔(armL, +X 쪽). 어깨 회전 중심에서 앞으로 든다(전 할배 모델과 같은 각도).
+    function fatherReach(amount) { dad.parts.armL.rotation.x = -amount * 1.5; }
     const tray = new T.Group(); group.add(tray); tray.position.set(0, .055, -2.10);
     box(tray, 0, .025, 0, .60, .04, .40, C.white);
     for (const x of [-.3,.3]) box(tray, x, .055, 0, .025, .04, .42, C.ink);

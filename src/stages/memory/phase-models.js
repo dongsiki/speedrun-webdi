@@ -5,7 +5,9 @@
   const DATA = {
     mom: /* @jsonraw assets/models/memory-phase/mom-model.json */ null,
     child: /* @jsonraw assets/models/memory-phase/child-model.json */ null,
-    cockroach: /* @jsonraw assets/models/memory-phase/cockroach-model.json */ null
+    cockroach: /* @jsonraw assets/models/memory-phase/cockroach-model.json */ null,
+    // 2026-11-23 Claude Code: 2페 4회차 방 안 장면의 아빠(Codex 2026-11-10 제작, 스킨 dad-model-atlas.png).
+    dad: /* @jsonraw assets/models/memory-phase/dad-model.json */ null
   };
   function build(T, name) {
     const data = DATA[name];
