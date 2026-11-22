@@ -406,8 +406,8 @@
       const flat = V(tmp.x, 0, tmp.z).normalize();
       const scrub = Math.sin(brushT * Math.PI * 22) * .04;
       // 손이 닿을 곳: 입 바로 앞(눈 아래). 엄마 어깨는 거기서 팔 길이만큼 오른쪽 뒤에 둔다.
-      mouth.copy(camera.position).addScaledVector(flat, .13).addScaledVector(right, scrub); mouth.y -= .11;
-      const s = holder.children[0].scale.x, pivot = arm.userData.pivot, reach = Math.max(.2, -arm.userData.box.min.y) * s * .96;
+      mouth.copy(camera.position).addScaledVector(flat, .2).addScaledVector(right, scrub); mouth.y -= .07; // 11-23: 엄마 모델을 아빠 모델 바탕으로 바꾼 뒤 손·칫솔이 화면 안(눈 아래)에 오도록 .13·.11 → .2·.07
+      const s = holder.children[0].scale.x, pivot = arm.userData.pivot, reach = Math.max(.2, arm.userData.len || -arm.userData.box.min.y) * s * .96;
       const rise = pivot[1] * s - mouth.y, across = Math.sqrt(Math.max(.01, reach * reach - rise * rise));
       const hdir = V(right.x * .5 - flat.x * .87, 0, right.z * .5 - flat.z * .87).normalize();
       const sx = mouth.x + hdir.x * across, sz = mouth.z + hdir.z * across;
@@ -416,8 +416,8 @@
       holder.position.set(sx - (pivot[0] * c + pivot[2] * si) * s, 0, sz - (-pivot[0] * si + pivot[2] * c) * s);
       holder.updateMatrixWorld(true);
       local.copy(mouth); arm.parent.worldToLocal(local);
-      arm.quaternion.setFromUnitVectors(V(0, -1, 0), local.sub(arm.position).normalize());
-      if (tool) { arm.updateMatrixWorld(true); tool.lookAt(camera.position.x, camera.position.y - .11, camera.position.z); }
+      arm.quaternion.setFromUnitVectors(arm.userData.down || V(0, -1, 0), local.sub(arm.position).normalize());
+      if (tool) { arm.updateMatrixWorld(true); tool.lookAt(camera.position.x, camera.position.y - .07, camera.position.z); }
     }
     function update(dt, info) {
       if (info.stageIndex !== 0 || !state.cfg?.child) brush.visible = false;

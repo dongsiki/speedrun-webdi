@@ -40,6 +40,13 @@
       mesh.frustumCulled = outline.frustumCulled = false;
       holder.add(mesh, outline);
       holder.userData.pivot = pivot; holder.userData.box = g.boundingBox;
+      // 2026-11-23 Claude Code: 엄마 모델(아빠 모델 바탕)은 팔이 살짝 벌어져 늘어진다. 그 방향(down)을 팔 뻗기에 쓴다.
+      if (p.down) {
+        const down = holder.userData.down = new T.Vector3().fromArray(p.down), q = p.positions;
+        let len = 0; // 어깨에서 손끝까지 그 방향으로 잰 길이(팔 뻗기 거리)
+        for (let i = 0; i < q.length; i += 3) len = Math.max(len, (q[i] - pivot[0]) * down.x + (q[i + 1] - pivot[1]) * down.y + (q[i + 2] - pivot[2]) * down.z);
+        holder.userData.len = len;
+      }
       parts[key] = holder;
     }
     group.userData.height = data.height || 1;
