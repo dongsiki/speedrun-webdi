@@ -41,9 +41,24 @@ const MRI = {
   t5: '마지막이에요. 조금만 더요.',
   maid: '좋은 꿈 꾸세요, 할아버지.'
 };
+// 11/23 02 승부욕 대사(src/shell/dev/taunts.js의 LINES를 그대로 읽음, 숫자가 바뀌는 3줄은 자막만이라 거기에 없음) → assets/audio/taunt/
+// 실행: node src/voice/make-story-voices.cjs taunt  (taunt만 만든다)
+const TAUNT = JSON.parse(fs.readFileSync(path.join(__dirname, '../shell/dev/taunts.js'), 'utf8').split('/*LINES*/')[1].split('/*END*/')[0]);
 if (require.main === module) {
 const only = process.argv[2] ? process.argv[2].split(',') : null;
-for (const [dir, set] of [['assets/audio/voice', TEASE], ['assets/audio/mri-reboot', MRI]]) {
+const sets = only && only[0] === 'taunt' ? [['assets/audio/taunt', TAUNT]] : [['assets/audio/voice', TEASE], ['assets/audio/mri-reboot', MRI]];
+for (const [dir, set] of sets) {
+  if (set === TAUNT) {
+    const out = path.join(root, dir); fs.mkdirSync(out, { recursive: true });
+    for (const [id, text] of Object.entries(set)) {
+      if (fs.existsSync(path.join(out, id + '.wav')) || fs.existsSync(path.join(out, id + '.mp3'))) continue;
+      const big = path.join(out, id + '.44k.wav');
+      execFileSync(py, ['-m', 'supertonic.cli', 'tts', text, '-o', big, '--lang', 'ko', '--voice', 'F1'], { stdio: 'ignore' });
+      half(big, path.join(out, id + '.wav')); fs.unlinkSync(big);
+      console.log(dir, id, text);
+    }
+    continue;
+  }
   const out = path.join(root, dir); fs.mkdirSync(out, { recursive: true });
   for (const [id, text] of Object.entries(set)) {
     if (only && !only.includes(id)) continue;

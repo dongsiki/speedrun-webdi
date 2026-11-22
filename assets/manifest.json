@@ -1209,5 +1209,741 @@
     ],
     "source": "Cut from the photo \"Opisthoplatia orientalis-underside\" by peterwchen, Wikimedia Commons, CC BY 4.0 (attribution required): https://commons.wikimedia.org/wiki/File:Opisthoplatia_orientalis-underside.jpg (960px thumbnail, sha1 ffd86c556e3f5bedd0e4128e4935511b40b47ae5). Background removed; body and 6 leg/antenna pieces cut apart (legs under the body filled in) by Claude Code 2026-11-18.",
     "rightsStatus": "CC BY 4.0 (credit: peterwchen, Wikimedia Commons)"
+  },
+  "assets/audio/taunt/cs1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "07edbe7fde04b23ecbff8d30fe38287762822cf2118c5998682cbba7898f8b94",
+    "bytes": 26982,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/cs2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "cdabfe623807eb26295f8e27b93890f672e36e18099c04fe879b6f3617ac618a",
+    "bytes": 13869,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/cs3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "22addd3331a03c6d2b3874daa8b2f8121b3eeb5652173531c9dded8cfc17f6f4",
+    "bytes": 15815,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/cs4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "b07734ba59c1370b39e6d8bef0a1f9f757169ab3f2ba2887381600fea59660c3",
+    "bytes": 17089,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/cs5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "72786d50a43c5f31fd66b0a552bed2e15717e68caab564b6fad7d24f19c4d7dd",
+    "bytes": 25808,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/f2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "69361fc1421a3cc938864bf40b644db32c8fc705220b331b2298dcbd560177b3",
+    "bytes": 16993,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/f3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "ee741faee359a9332c3f1ba5910eab3dcf2ef8dcd9f2a238543a9860ab9a64ac",
+    "bytes": 21253,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/f4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "73efd3d4337f44fe625cdc408285ffc8a4625c8a4ced2053738f4d7def6a99dc",
+    "bytes": 22793,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/f5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "4fc6bdb65417107c18407421324a1c44570a2242cd9d83a0576a8c5dd29f6956",
+    "bytes": 23544,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e78210f2215aae7601aa8c308218aebb38a1d888d7adc908987ccde599994320",
+    "bytes": 20676,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "77894e7add840a939381ad698ce9d169af1088bcec4811744ef0f7b388f03a9a",
+    "bytes": 20397,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "64ee8decbe8a28d0701f4ed83e2b682835e2fcda5fa49128efa2ec7b664cf984",
+    "bytes": 23184,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "30a8382a502bf2e12d350217b5f062dd5fa4b4e12cf0bd771be82b38f455a480",
+    "bytes": 14305,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "7ac160a588ba0fa4aceeb63fcba13f96680fe1493f20f4e2a762e362bb52876f",
+    "bytes": 20213,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h6.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e35f5eb9d74c2657881c4fed7994364e716d1b33794f0aecd96f72539a34634e",
+    "bytes": 25236,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h7.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "f470c9b8e3a64db9c91a6e177c5364d6f3dcc6915ca8361475c314420fdca533",
+    "bytes": 18054,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h8.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "38392b193b3c0bef7118d91721c0211e42188b05d8005dd565caeab084316d17",
+    "bytes": 24198,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h9.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "51b19a75521e0a57602a9468e147a31404772ba9c547829374f6a9b11f5af9f6",
+    "bytes": 13839,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/h10.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "6e55b7e17a4823e17800b2dfe820c97da48620139772e4af88d2d636ba6f2119",
+    "bytes": 17896,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/i1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "9a42da37e2a9beeff0b5c3eef9e7a7cfdb187a5ecde66e7f5c0e85e17fad33b9",
+    "bytes": 17508,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/i2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "813162e2678e049e5f358ceb077afea140e6d0025f66a3dedfba1558e0351981",
+    "bytes": 22084,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/i3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "84cf68b136b6787641dc2c7c71edb34d60fbebde66b1898c826b77ee3c2ae320",
+    "bytes": 21254,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/i4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e54b7728e95c5a5a13653ca24adb965449d08253fffef7c3e540a9ef8dafd159",
+    "bytes": 17872,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/i5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "3352ea66afd311272844b94f4f5f3c90e01aefa822788be6ecff73d7603ba5b1",
+    "bytes": 16883,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/k1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "81f46e948765de7efefe3baab5506c200bfbdcb656ba0a5f2a69fb12df40618b",
+    "bytes": 22086,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/k3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "5c91eb1ae5bfa1d00af50c03d488fa5c59d67e322f248e8d22b80aab9e02b1c5",
+    "bytes": 13970,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/k4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "73b09e0c9214de53ff504a67e5339622b76aeed282c486fb7519d25d910af1d1",
+    "bytes": 24542,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/k5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "235780ac0a11a549934af3f880992de87ac1031133f47fdd34b5315de791d1bb",
+    "bytes": 6261,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/k6.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "78c7eb413ced0a64b206fc6c80f903af7b8f6e9c1c8b009dab10956aad4ac4f0",
+    "bytes": 20059,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/lw1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "571efe8cf9901f7c68afe06c1a1b524a769a03ef65cf8c40ec9f77ea35cf6d32",
+    "bytes": 18261,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/lw2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "fb1cbeb765cca34cfc9751fb02a8213fb1e1fd0f9be5db32c5fc59bc3cf75763",
+    "bytes": 14023,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/lw3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "b49e7c7e241197479d7f142c4599456c27c2404a088b420f1acce5bb4ab187e0",
+    "bytes": 22138,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/lw4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "2d280a9253ce2ee8da5bf65a2b0c4b7771865b495aad00b44ed5a155a6cb2b5d",
+    "bytes": 15273,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/lw5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "9ff2cf8eb22af3a249d7f20d45b13b2d0c9c1d4009427d91a7ed77a3f22d6d6f",
+    "bytes": 24225,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/m1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "b83f68f03dcb8fde9da3d9efd9ca3252d9830b187780120808f6360faafccbd0",
+    "bytes": 10535,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/m2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "0ce96868ac6369f0f34e91369f8cd3fb383dd4a11f8da429e93c0a2e25f357e0",
+    "bytes": 17066,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/m3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "c901a3a86445f869696f6449c26757831367e5990f5ad618bee8ee75cb758899",
+    "bytes": 16779,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/m4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "b7c38d9f3a708a3061cd3671a80bd77ce3489091ac20a9996110073fe27c6de8",
+    "bytes": 13138,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mr1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "d242988d03a6b3efc5746f6eb1218a01b26ef716aaca7f3210df79f4e02ee39b",
+    "bytes": 28022,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mr2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "8ffc601fc34a07b5db620cc1b9b95c249e91118b63de708db6b0761634832605",
+    "bytes": 21877,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mr3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e9696117cec97642e912b4af14bdd73565a3b69136590c7d20f404d1dd836153",
+    "bytes": 19434,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mr4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "6e79c94b44370e7d2d02abbe123832dbd6fc4cb9bc05496c73f7f78db906cd3c",
+    "bytes": 23209,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mrr1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "c7b1ecc6b6c11e4b0799f5dca024e05a1ce89263a2235df816efdaa41bf4ed42",
+    "bytes": 14279,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mrr3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e4252572d58bafb9bfe93a8d879c81f6ab4239868b3f6b89f3cb4d4fb5b43217",
+    "bytes": 12591,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mrr4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "450920142e274a607a25c628fe971fc37757708c60bfd508e6a141f675df52be",
+    "bytes": 20861,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mz1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "d691a58b3beedb72b9e49847410bfc0467d7d31f7b6ec7f9a6bd6ba95dd7397a",
+    "bytes": 18079,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mz2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e2f94c9c70f1326642630d3d61eb82c1570fd058962ef2c9571f0cbff78c8a76",
+    "bytes": 22248,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mz3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e590aedb00d18a8d81adf5f04908a3351cf59e131b34ca7c93ae5cb2697e02fd",
+    "bytes": 12694,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mz4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "0649624f6ed1bd889004d865b495285640aaebc0621604fd8ad442d5e53da73d",
+    "bytes": 20661,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/mz5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "8ba1854ea4680917b0b0ce27076478c5ce309d66956bfb3224fbcc6d9408a8ea",
+    "bytes": 20940,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "b827e55b3f5db1c4f0b7979ba7e0c9becef35eaa830b273255a15e49ba53e7c5",
+    "bytes": 22080,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "0ff8a050d1293243b14577649ebe9d5c3b12873782162d48e7d7cbe255df7f98",
+    "bytes": 18092,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e84dcec6dd6329eaee09102616deec0ede7d660354bc7432ed47a292e83f289c",
+    "bytes": 12746,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "b84676752c3e29f3ce336363c4d8d3f1aacb67e762ae352401a1031e0ca793e8",
+    "bytes": 12476,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "8237b58820c79fa341614e21a9bcc54ceb494320fe4a5a0ecbe66a120a6d1533",
+    "bytes": 21059,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p6.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "46904b7dc47ed8b275056a45fef8d2a7db5453398ea6e0abe802b033c274940d",
+    "bytes": 20814,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p7.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "9a7b3eada4e390c3ec9162e7036d53353720c65ccd3998f72cdd4138ec8ff760",
+    "bytes": 15398,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p8.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "b3ce76593841b5834b757790121dd397bcddfbed1805fc24f17c0fda4482117e",
+    "bytes": 15917,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p9.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "031349ebb1517e8b64ac6dd6f5032896339e535cf1c20f0582fe4397182c6fd8",
+    "bytes": 18600,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p10.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "39bb6c358d846de51c25d7d37f5fa9c4cd5e7866062ae77edd2c6f6a93178f4b",
+    "bytes": 20581,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p11.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e3fa27de393d75c209515eb56c970b8174ace6e887d1723e29c0ef70c6b395ba",
+    "bytes": 15975,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p12.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "de2533edf2921fe6202b5d92a061a8fc8b848b3670b816ce1ad6680870e7232a",
+    "bytes": 14468,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p13.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "686972557ac2211c137f24457f10f50514328ac14cbb1f98be0ad1f56231200b",
+    "bytes": 12747,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p14.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "51c5ee6d87d8fe44edf81df6c60f1ca4a031d8f4d5f915d19368d79a6fdb00f4",
+    "bytes": 31751,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p15.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "737a8bd357830395ac1b9de4932bf3da761eadd151078ac11aceb4d0435d4f68",
+    "bytes": 18806,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/p16.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "aa05a227d8b1e229a2009b5ab438ef45c761adfef500565e660fa1d447299196",
+    "bytes": 23290,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/rt1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "3a3e223b475b3101ce8831c7367fe0fb14e81b8445dc855211615b672488d5c3",
+    "bytes": 29865,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/rt2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "2210098ac516bde1d31afcef25bd7c5289cc52eb38580b8210c2d679a9d431cd",
+    "bytes": 16259,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/rt3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "dbda0d65993e7ac08564826dfac4ca340e4afc94b172f92cc71f5623920150b2",
+    "bytes": 14907,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/rt4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "44fb927fbd9c42159f3548adbe6a93e206a17f2a2e716b161be7ecf65fa89e47",
+    "bytes": 26642,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/rt5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "49cff8f38ce5c462ad441c965b5e53649e3ed346c1b83e5b94b995ca15c0593b",
+    "bytes": 33022,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/s1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "fd2c9017b66b79cb08f2200aa0c366475f095b862d2812bdf941c68aa212c69c",
+    "bytes": 16362,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/s2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "f0d9f3fb966fd54c4a7e5ff53d41e43a2cf0250b1ea3976b86929404284f8544",
+    "bytes": 16210,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/s3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "cf83a9ced07a33bcd5d6f0ea578429c6e03a20bfad124843a66fed01769fc7dd",
+    "bytes": 21750,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/s4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "93547ae24797c0b230def0b719af57824bb2aa55e639b0581ad83d27c8b7b2ca",
+    "bytes": 24742,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/s5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "7100a52133691fa9d84cb529c726b14804ff253a0a9e693d807b237442858e5e",
+    "bytes": 26413,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/s6.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "4eac84b6a84f79a7af91f2f414de6c207fa599b2915b99751add88305cbb6457",
+    "bytes": 14860,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/s7.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "85111c73dbc56cc2f4632cecd242e83eb69000645c003f63f6d19ef439025889",
+    "bytes": 26936,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/s8.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "b8b78a6de9a5c03345c746ec7a1345861130029ff64519322d4b79e7f331c24b",
+    "bytes": 35468,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/sw1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e3f97fed24d220ae8ca6f25e60c6f9ce4920c53e3d57631b011227214032c876",
+    "bytes": 15245,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/sw2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "e13d7d138ad43c9379e2e1724f6130cfc16db8a8e3df09c01bc455e17b4e6358",
+    "bytes": 25263,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/sw3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "2437a62916009afa72f08224d087d80bddbfe5aac644ca7d24e5056e63042d20",
+    "bytes": 19749,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/sw4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "690ec1a1c4f3e5c8b0515f94085ecabc2a0658822bcaf6a3b728c73aa5e0b9b4",
+    "bytes": 21621,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/sw5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "c850ee7704f0ae5a47757759b5d1a8a21ab81dbedcde5de2fdb83bb2d360a200",
+    "bytes": 15949,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/sw6.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "a88e320ce40ee08fc869041973d6e135cdc15afc7dd84a13294ef75a16491b62",
+    "bytes": 22537,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/x1.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "bb8f8949c0d0494397c3504a642fd65d82e8519821032775fcb6d874887cbe30",
+    "bytes": 15814,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/x2.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "111c773de28aebf7a418ee40cf4425a68ef234ab758678e649c85f0708918d57",
+    "bytes": 22169,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/x3.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "a92b0db66e55b0609d4722793c64a320b239452f33f0a5df445cf45c6e6d9a24",
+    "bytes": 22112,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/x4.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "bbc36d51573685c45720585b80a68faed692493bdc80dce481e39191229bd16c",
+    "bytes": 13840,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/x5.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "095f1e503123efc1c80d6017feb9232284321614d616018c09b84c860fa4918f",
+    "bytes": 21545,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/x6.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "3ffda4bd1d68a5b73807bb40b75c53fb1f1a2df7cdb4bd43336ec96d6341200d",
+    "bytes": 21085,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
+  },
+  "assets/audio/taunt/x7.mp3": {
+    "mime": "audio/mpeg",
+    "sha256": "14b78d8d1e48d63c9c0a627b22dadb27854377746ff17342298a0dff1e9a473e",
+    "bytes": 24223,
+    "usedBy": [
+      "src/shell/dev/taunts.js"
+    ]
   }
 }
