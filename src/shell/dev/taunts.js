@@ -164,7 +164,7 @@
     for (const d of docs()) {
       const t = d.getElementById('phase-tease');
       if (t && t.style.opacity === '1') return true;
-      if (d.querySelector('#phase-caption.show, #mom-line.show, #caption.on, #radio.show')) return true;
+      if (d.querySelector('#phase-caption.show, #mom-line.show, #caption.on, #radio.show, #defy-line.on')) return true; // 11/24 #defy-line = 반항하는 재미(src/phase/defy.js) 말리는 대사
     }
     return false;
   }

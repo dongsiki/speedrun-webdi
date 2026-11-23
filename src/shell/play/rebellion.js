@@ -62,6 +62,20 @@
       story: ['가져가려고 집었던 것이었다.', '그는 그것을 다시 바닥에 놓았다.', '왜 바꾸었는지는 말하지 않았다.'] },
     { id: 'suitcaseEmpty', kind: 'rebel', title: '빈손으로', line: '그는 아무것도 넣지 않고 가방을 닫았다.', hint: '빈 가방으로 떠난다.', test: s => s.suitcaseEmpty > 0,
       story: ['옷도 사진도 그대로 놓여 있었다.', '그는 빈 가방의 무게를 한 번 들어 보았다.', '이번에는 찾으러 돌아오지 않았다.'] },
+    // 2026-11-24 반항하는 재미(사용자 「ㅇㅋ 이거 해」, 되묻기에 「ㅇㅇ」): AI가 「하지 마세요」라고 말린 행동을 하면 열린다.
+    // 말리기·알아채기는 src/phase/defy.js. 기록 숫자는 store.defy[id].
+    { id: 'defyDig', kind: 'rebel', title: '더 팠다', line: '그만 파라는 말을 듣고도 그는 더 팠다.', hint: '그만 파라는 말을 듣고도 판다.', test: s => (s.defy || {}).defyDig > 0,
+      story: ['일곱 개를 다 꺼냈는데도 손은 멈추지 않았다.', '더 묻힌 것이 있을 것 같았다.', '흙은 끝까지 아무것도 내주지 않았다.'] },
+    { id: 'defyCctv', kind: 'rebel', title: '기다리지 않았다', line: '기다리라는 말에도 그는 화면을 넘겼다.', hint: '기다리라는 말을 듣고도 화면을 넘긴다.', test: s => (s.defy || {}).defyCctv > 0,
+      story: ['한 화면에 10초. 그렇게 정해져 있었다.', '그는 다음 방이 더 궁금했다.', '밤은 그가 넘긴 만큼 빨리 지나가지 않았다.'] },
+    { id: 'defyMaze', kind: 'rebel', title: '뒤로 걸었다', line: '앞만 보라는 말에도 그는 뒤로 걸었다.', hint: '앞만 보라는 말을 듣고도 뒤로 걷는다.', test: s => (s.defy || {}).defyMaze > 0,
+      story: ['앞에는 벽이 있었고, 뒤에도 벽이 있었다.', '그는 지나온 길을 한 번 더 보고 싶었다.', '뒤로 걷는 법은 아무도 가르쳐 주지 않았다.'] },
+    { id: 'defyRoutine', kind: 'rebel', title: '가만히 있었다', line: '멈추지 말라는 말에도 그는 가만히 있었다.', hint: '멈추지 말라는 말을 듣고도 가만히 있는다.', test: s => (s.defy || {}).defyRoutine > 0,
+      story: ['해야 할 일은 벽에 적혀 있었다.', '그는 아무것도 하지 않고 방을 둘러보았다.', '그 방이 원래 어떤 방이었는지 조금 생각났다.'] },
+    { id: 'defyLimb', kind: 'rebel', title: '눈을 감았다', line: '깜빡이지 말라는 말에도 그는 눈을 감았다 떴다.', hint: '깜빡이지 말라는 말을 듣고도 눈을 깜빡인다.', test: s => (s.defy || {}).defyLimb > 0,
+      story: ['눈이 말라 따가웠다.', '대신 해 주겠다는 말이 있었다.', '그래도 그는 제 눈꺼풀로 깜빡였다.'] },
+    { id: 'defyMri', kind: 'rebel', title: '끝까지 눌렀다', line: '떼도 된다는 말에도 그는 끝까지 누르고 있었다.', hint: '떼도 된다는 말을 듣고도 끝까지 누른다.', test: s => (s.defy || {}).defyMri > 0,
+      story: ['이제 괜찮다는 말은 늘 조금 일찍 왔다.', '그는 손을 떼지 않았다.', '끝은 그가 정하고 싶었다.'] },
     { id: 'again', kind: 'rebel', title: 'RE?', line: '그는 다시 처음으로 돌아갔다. AI는 다시 켜져 있었다.', hint: '모두 끝낸 뒤 다시 시작한다.', test: s => s.again > 0,
       story: ['끝까지 갔는데, 처음이 다시 왔다.', '스위치는 다시 올라가 있었다. 초록 불이 켜져 있었다.', '그는 오늘이 며칠째인지 묻지 않았다. 숫자는 이미 화면에 적혀 있었다.'] }
   ];
@@ -74,6 +88,13 @@
   // 기록 한 줄마다 따라붙는, 남이 적은 간호 기록 한 줄.
   function nursing(text) {
     if (/스위치를 내렸다/.test(text)) return '경보 1회. 재연결함.';
+    // 2026-11-24 반항하는 재미(defy.js)
+    if (/그만 파라는 말/.test(text)) return '손을 오므렸다 폈다 하심. 멈추지 않음.';
+    if (/기다리라는 말/.test(text)) return '모니터 쪽으로 고개 돌리심.';
+    if (/앞만 보라는 말/.test(text)) return '뒤척이심.';
+    if (/멈추지 말라는 말/.test(text)) return '한동안 움직임 없음. 호흡 고름.';
+    if (/깜빡이지 말라는 말/.test(text)) return '눈 깜빡임 있음. 인공눈물 넣어 드림.';
+    if (/떼도 된다는 말/.test(text)) return '손을 꼭 쥐고 놓지 않으심.';
     if (/흙 속에서|다시 찾았다/.test(text)) return '손을 오므렸다 폈다 하심.';
     if (/아무것도 넣지 않고/.test(text)) return '개인 물품 모두 남아 있음. 가방만 없어짐.';
     if (/다시 꺼냈다/.test(text)) return '짐을 다시 정리함. 이전 목록과 다름.';
@@ -358,7 +379,14 @@
     if (stage === 'digging' && idle() && games.every(g => done.includes(g))) showFinale();
   }
   new MutationObserver(sync).observe(body, { attributes: true, attributeFilter: ['data-stage', 'data-completed', 'data-transition'] });
+  // 2026-11-24 반항하는 재미: 02(개발자용)에서 적어 둔 반항(store.defy)은 여기서 처음 열릴 때 연다. 반항하는 재미 기록만 이렇게 한다.
+  if (achievements.some(a => a.id.startsWith('defy') && !store.unlocked[a.id] && a.test(store))) settle();
   render(); sync();
   // resetFinale: 개발용 미리보기에서 RE? 뒤 처음 화면으로 돌아갈 때 클리어 화면을 치운다.
-  window.RebellionLog = { get store() { return store; }, achievements, show, close, resetFinale() { finale?.remove(); finale = null; offInRun = false; sync(); } };
+  // defy(id, text): 반항하는 재미(src/phase/defy.js)가 말린 행동을 알아챘을 때. 다른 기록처럼 AI를 끈 판에서만 센다.
+  function defy(id, text) {
+    if (!offInRun) return;
+    store.defy = store.defy || {}; bump(store.defy, id); write(text); settle();
+  }
+  window.RebellionLog = { get store() { return store; }, achievements, show, close, defy, resetFinale() { finale?.remove(); finale = null; offInRun = false; sync(); } };
 })();
