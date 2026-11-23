@@ -1,8 +1,8 @@
-/* 개발자용 02 전체: 아무 소리도 안 날 때 할배 숨소리(2026-11-17 Claude Code). 본편 01에는 없다.
+/* 개발자용 02 전체: 아무 소리도 안 날 때 할배 숨소리(2026-11-17 Claude Code). 11/21부터 본편 01에도 같은 코드가 들어 있다.
    사용자(코디네이터 되묻기에 「ㅇㅇ」): 「02 게임 전체에서 아무 소리도 안 나는 때에는 할배 숨소리가 들리게 한다」,
    숨소리는 매뉴얼 사무엘 소리 파일을 가져오지 않고 그 느낌으로 새로 만든 것(assets/audio/phase3/breath.mp3, make-breath.cjs) 하나를 쓴다.
-   - 이 페이지와 안에 열린 게임 화면(같은 출처 iframe)을 0.1초마다 살펴, 소리가 하나도 없는 채로 1.5초가 지나면 숨소리를 천천히 키운다.
-     다른 소리가 나면 바로 줄여 멈춘다(멈춘 자리부터 다시 이어 숨 쉰다).
+   - 이 페이지와 안에 열린 게임 화면(같은 출처 iframe)을 0.1초마다 살펴, 소리가 하나도 없는 채로 5초가 지나면 숨소리를 3초에 걸쳐 키운다(11/23, 전에는 1.5초).
+     다른 소리가 나면 바로 음소거해 멈춘다(멈춘 자리부터 다시 이어 숨 쉰다).
    - 소리를 보는 법: ① <audio>·<video>가 소리 켠 채 재생 중인지 ② 웹 오디오는 스피커로 가는 길목에 귀(AnalyserNode)를 달아 실제 크기를 잰다.
      귀를 달기 전에 이미 스피커에 이어진 소리는 재생 시작·끝으로 센다.
    - 사용 전 window.ElderBreathSrc 에 소리 주소를 넣는다. window.ElderBreath.force(true/false)로 장면이 직접 숨소리를 켜고 끌 수 있다(3페 시작 까만 화면).
@@ -14,9 +14,16 @@
   try { if (window.top !== window && window.top.ElderBreath) return; } catch (_) {} // 바깥 02가 이미 맡고 있으면 둘이 같이 숨 쉬지 않게
   const SRC = window.ElderBreathSrc;
   if (!SRC) return;
-  const QUIET_MS = 1500, VOL = .2, THRESH = .004; // 11/17 숨소리 크기 절반(0.6 → 0.3), 또 줄임(0.3 → 0.2)
-  //   심전도 삑(960Hz, ai-cling.js·phase3.js 박동)은 소리로 치지 않는다(사용자: 「2는 ㅇㅇ 그렇게 해」, 삑은 그대로 계속 난다).
+  // 11/17 숨소리 크기 절반(0.6 → 0.3), 또 줄임(0.3 → 0.2). 11/23 또 줄임(0.2 → 0.1).
+  // 11/23 사용자(되묻기에 「ㅇㅇ」): 「한 번이라도 소리가 난다면 기본 숨소리를 무조건 음소거시키고 5초 뒤에 그라데이션으로 다시 들리게」
+  //   → 다른 소리가 나면 바로 0, 그 소리가 끝나고 5초(QUIET_MS) 조용하면 3초(FADE_MS)에 걸쳐 0 → VOL로 키운다.
+  const QUIET_MS = 5000, FADE_MS = 3000, VOL = .1, THRESH = .004;
+  //   심전도 삑(960Hz, ai-cling.js 연명장치 삑이 02 내내 남)은 소리로 치지 않는다(11/17 그대로, 11/24 되묻기에 「ㅇㅇ」).
   const IGNORE_BEAT = true;
+  // 11/24 사용자(되묻기에 「ㅇㅇ」): 「심전도 스테이지에서는 기본 숨소리를 없애라」 「심전도 숨소리만 나오게」
+  //   → 06 마지막 걸음 화면(canvas#world, 이름표 「마지막 걸음…」)이 열려 있는 동안은 기본 숨소리를 처음부터 끝까지 끈다.
+  const isLastWalk = w => { try { return !!w.document.querySelector('canvas#world[aria-label^="마지막 걸음"]'); } catch (_) { return false; } };
+  const lastWalkOpen = () => windows(window).some(isLastWalk);
 
   const el = new Audio(); el.src = SRC; el.loop = true; el.preload = 'auto'; el.volume = 0; el.__breath = true;
   const media = new Set(), taps = new Map(), loose = new Set(), beepUntil = new WeakMap();
@@ -104,14 +111,14 @@
   }
   function tick() {
     const now = performance.now();
-    if (!forced && loud()) quietSince = now;
-    const want = !document.hidden && (forced || (!held() && now - quietSince >= QUIET_MS));
+    const stageOff = lastWalkOpen(); // 06 마지막 걸음: 기본 숨소리 없음(나간 뒤에는 5초 뒤부터)
+    if (stageOff || (!forced && loud())) quietSince = now;
+    const want = !document.hidden && !stageOff && (forced || (!held() && now - quietSince >= QUIET_MS));
     if (want) {
       if (el.paused && now >= nextTry) { nextTry = now + 1000; el.play().catch(() => {}); } // 사용자가 한 번 누르기 전에는 브라우저가 막는다 → 1초마다 다시
-      el.volume = Math.min(VOL, el.volume + (forced ? .2 : .045));
-    } else if (!el.paused) {
-      el.volume = Math.max(0, el.volume - .3);
-      if (el.volume === 0) el.pause();
+      el.volume = Math.min(VOL, el.volume + (forced ? .2 : VOL * 100 / FADE_MS)); // 0.1초마다 → 3초에 걸쳐 VOL까지
+    } else if (!el.paused || el.volume > 0) {
+      el.volume = 0; el.pause(); // 11/23 바로 음소거(서서히 줄이지 않음)
     }
   }
   patch(window);
