@@ -28,7 +28,7 @@ function duration() { return matchMedia('(prefers-reduced-motion:reduce-off)').m
       state = next;
       document.body.dataset.stage = state.stage;
       document.body.dataset.completed = state.completed.join(',');
-      $('announcer').textContent = { digging: '땅파기 로비', switches: '전구 퍼즐', maze: '미로. W A S D로 이동하고 마우스로 둘러봅니다.', routine: '기억 속 하루', limb: '마지막 걸음. A와 D로 발을 번갈아 딛고, 스페이스로 숨을 쉬고, E로 눈을 깜빡입니다.', needle: '실 꿰기. 마우스나 방향키로 실 끝을 옮기고, 누르고 있거나 스페이스를 누르고 있으면 숨을 참습니다.', suitcase: '짐 싸기. 물건을 누르거나 끌어 가방에 넣고 빼고, 잠금쇠로 닫습니다. 가방이 작아 다 넣을 수 없습니다.', mri: 'MRI 검사. 검사가 시작되면 움직이지 않고 기다립니다.' }[state.stage];
+      $('announcer').textContent = { digging: '땅파기 로비', switches: '빈건물 CCTV', maze: '미로. W A S D로 이동하고 마우스로 둘러봅니다.', routine: '기억 속 하루', limb: '마지막 걸음. A와 D로 발을 번갈아 딛고, 스페이스로 숨을 쉬고, E로 눈을 깜빡입니다.', needle: '실 꿰기. 마우스나 방향키로 실 끝을 옮기고, 누르고 있거나 스페이스를 누르고 있으면 숨을 참습니다.', suitcase: '짐 싸기. 물건을 누르거나 끌어 가방에 넣고 빼고, 잠금쇠로 닫습니다. 가방이 작아 다 넣을 수 없습니다.', mri: 'MRI 검사. 검사가 시작되면 움직이지 않고 기다립니다.' }[state.stage];
       $(state.stage).contentWindow.focus();
       send(state.stage, 'focus');
       if (state.stage === 'switches') send('switches', 'interference-state', { used: switchInterferenceUsed });

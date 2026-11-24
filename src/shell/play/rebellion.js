@@ -6,7 +6,7 @@
   const $ = id => document.getElementById(id), body = document.body;
   // 2026-10-19: 실 꿰기(needle, Claude Code)·짐 싸기(suitcase, Codex) 추가. 클리어는 여기 있는 여섯 곳 전부(사용자 확정).
   const games = ['switches', 'maze', 'routine', 'limb', 'needle', 'suitcase', 'mri'];
-  const place = { switches: '전구 퍼즐', maze: '미로', routine: '기억 속 하루', limb: '마지막 걸음', needle: '실 꿰기', suitcase: '짐 싸기', mri: 'MRI 검사' };
+  const place = { switches: '빈건물 CCTV', maze: '미로', routine: '기억 속 하루', limb: '마지막 걸음', needle: '실 꿰기', suitcase: '짐 싸기', mri: 'MRI 검사' };
   const thing = { bulb: ['전구', '전구를', '전구는'], key: ['열쇠', '열쇠를', '열쇠는'], toothbrush: ['칫솔', '칫솔을', '칫솔은'], cane: ['지팡이', '지팡이를', '지팡이는'], spool: ['실과 바늘', '실과 바늘을', '실과 바늘은'], suitcase: ['여행가방', '여행가방을', '여행가방은'], chart: ['검사표', '검사표를', '검사표는'] };
   const cleared = { switches: '그는 불을 직접 켰다.', maze: '그는 미로를 걸어서 빠져나왔다.', routine: '그는 그날 하루를 끝까지 기억했다.', limb: '그는 끝까지 걸었다. 숨은 기계가 이어 쉬었다.', needle: '그는 바늘에 실을 꿰었다.', suitcase: '그는 가져갈 것과 두고 갈 것을 골랐다.', mri: '그는 검사가 끝날 때까지 움직이지 않았다.' };
   const failed = { switches: '그는 불을 켜지 못했다.', maze: '그는 미로에서 쓰러졌다.', routine: '그는 그날 일을 놓쳤다.', limb: '그는 숨을 놓쳤다.', needle: '그는 실을 다 써 버렸다.', suitcase: '그는 짐을 싸지 못했다.', mri: '그는 검사를 끝까지 기다리지 못했다.' };
@@ -27,7 +27,7 @@
       story: ['맨손으로 판 흙은 생각보다 따뜻했다.', '손톱 밑에 낀 흙은 씻어도 오래 남았다.', '누군가 그 손을 닦아 주며 물었다. "또 어디 다녀오셨어요."'] },
     { id: 'dig4', kind: 'goal', title: `${many(Object.keys(thing).length)} 개를 꺼냈다`, line: `${things}. 그는 모두 꺼냈다.`, hint: `묻힌 물건 ${many(Object.keys(thing).length)} 개를 모두 찾는다.`, test: s => Object.keys(thing).every(k => s.found[k]),
       story: [`${things}. 한 사람이 하루를 사는 데 드는 것들.`, '그는 이것들을 왜 묻었는지 기억하지 못했다.', '다시 꺼내야 한다는 것만은 알았다.'] },
-    { id: 'switches', kind: 'goal', title: '불을 켰다', line: cleared.switches, hint: '전구 퍼즐을 직접 푼다.', test: s => s.clears.switches > 0,
+    { id: 'switches', kind: 'goal', title: '불을 켰다', line: cleared.switches, hint: '빈건물 CCTV를 직접 깬다.', test: s => s.clears.switches > 0,
       story: ['낡은 전구. 돌리면 찰칵 소리가 난다.', '그 방의 불은 늘 켜져 있었다. 밤에도, 아무도 없을 때도.', '그래서 그는 직접 켜 보고 싶었다. 끄는 법은 이미 잊었으니까.'] },
     { id: 'maze', kind: 'goal', title: '길을 찾았다', line: cleared.maze, hint: '미로를 직접 빠져나온다.', test: s => s.clears.maze > 0,
       story: ['녹슨 현관 열쇠. 고리에 붉은 실이 묶여 있다. 잃어버리지 말라고 누가 묶었다.', '매일 걷던 길이 어느 날부터 매일 달라졌다.', '벽은 늘 차가웠고, 늘 같은 자리에 있었다.'] },

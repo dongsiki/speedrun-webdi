@@ -345,7 +345,7 @@
   const discoveries = document.createElement('div');
   discoveries.id = 'discovered-objects'; document.body.append(discoveries);
   const labels = { bulb: '전구', key: '열쇠', toothbrush: '칫솔', cane: '지팡이', spool: '실과 바늘', suitcase: '여행가방', chart: '검사표' }, objectButtons = new Map();
-  const stageLabels = { bulb: '전구 퍼즐', key: '미로', toothbrush: '기억 속 하루', cane: '한 걸음', spool: '실 꿰기', suitcase: '짐 싸기', chart: 'MRI 검사' };
+  const stageLabels = { bulb: '빈건물 CCTV', key: '미로', toothbrush: '기억 속 하루', cane: '한 걸음', spool: '실 꿰기', suitcase: '짐 싸기', chart: 'MRI 검사' };
   const initialPositions = { bulb: [.42, .5], key: [.58, .5], toothbrush: [.5, .32], cane: [.5, .68], spool: [.36, .7], suitcase: [.64, .3], chart: [.72, .72] };
   let portalTimer = null;
   const notifyDemo = (type, object) => parent.postMessage({ channel: demoChannel, type, object }, '*');

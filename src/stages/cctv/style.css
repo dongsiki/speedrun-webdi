@@ -1,4 +1,4 @@
-/* 빈건물 CCTV(2026-11-05, Claude Code). 전구 퍼즐(라이트아웃) 자리에 들어가는 게임. 흰 종이 + 검은 모니터. */
+/* 빈건물 CCTV(2026-11-05, Claude Code). 빈건물 CCTV(라이트아웃) 자리에 들어가는 게임. 흰 종이 + 검은 모니터. */
 :root{color-scheme:light;--paper:#fff;--ink:#000}
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--paper);color:var(--ink);font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif}

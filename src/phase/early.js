@@ -46,7 +46,7 @@
   // 발표용 바로가기: 01_speedrun_play.html#demo=...
   //  finale1  = 1페이즈 결과 화면(공포 컷 2번)까지 바로
   //  phase2   = 2페이즈 처음(글리치 인트로부터)
-  //  phase2-last = 2페이즈에서 여섯 곳을 깬 상태(남은 한 곳: 전구 퍼즐)
+  //  phase2-last = 2페이즈에서 여섯 곳을 깬 상태(남은 한 곳: 빈건물 CCTV)
   //  scare    = AI 스위치를 끄면 바로 경고 → 점프스케어
   //  reset    = 1페이즈로 초기화
   const demo = demoHash;

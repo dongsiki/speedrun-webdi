@@ -153,7 +153,7 @@
       body.dataset.demoFinale = '1';
       body.dataset.completed = games.join(',');
     }
-    // 발표용: 점프스케어 직전의 마지막 한 게임(정상화된 전구 퍼즐)으로 바로 들어간다
+    // 발표용: 점프스케어 직전의 마지막 한 게임(정상화된 빈건물 CCTV)으로 바로 들어간다
     if (P.demo === 'phase2-last' && stage === 'digging' && !body.dataset.demoEnter) {
       body.dataset.demoEnter = '1';
       setTimeout(() => {
