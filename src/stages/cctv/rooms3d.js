@@ -153,13 +153,14 @@ function buildStairs(json) { // CAM 2 계단: 11/05 시험 3D 그대로
   const P = (kind, x, z, ry = 0, arg) => { const [px, py, pz] = at(x, z); prop(scene, kind, px, py, pz, ry, arg); };
   P('boxes', .45, 8.3, .3, 3); P('boxes', 1.05, 8.5, -.2, 1); P('bin', .35, 5.7); P('chair', .5, 6.7, Math.PI / 2 - .3); P('cone', 1.25, 4.6);
   P('papers', 1.7, 7.9, .9); P('sack', .4, 4.4); P('extinguisher', .12, 7.5);
-  return { scene, camera, spots: { actor: at(3.4, 6.8), far: at(1.6, 2.6), near: at(4.2, 6.8), elder: at(3.0, 5.2), hint: at(2.6, 6.2) } };
+  return { scene, camera, spots: { actor: at(3.4, 6.8), far: at(1.6, 2.6), near: at(4.2, 6.8), elder: at(3.0, 5.2), hint: at(2.6, 6.2), go: at(3.0, 5.2) } };
 }
-// 방마다 모델 세울 자리: actor = 1페 것들, far→near = 2페 그림자(확인할수록 가까이), elder = 3페 할배, hint = 교복 치마
+// 방마다 모델 세울 자리: actor = 1페 것들, far→near = 2페 그림자(확인할수록 가까이), elder = (옛) 3페 할배, hint = 교복 치마
+// go = 3페 떠나는 할배(2026-11-24): 창고 앞쪽 빈 바닥(선반에 묻히지 않게) → 계단 → 복도 끝 문 쪽 → 로비 뒤 벽 문 앞. 카메라를 등지고 선다.
 const SPOTS = {
-  hall: { actor: [-.6, 0, -3.5], far: [-.2, 0, -6.5], near: [.1, 0, 3.8], elder: [.3, 0, -1.5], hint: [.5, 0, -.5] },
-  lobby: { actor: [-1.6, 0, .4], far: [-1, 0, -3.6], near: [2.2, 0, 2.2], elder: [-1.4, 0, 1.4], hint: [0, 0, 1.2] },
-  store: { actor: [-.5, 0, .2], far: [-2.8, 0, -1.4], near: [1.5, 0, 1.6], elder: [-1.2, 0, -.9], hint: [.4, 0, .9] }
+  hall: { actor: [-.6, 0, -3.5], far: [-.2, 0, -6.5], near: [.1, 0, 3.8], elder: [.3, 0, -1.5], hint: [.5, 0, -.5], go: [0, 0, -5] },
+  lobby: { actor: [-1.6, 0, .4], far: [-1, 0, -3.6], near: [2.2, 0, 2.2], elder: [-1.4, 0, 1.4], hint: [0, 0, 1.2], go: [-1, 0, -3.5] },
+  store: { actor: [-.5, 0, .2], far: [-2.8, 0, -1.4], near: [1.5, 0, 1.6], elder: [-1.2, 0, -.9], hint: [.4, 0, .9], go: [-.4, 0, .3] }
 };
 function build(id, stairsJson) {
   const s = id === 'hall' ? buildHall() : id === 'lobby' ? buildLobby() : id === 'store' ? buildStore() : buildStairs(stairsJson);
@@ -172,6 +173,7 @@ function stand(s, kind, t = 0) {
   const g = new THREE.Group(); s.actors = g; s.scene.add(g); if (!kind) return;
   const sp = s.spots; let p = kind === 'shadow' ? sp.far.map((v, i) => v + (sp.near[i] - v) * t) : kind === 'skirt' ? sp.hint : (kind === 'elder' || kind === 'elderSit') ? sp.elder : sp.actor;
   if (kind === 'shadow' && t > 1) p = sp.near.map((v, i) => v + (s.camera.position.toArray()[i] - v) * Math.min(.6, (t - 1)) * (i === 1 ? 0 : 1));
+  if (kind === 'elderGo') { p = sp.go; put(g, 'elder', p[0], p[1], p[2], Math.atan2(s.camera.position.x - p[0], s.camera.position.z - p[2]) + Math.PI); return; } // 등지고 떠나는 할배
   put(g, kind, p[0], p[1], p[2], Math.atan2(s.camera.position.x - p[0], s.camera.position.z - p[2]));
 }
 function addSkirt(s, on) { if (s.skirt) { s.scene.remove(s.skirt); s.skirt = null; } if (on) { const p = s.spots.hint; s.skirt = put(s.scene, 'skirt', p[0], p[1], p[2], 0); } }
