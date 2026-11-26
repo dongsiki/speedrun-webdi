@@ -118,5 +118,15 @@
       "title",
       "html"
     ]
+  },
+  "12-fail-draft.html": {
+    "entry": "src/extras/fail-draft/page.template.html",
+    "metadata": {
+      "title": "실패 축하 시안"
+    },
+    "propertyOrder": [
+      "title",
+      "html"
+    ]
   }
 }

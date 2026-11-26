@@ -1945,5 +1945,13 @@
     "usedBy": [
       "src/shell/dev/taunts.js"
     ]
+  },
+  "assets/images/fail-draft-cctv-bg.jpg": {
+    "mime": "image/jpeg",
+    "sha256": "d017b4d223af80f4add6128253447a98b26552c351d90f1732c5b020cccad3ff",
+    "bytes": 305214,
+    "usedBy": [
+      "src/extras/fail-draft/page.template.html"
+    ]
   }
 }

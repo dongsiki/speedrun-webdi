@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>실패 축하 시안</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#000;font-family:"Malgun Gothic",sans-serif}
+#bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover}
+.fail-draft-cloud{position:fixed;z-index:22;pointer-events:none;margin:0;max-width:40vw;color:#fff;font:700 max(20px,3.4vh)/1.25 "Malgun Gothic",sans-serif;
+  text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000,0 -1px 0 #000,0 1px 0 #000,-1px 0 0 #000,1px 0 0 #000;opacity:1;transition:opacity .1s linear;word-break:keep-all}
+#bar{position:fixed;right:18px;bottom:18px;z-index:30;display:flex;gap:10px}
+#bar button,#bar a{font:16px "Malgun Gothic",sans-serif;padding:.5em 1em;background:#fff;color:#000;border:2px solid #000;cursor:pointer;text-decoration:none}
+</style></head><body>
+<img id="bg" alt="" src="@@data:assets/images/fail-draft-cctv-bg.jpg@@">
+<div id="bar"><button type="button" id="again">다시 보기</button><a href="#menu" id="menu">개발용 목록</a></div>
+<script>/* @inline src/extras/fail-draft/fail-draft.js */</script>
+<script>
+(() => {
+  document.getElementById('again').addEventListener('click', () => FailDraft.play());
+  document.getElementById('menu').addEventListener('click', e => { e.preventDefault(); parent.postMessage({ channel: 'speedrun-offline-developer-v1', type: 'menu' }, '*'); });
+  setTimeout(() => FailDraft.play(), 300); // 목록에서 누르면 바로 한 번
+})();
+</script>
+</body></html>
